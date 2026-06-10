@@ -1,4 +1,5 @@
-import { PrismaClient } from "../generated/prisma";
+
+import { PrismaClient } from "@prisma/client";
 
 // PrismaClient singleton for Next.js
 // Prevents multiple instances during hot reload in development.
