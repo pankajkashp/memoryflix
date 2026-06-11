@@ -1,4 +1,3 @@
-
 import { PrismaClient } from "@prisma/client";
 
 // PrismaClient singleton for Next.js
