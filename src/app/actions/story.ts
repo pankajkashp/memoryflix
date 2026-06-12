@@ -1,0 +1,138 @@
+"use server";
+
+import { z } from "zod";
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+
+// ── Types ─────────────────────────────────────────────────────────────────────
+
+export type StoryActionState = {
+  errors?: {
+    title?: string[];
+    general?: string[];
+  };
+};
+
+// ── createStory ───────────────────────────────────────────────────────────────
+
+const CreateStorySchema = z.object({
+  title: z.string().min(2, "Title must be at least 2 characters").max(100, "Title must be under 100 characters"),
+});
+
+export async function createStory(
+  _state: StoryActionState,
+  formData: FormData
+): Promise<StoryActionState> {
+  // 1. Auth check — every Server Action must verify the session
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) {
+    return { errors: { general: ["You must be logged in to create a story."] } };
+  }
+
+  // 2. Validate
+  const result = CreateStorySchema.safeParse({
+    title: formData.get("title"),
+  });
+  if (!result.success) {
+    return { errors: result.error.flatten().fieldErrors };
+  }
+
+  const { title } = result.data;
+
+  // 3. Dynamic prisma import — prevents eager init at module-load time
+  const { prisma } = await import("@/lib/prisma");
+
+  // 4. Get the Netflix template (the only one in MVP)
+  const template = await prisma.storyTemplate.findFirst({
+    where: { slug: "netflix", isActive: true },
+  });
+  if (!template) {
+    return { errors: { general: ["Story template not found. Please contact support."] } };
+  }
+
+  // 5. Create the story — slug is left null until the story is published (Phase 6)
+  let story;
+  try {
+    story = await prisma.story.create({
+      data: {
+        userId: session.user.id,
+        templateId: template.id,
+        title,
+      },
+    });
+  } catch {
+    return { errors: { general: ["Failed to create story. Please try again."] } };
+  }
+
+  // 6. Redirect to the story editor
+  redirect(`/stories/${story.id}`);
+}
+
+// ── updateStory ───────────────────────────────────────────────────────────────
+
+const UpdateStorySchema = z.object({
+  title: z.string().min(2, "Title must be at least 2 characters").max(100, "Title must be under 100 characters"),
+});
+
+export async function updateStory(
+  storyId: string,
+  _state: StoryActionState,
+  formData: FormData
+): Promise<StoryActionState> {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) {
+    return { errors: { general: ["Unauthorized."] } };
+  }
+
+  const result = UpdateStorySchema.safeParse({
+    title: formData.get("title"),
+  });
+  if (!result.success) {
+    return { errors: result.error.flatten().fieldErrors };
+  }
+
+  const { prisma } = await import("@/lib/prisma");
+
+  // Verify ownership before updating
+  const story = await prisma.story.findUnique({
+    where: { id: storyId, userId: session.user.id },
+  });
+  if (!story) {
+    return { errors: { general: ["Story not found."] } };
+  }
+
+  await prisma.story.update({
+    where: { id: storyId },
+    data: { title: result.data.title },
+  });
+
+  revalidatePath(`/stories/${storyId}`);
+  revalidatePath("/dashboard");
+  return {};
+}
+
+// ── deleteStory ───────────────────────────────────────────────────────────────
+
+export async function deleteStory(storyId: string): Promise<void> {
+  // Guard: session must be present
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) return;
+
+  const { prisma } = await import("@/lib/prisma");
+
+  // Guard: story must exist and belong to this user
+  const story = await prisma.story.findUnique({
+    where: { id: storyId, userId: session.user.id },
+  });
+  if (!story) return;
+
+  await prisma.story.delete({ where: { id: storyId } });
+
+  revalidatePath("/dashboard");
+  redirect("/dashboard");
+}
