@@ -5,6 +5,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import EditStoryForm from "@/components/story/EditStoryForm";
+import MediaUploader from "@/components/story/MediaUploader";
+import MediaList from "@/components/story/MediaList";
 
 // In Next.js 15+, dynamic route params are a Promise.
 type PageProps = {
@@ -31,7 +33,10 @@ export default async function StoryEditorPage({ params }: PageProps) {
   // Fetch the story and verify ownership in a single query
   const story = await prisma.story.findUnique({
     where: { id, userId: session!.user.id },
-    include: { template: true },
+    include: { 
+      template: true,
+      media: { orderBy: { position: "asc" } }
+    },
   });
 
   if (!story) notFound();
@@ -76,14 +81,20 @@ export default async function StoryEditorPage({ params }: PageProps) {
           />
         </section>
 
-        {/* Media section — Phase 5 placeholder */}
-        <section className="rounded-xl border border-dashed bg-gray-50 p-6">
-          <h2 className="mb-2 text-base font-semibold text-gray-700">
-            Photos &amp; Videos
-          </h2>
-          <p className="text-sm text-gray-400">
-            Media upload will be available in the next phase.
-          </p>
+        {/* Media section */}
+        <section className="rounded-xl border bg-white p-6 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b pb-4 mb-4">
+            <div>
+              <h2 className="text-base font-semibold text-gray-900">
+                Photos &amp; Videos
+              </h2>
+              <p className="mt-1 text-sm text-gray-500">
+                Upload media to build your cinematic story.
+              </p>
+            </div>
+            <MediaUploader storyId={story.id} />
+          </div>
+          <MediaList media={story.media} />
         </section>
 
         {/* Preview section */}
