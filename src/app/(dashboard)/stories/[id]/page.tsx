@@ -86,14 +86,24 @@ export default async function StoryEditorPage({ params }: PageProps) {
           </p>
         </section>
 
-        {/* Preview section — Phase 4 placeholder */}
-        <section className="rounded-xl border border-dashed bg-gray-50 p-6">
-          <h2 className="mb-2 text-base font-semibold text-gray-700">
-            Preview
-          </h2>
-          <p className="text-sm text-gray-400">
-            Story preview (Netflix template) will be available in the next phase.
-          </p>
+        {/* Preview section */}
+        <section className="rounded-xl border bg-white p-6 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h2 className="text-base font-semibold text-gray-900">
+              Preview
+            </h2>
+            <p className="mt-1 text-sm text-gray-500">
+              View your story in the cinematic Netflix-inspired layout.
+            </p>
+          </div>
+          <Link
+            href={`/stories/${story.id}/preview`}
+            target="_blank"
+            className="inline-flex items-center justify-center rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-red-700 transition-colors"
+          >
+            Open Preview
+            <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+          </Link>
         </section>
       </div>
     </div>
