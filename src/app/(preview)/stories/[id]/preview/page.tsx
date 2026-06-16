@@ -2,9 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import NetflixHero from "@/components/preview/NetflixHero";
-import MediaGallery from "@/components/preview/MediaGallery";
-import EmptyState from "@/components/preview/EmptyState";
+import PreviewClientWrapper from "@/components/preview/PreviewClientWrapper";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -20,23 +18,16 @@ export default async function PreviewPage({ params }: PageProps) {
 
   const story = await prisma.story.findUnique({
     where: { id, userId: session.user.id },
-    include: { media: true },
+    include: { media: { orderBy: { position: "asc" } } },
   });
 
   if (!story) {
     notFound();
   }
 
-  const hasMedia = story.media && story.media.length > 0;
-
   return (
     <main>
-      <NetflixHero story={story} />
-      {hasMedia ? (
-        <MediaGallery media={story.media} />
-      ) : (
-        <EmptyState />
-      )}
+      <PreviewClientWrapper story={story} />
     </main>
   );
 }

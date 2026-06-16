@@ -2,16 +2,17 @@
 
 import { MediaAsset } from "@prisma/client";
 
-export default function MediaGallery({ media }: { media: MediaAsset[] }) {
+export default function MediaGallery({ media, onMediaClick }: { media: MediaAsset[]; onMediaClick?: (index: number) => void }) {
   return (
     <div className="px-6 md:px-12 py-8 -mt-8 relative z-20">
       <h2 className="text-xl md:text-2xl font-bold text-white mb-6 tracking-wide drop-shadow-md">
         Gallery
       </h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        {media.map((item) => (
+        {media.map((item, index) => (
           <div 
             key={item.id}
+            onClick={() => onMediaClick?.(index)}
             className="group relative aspect-video bg-zinc-800 rounded-md overflow-hidden cursor-pointer transition-transform duration-300 hover:scale-105 hover:z-30 shadow-lg"
           >
             {item.url ? (

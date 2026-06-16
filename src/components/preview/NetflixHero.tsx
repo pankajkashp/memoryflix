@@ -2,9 +2,18 @@
 
 import { Story } from "@prisma/client";
 
-export default function NetflixHero({ story }: { story: Story }) {
+export default function NetflixHero({ story, heroImageUrl, onPlay }: { story: Story; heroImageUrl?: string; onPlay?: () => void }) {
   return (
     <div className="relative h-[60vh] md:h-[70vh] w-full bg-zinc-900 flex items-end">
+      {/* Background Image */}
+      {heroImageUrl && (
+        <img
+          src={heroImageUrl}
+          alt="Hero background"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+      )}
+      
       {/* Cinematic Gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent pointer-events-none" />
       
@@ -21,9 +30,12 @@ export default function NetflixHero({ story }: { story: Story }) {
         <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 tracking-tight drop-shadow-lg">
           {story.title}
         </h1>
-        {/* Play button placeholder to match aesthetics */}
+        {/* Play button */}
         <div className="flex gap-4 mt-6">
-          <button className="bg-white text-black px-6 py-2 md:px-8 md:py-3 rounded flex items-center gap-2 font-semibold hover:bg-white/90 transition">
+          <button 
+            onClick={onPlay}
+            className="bg-white text-black px-6 py-2 md:px-8 md:py-3 rounded flex items-center gap-2 font-semibold hover:bg-white/90 transition"
+          >
             <svg className="w-5 h-5 md:w-6 md:h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
             Play
           </button>
