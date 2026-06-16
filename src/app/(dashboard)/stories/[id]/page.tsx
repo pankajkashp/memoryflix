@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import EditStoryForm from "@/components/story/EditStoryForm";
 import MediaUploader from "@/components/story/MediaUploader";
 import MediaList from "@/components/story/MediaList";
+import PublishButton from "@/components/story/PublishButton";
 
 // In Next.js 15+, dynamic route params are a Promise.
 type PageProps = {
@@ -52,19 +53,31 @@ export default async function StoryEditorPage({ params }: PageProps) {
       </Link>
 
       {/* Page header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold text-gray-900">{story.title}</h1>
-          <span className="rounded-full bg-red-600 px-2.5 py-0.5 text-xs font-semibold text-white">
-            {story.template.name}
-          </span>
+      <div className="mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold text-gray-900">{story.title}</h1>
+            <span className="rounded-full bg-red-600 px-2.5 py-0.5 text-xs font-semibold text-white">
+              {story.template.name}
+            </span>
+            {story.status === "PUBLISHED" && (
+              <span className="rounded-full bg-green-100 text-green-700 px-2.5 py-0.5 text-xs font-semibold">
+                PUBLISHED
+              </span>
+            )}
+          </div>
+          {story.status === "PUBLISHED" && story.slug ? (
+            <p className="mt-2 text-sm text-gray-600">
+              Public Link:{" "}
+              <Link href={`/s/${story.slug}`} target="_blank" className="font-medium text-indigo-600 hover:text-indigo-500 underline underline-offset-2">
+                memoryflix.com/s/{story.slug}
+              </Link>
+            </p>
+          ) : (
+            <p className="mt-1 text-sm text-gray-400">Status: DRAFT</p>
+          )}
         </div>
-        <p className="mt-1 text-sm text-gray-400">
-          Slug:{" "}
-          <code className="rounded bg-gray-100 px-1.5 py-0.5 text-xs">
-            {story.slug}
-          </code>
-        </p>
+        {story.status === "DRAFT" && <PublishButton storyId={story.id} />}
       </div>
 
       {/* Sections */}

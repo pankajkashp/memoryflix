@@ -136,3 +136,40 @@ export async function deleteStory(storyId: string): Promise<void> {
   revalidatePath("/dashboard");
   redirect("/dashboard");
 }
+
+// ── publishStory ──────────────────────────────────────────────────────────────
+
+export async function publishStory(storyId: string) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const { prisma } = await import("@/lib/prisma");
+
+  const story = await prisma.story.findUnique({
+    where: { id: storyId, userId: session.user.id },
+  });
+
+  if (!story) throw new Error("Story not found or unauthorized");
+
+  if (story.status === "PUBLISHED" && story.slug) {
+    return { success: true, slug: story.slug };
+  }
+
+  const baseSlug = story.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  const uniqueId = Math.random().toString(36).substring(2, 8);
+  const slug = `${baseSlug}-${uniqueId}`;
+
+  await prisma.story.update({
+    where: { id: storyId },
+    data: {
+      status: "PUBLISHED",
+      slug,
+      publishedAt: new Date(),
+    },
+  });
+
+  revalidatePath(`/stories/${storyId}`);
+  revalidatePath("/dashboard");
+  
+  return { success: true, slug };
+}

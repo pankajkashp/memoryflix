@@ -1,0 +1,53 @@
+import { notFound } from "next/navigation";
+import { Metadata } from "next";
+import { prisma } from "@/lib/prisma";
+import PreviewClientWrapper from "@/components/preview/PreviewClientWrapper";
+
+type PageProps = {
+  params: Promise<{ slug: string }>;
+};
+
+// SEO Metadata Generation
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const story = await prisma.story.findUnique({
+    where: { slug },
+    include: { media: { orderBy: { position: "asc" } } },
+  });
+
+  if (!story || story.status !== "PUBLISHED") {
+    return { title: "Story Not Found" };
+  }
+
+  const firstImage = story.media.find((m) => m.type === "IMAGE");
+
+  return {
+    title: `${story.title} | MemoryFlix`,
+    description: "A cinematic story shared on MemoryFlix.",
+    openGraph: {
+      title: story.title,
+      description: "A cinematic story shared on MemoryFlix.",
+      images: firstImage ? [{ url: firstImage.url }] : [],
+    },
+  };
+}
+
+export default async function PublicStoryPage({ params }: PageProps) {
+  const { slug } = await params;
+  
+  const story = await prisma.story.findUnique({
+    where: { slug },
+    include: { media: { orderBy: { position: "asc" } } },
+  });
+
+  // Security check: Only allow access if the story is published
+  if (!story || story.status !== "PUBLISHED") {
+    notFound();
+  }
+
+  return (
+    <main>
+      <PreviewClientWrapper story={story} />
+    </main>
+  );
+}
