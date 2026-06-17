@@ -44,10 +44,10 @@ export default function MediaViewer({ media, initialIndex, onClose }: MediaViewe
       {/* Close Button */}
       <button
         onClick={onClose}
-        className="absolute top-6 right-6 z-50 text-white/70 hover:text-white transition-colors"
+        className="absolute top-4 right-4 md:top-6 md:right-6 z-50 text-white/70 hover:text-white transition-colors"
         aria-label="Close"
       >
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+        <svg className="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
@@ -56,10 +56,10 @@ export default function MediaViewer({ media, initialIndex, onClose }: MediaViewe
       {media.length > 1 && (
         <button
           onClick={(e) => { e.stopPropagation(); handlePrev(); }}
-          className="absolute left-4 md:left-8 z-50 text-white/50 hover:text-white transition-colors p-2"
+          className="absolute left-1 md:left-8 z-50 text-white/50 hover:text-white transition-colors p-2"
           aria-label="Previous"
         >
-          <svg className="w-10 h-10" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+          <svg className="w-6 h-6 md:w-10 md:h-10" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
         </button>
@@ -69,17 +69,17 @@ export default function MediaViewer({ media, initialIndex, onClose }: MediaViewe
       {media.length > 1 && (
         <button
           onClick={(e) => { e.stopPropagation(); handleNext(); }}
-          className="absolute right-4 md:right-8 z-50 text-white/50 hover:text-white transition-colors p-2"
+          className="absolute right-1 md:right-8 z-50 text-white/50 hover:text-white transition-colors p-2"
           aria-label="Next"
         >
-          <svg className="w-10 h-10" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+          <svg className="w-6 h-6 md:w-10 md:h-10" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
           </svg>
         </button>
       )}
 
       {/* Media Content */}
-      <div className="relative w-full h-full max-w-7xl max-h-[90vh] flex items-center justify-center px-16 md:px-24">
+      <div className="relative w-full h-full max-w-7xl max-h-[90vh] flex items-center justify-center px-4 md:px-16 lg:px-24">
         {currentMedia.type === "VIDEO" ? (
           <video
             key={currentMedia.url} // Force remount on source change to autoPlay

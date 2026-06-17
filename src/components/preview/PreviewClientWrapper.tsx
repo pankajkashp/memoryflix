@@ -14,12 +14,13 @@ export default function PreviewClientWrapper({ story }: { story: StoryWithMedia 
 
   const hasMedia = story.media && story.media.length > 0;
   const firstImage = story.media?.find((m) => m.type === "IMAGE");
+  const coverImage = story.media?.find((m) => m.id === story.coverMediaId) || firstImage;
 
   return (
     <>
       <NetflixHero 
         story={story} 
-        heroImageUrl={firstImage?.url} 
+        heroImageUrl={coverImage?.url} 
         onPlay={hasMedia ? () => setActiveMediaIndex(0) : undefined}
       />
       

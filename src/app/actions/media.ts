@@ -70,3 +70,39 @@ export async function saveMediaAsset(data: {
   revalidatePath(`/stories/${data.storyId}/preview`);
   return { success: true, asset };
 }
+
+// ── setCoverMedia ─────────────────────────────────────────────────────────────
+
+export async function setCoverMedia(storyId: string, mediaId: string) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  // Verify the user owns the story
+  const story = await prisma.story.findUnique({
+    where: { id: storyId, userId: session.user.id },
+  });
+
+  if (!story) throw new Error("Story not found or unauthorized");
+
+  // Verify the media exists, belongs to the story, and is an IMAGE
+  const media = await prisma.mediaAsset.findUnique({
+    where: { id: mediaId, storyId },
+  });
+
+  if (!media) throw new Error("Media asset not found in this story");
+  if (media.type !== "IMAGE") throw new Error("Only images can be set as cover");
+
+  // Update the story's coverMediaId
+  await prisma.story.update({
+    where: { id: storyId },
+    data: { coverMediaId: mediaId },
+  });
+
+  revalidatePath(`/stories/${storyId}`);
+  revalidatePath(`/stories/${storyId}/preview`);
+  if (story.slug) {
+    revalidatePath(`/s/${story.slug}`);
+  }
+
+  return { success: true };
+}

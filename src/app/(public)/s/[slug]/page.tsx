@@ -20,14 +20,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const firstImage = story.media.find((m) => m.type === "IMAGE");
+  const coverImage = story.media.find((m) => m.id === story.coverMediaId) || firstImage;
 
   return {
     title: `${story.title} | MemoryFlix`,
-    description: "A cinematic story shared on MemoryFlix.",
+    description: story.description || "A cinematic story shared on MemoryFlix.",
     openGraph: {
       title: story.title,
-      description: "A cinematic story shared on MemoryFlix.",
-      images: firstImage ? [{ url: firstImage.url }] : [],
+      description: story.description || "A cinematic story shared on MemoryFlix.",
+      images: coverImage ? [{ url: coverImage.url }] : [],
     },
   };
 }

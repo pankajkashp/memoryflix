@@ -6,12 +6,22 @@ import { updateStory, StoryActionState } from "@/app/actions/story";
 type Props = {
   storyId: string;
   initialTitle: string;
+  initialDescription?: string | null;
+  initialOccasion?: string | null;
+  initialEventDate?: string | null;
   status: string;
 };
 
 const initialState: StoryActionState = {};
 
-export default function EditStoryForm({ storyId, initialTitle, status }: Props) {
+export default function EditStoryForm({ 
+  storyId, 
+  initialTitle, 
+  initialDescription, 
+  initialOccasion, 
+  initialEventDate, 
+  status 
+}: Props) {
   const updateWithId = updateStory.bind(null, storyId);
   const [state, action, pending] = useActionState(updateWithId, initialState);
 
@@ -36,6 +46,54 @@ export default function EditStoryForm({ storyId, initialTitle, status }: Props) 
         />
         {state?.errors?.title && (
           <p className="mt-1 text-xs text-red-600">{state.errors.title[0]}</p>
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="occasion" className="block text-sm font-medium text-gray-700">
+          Occasion (e.g. Wedding, Vacation)
+        </label>
+        <input
+          id="occasion"
+          name="occasion"
+          type="text"
+          defaultValue={initialOccasion || ""}
+          className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
+        />
+        {state?.errors?.occasion && (
+          <p className="mt-1 text-xs text-red-600">{state.errors.occasion[0]}</p>
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="eventDate" className="block text-sm font-medium text-gray-700">
+          Event Date
+        </label>
+        <input
+          id="eventDate"
+          name="eventDate"
+          type="date"
+          defaultValue={initialEventDate || ""}
+          className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
+        />
+        {state?.errors?.eventDate && (
+          <p className="mt-1 text-xs text-red-600">{state.errors.eventDate[0]}</p>
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+          Description
+        </label>
+        <textarea
+          id="description"
+          name="description"
+          rows={3}
+          defaultValue={initialDescription || ""}
+          className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
+        />
+        {state?.errors?.description && (
+          <p className="mt-1 text-xs text-red-600">{state.errors.description[0]}</p>
         )}
       </div>
 

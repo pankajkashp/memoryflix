@@ -14,6 +14,9 @@ import { authOptions } from "@/lib/auth";
 export type StoryActionState = {
   errors?: {
     title?: string[];
+    description?: string[];
+    occasion?: string[];
+    eventDate?: string[];
     general?: string[];
   };
 };
@@ -77,6 +80,9 @@ export async function createStory(
 
 const UpdateStorySchema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters").max(100, "Title must be under 100 characters"),
+  description: z.string().max(500, "Description must be under 500 characters").optional().or(z.literal("")),
+  occasion: z.string().max(50, "Occasion must be under 50 characters").optional().or(z.literal("")),
+  eventDate: z.string().optional().or(z.literal("")),
 });
 
 export async function updateStory(
@@ -91,6 +97,9 @@ export async function updateStory(
 
   const result = UpdateStorySchema.safeParse({
     title: formData.get("title"),
+    description: formData.get("description"),
+    occasion: formData.get("occasion"),
+    eventDate: formData.get("eventDate"),
   });
   if (!result.success) {
     return { errors: result.error.flatten().fieldErrors };
@@ -106,9 +115,17 @@ export async function updateStory(
     return { errors: { general: ["Story not found."] } };
   }
 
+  const { title, description, occasion, eventDate } = result.data;
+  const parsedDate = eventDate ? new Date(eventDate) : null;
+
   await prisma.story.update({
     where: { id: storyId },
-    data: { title: result.data.title },
+    data: { 
+      title,
+      description: description || null,
+      occasion: occasion || null,
+      eventDate: parsedDate,
+    },
   });
 
   revalidatePath(`/stories/${storyId}`);
