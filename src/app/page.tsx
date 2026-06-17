@@ -1,3 +1,5 @@
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import LandingHero from "@/components/landing/LandingHero";
 import HowItWorks from "@/components/landing/HowItWorks";
 import DemoStory from "@/components/landing/DemoStory";
@@ -12,7 +14,13 @@ export const metadata = {
   description: "Turn your photo albums into premium Netflix-style stories. Beautiful layouts, elegant typography, and effortless sharing.",
 };
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const session = await getServerSession(authOptions);
+  const isAuthenticated = !!session;
+  
+  const ctaHref = isAuthenticated ? "/dashboard" : "/register";
+  const ctaText = isAuthenticated ? "Go to Dashboard" : "Start Creating Free";
+
   return (
     <main className="min-h-screen bg-black selection:bg-red-500/30">
       {/* Top Navigation Bar - simplified for landing page */}
@@ -24,25 +32,33 @@ export default function LandingPage() {
             </span>
           </div>
           <div className="flex flex-1 justify-end items-center gap-6">
-            <a href="/login" className="text-sm font-semibold leading-6 text-zinc-300 hover:text-white transition-colors">
-              Log in
-            </a>
-            <a href="/register" className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-black hover:bg-zinc-200 transition-colors">
-              Sign up
-            </a>
+            {!isAuthenticated ? (
+              <>
+                <a href="/login" className="text-sm font-semibold leading-6 text-zinc-300 hover:text-white transition-colors">
+                  Log in
+                </a>
+                <a href="/register" className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-black hover:bg-zinc-200 transition-colors">
+                  Sign up
+                </a>
+              </>
+            ) : (
+              <a href="/dashboard" className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-black hover:bg-zinc-200 transition-colors">
+                Dashboard
+              </a>
+            )}
           </div>
         </nav>
       </header>
 
       {/* Sections */}
-      <LandingHero />
+      <LandingHero ctaHref={ctaHref} ctaText={ctaText} />
       <HowItWorks />
       <DemoStory />
       <TemplatesSection />
       <FeaturesGrid />
-      <PricingSection />
+      <PricingSection ctaHref={ctaHref} ctaText={ctaText} />
       <FAQSection />
-      <CTASection />
+      <CTASection ctaHref={ctaHref} ctaText={ctaText} />
       
       {/* Footer */}
       <footer className="bg-black py-12 border-t border-zinc-900 text-center">

@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export default function DemoStory() {
   return (
@@ -40,13 +41,13 @@ export default function DemoStory() {
                 Two weeks exploring the Amalfi coast, eating endless amounts of pasta, and watching the sunset over the Mediterranean Sea.
               </p>
               <div className="flex gap-3">
-                <button className="bg-white text-black px-6 py-2 rounded font-semibold flex items-center gap-2 hover:bg-zinc-200 transition-colors">
+                <Link href="/demo" className="bg-white text-black px-6 py-2 rounded font-semibold flex items-center gap-2 hover:bg-zinc-200 transition-colors">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
                   Play
-                </button>
-                <button className="bg-zinc-500/40 text-white px-6 py-2 rounded font-semibold hover:bg-zinc-500/60 transition-colors backdrop-blur-md">
+                </Link>
+                <Link href="/demo" className="bg-zinc-500/40 text-white px-6 py-2 rounded font-semibold hover:bg-zinc-500/60 transition-colors backdrop-blur-md">
                   View Gallery
-                </button>
+                </Link>
               </div>
             </div>
           </div>

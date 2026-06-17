@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 
-export default function LandingHero() {
+export default function LandingHero({ ctaHref, ctaText }: { ctaHref: string, ctaText: string }) {
   return (
     <section className="relative overflow-hidden bg-black pt-32 pb-20 lg:pt-48 lg:pb-32">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-black to-black opacity-60"></div>
@@ -27,13 +27,13 @@ export default function LandingHero() {
           
           <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="/register"
+              href={ctaHref}
               className="inline-flex h-14 items-center justify-center rounded-full bg-white px-8 text-lg font-semibold text-black transition-transform hover:scale-105"
             >
-              Start Creating Free
+              {ctaText}
             </Link>
             <Link
-              href="#demo"
+              href="/demo"
               className="inline-flex h-14 items-center justify-center rounded-full border border-zinc-700 bg-zinc-900/50 px-8 text-lg font-medium text-white backdrop-blur transition-colors hover:bg-zinc-800"
             >
               See a Demo

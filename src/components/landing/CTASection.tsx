@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 
-export default function CTASection() {
+export default function CTASection({ ctaHref, ctaText }: { ctaHref: string, ctaText: string }) {
   return (
     <section className="bg-black py-24 sm:py-32 relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-black via-zinc-950 to-black"></div>
@@ -26,12 +26,12 @@ export default function CTASection() {
           </p>
           <div className="mt-10 flex items-center justify-center gap-x-6">
             <Link
-              href="/register"
+              href={ctaHref}
               className="rounded-full bg-white px-8 py-3.5 text-sm font-semibold text-black shadow-sm hover:bg-zinc-200 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
-              Get started for free
+              {ctaText}
             </Link>
-            <Link href="#demo" className="text-sm font-semibold leading-6 text-white hover:text-zinc-300 transition-colors">
+            <Link href="/demo" className="text-sm font-semibold leading-6 text-white hover:text-zinc-300 transition-colors">
               Watch demo <span aria-hidden="true">→</span>
             </Link>
           </div>

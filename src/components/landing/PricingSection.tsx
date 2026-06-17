@@ -25,7 +25,7 @@ const tiers = [
   },
 ];
 
-export default function PricingSection() {
+export default function PricingSection({ ctaHref, ctaText }: { ctaHref: string, ctaText: string }) {
   return (
     <section className="bg-black py-24 sm:py-32 border-t border-zinc-900">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -66,14 +66,14 @@ export default function PricingSection() {
                 <span className="text-sm font-semibold leading-6 text-zinc-400">/month</span>
               </p>
               <Link
-                href={tier.href}
+                href={ctaHref}
                 className={`mt-6 block rounded-md px-3 py-2 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
                   tier.mostPopular
                     ? "bg-red-500 text-white hover:bg-red-400 focus-visible:outline-red-500"
                     : "bg-white/10 text-white hover:bg-white/20 focus-visible:outline-white"
                 }`}
               >
-                Get started
+                {ctaText}
               </Link>
               <ul role="list" className="mt-8 space-y-3 text-sm leading-6 text-zinc-400">
                 {tier.features.map((feature) => (
