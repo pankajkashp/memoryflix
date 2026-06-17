@@ -1,8 +1,9 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import LandingHero from "@/components/landing/LandingHero";
+import StoryExperiences from "@/components/landing/StoryExperiences";
+import LivePreviewShowcase from "@/components/landing/LivePreviewShowcase";
 import HowItWorks from "@/components/landing/HowItWorks";
-import DemoStory from "@/components/landing/DemoStory";
 import TemplatesSection from "@/components/landing/TemplatesSection";
 import FeaturesGrid from "@/components/landing/FeaturesGrid";
 import PricingSection from "@/components/landing/PricingSection";
@@ -52,8 +53,9 @@ export default async function LandingPage() {
 
       {/* Sections */}
       <LandingHero ctaHref={ctaHref} ctaText={ctaText} />
+      <StoryExperiences />
+      <LivePreviewShowcase />
       <HowItWorks />
-      <DemoStory />
       <TemplatesSection />
       <FeaturesGrid />
       <PricingSection ctaHref={ctaHref} ctaText={ctaText} />
