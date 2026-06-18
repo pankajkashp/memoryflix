@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import LandingHero from "@/components/landing/LandingHero";
+import ProductShowcase from "@/components/landing/ProductShowcase";
 import StoryExperiences from "@/components/landing/StoryExperiences";
 import LivePreviewShowcase from "@/components/landing/LivePreviewShowcase";
 import HowItWorks from "@/components/landing/HowItWorks";
@@ -53,6 +54,7 @@ export default async function LandingPage() {
 
       {/* Sections */}
       <LandingHero ctaHref={ctaHref} ctaText={ctaText} />
+      <ProductShowcase />
       <StoryExperiences />
       <LivePreviewShowcase />
       <HowItWorks />

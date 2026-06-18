@@ -116,7 +116,7 @@ export async function updateStory(
   }
 
   const { title, description, occasion, eventDate } = result.data;
-  const parsedDate = eventDate ? new Date(eventDate) : null;
+  const parsedDate = (eventDate && eventDate.trim() !== "") ? new Date(eventDate) : null;
 
   await prisma.story.update({
     where: { id: storyId },

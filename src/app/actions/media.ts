@@ -12,12 +12,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-console.log("Cloud Name:", process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME);
-console.log("API Key:", process.env.CLOUDINARY_API_KEY);
-console.log(
-  "API Secret:",
-  process.env.CLOUDINARY_API_SECRET ? "present" : "missing"
-);
+
 
 export async function generateCloudinarySignature(paramsToSign: Record<string, string | number | boolean>) {
   const session = await getServerSession(authOptions);
@@ -97,6 +92,38 @@ export async function setCoverMedia(storyId: string, mediaId: string) {
     where: { id: storyId },
     data: { coverMediaId: mediaId },
   });
+
+  revalidatePath(`/stories/${storyId}`);
+  revalidatePath(`/stories/${storyId}/preview`);
+  if (story.slug) {
+    revalidatePath(`/s/${story.slug}`);
+  }
+
+  return { success: true };
+}
+
+// ── reorderMedia ──────────────────────────────────────────────────────────────
+
+export async function reorderMedia(storyId: string, mediaIds: string[]) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  // Verify the user owns the story
+  const story = await prisma.story.findUnique({
+    where: { id: storyId, userId: session.user.id },
+  });
+
+  if (!story) throw new Error("Story not found or unauthorized");
+
+  // Update positions in a transaction to ensure atomicity
+  await prisma.$transaction(
+    mediaIds.map((id, index) =>
+      prisma.mediaAsset.update({
+        where: { id, storyId },
+        data: { position: index },
+      })
+    )
+  );
 
   revalidatePath(`/stories/${storyId}`);
   revalidatePath(`/stories/${storyId}/preview`);
