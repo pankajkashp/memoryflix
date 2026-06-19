@@ -22,12 +22,12 @@ import {
 } from "@dnd-kit/sortable";
 import SortableMediaItem from "./SortableMediaItem";
 import { reorderMedia } from "@/app/actions/media";
+import { Loader2 } from "lucide-react";
 
 // ── DragOverlay preview card ──────────────────────────────────────────────────
-// A lightweight clone rendered in the DragOverlay portal (above all z-indexes).
 function DragPreviewCard({ asset }: { asset: MediaAsset }) {
   return (
-    <div className="relative aspect-square rounded-lg overflow-hidden border-2 border-indigo-500 shadow-2xl ring-2 ring-indigo-400 ring-offset-2 scale-105 rotate-1 opacity-95">
+    <div className="relative aspect-square rounded-2xl overflow-hidden border-2 border-rose-500 shadow-2xl shadow-rose-500/50 ring-2 ring-rose-400 ring-offset-2 ring-offset-black scale-105 rotate-2 opacity-95">
       {asset.type === "IMAGE" ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
@@ -38,8 +38,7 @@ function DragPreviewCard({ asset }: { asset: MediaAsset }) {
       ) : (
         <video src={asset.url} className="object-cover w-full h-full" />
       )}
-      {/* Glassy tint so it looks like it's "lifted" */}
-      <div className="absolute inset-0 bg-indigo-500/10" />
+      <div className="absolute inset-0 bg-rose-500/20" />
     </div>
   );
 }
@@ -59,7 +58,6 @@ export default function MediaList({
   const [activeAsset, setActiveAsset] = useState<MediaAsset | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  // Sync state when props change (e.g. after a fresh upload)
   useEffect(() => {
     setItems(media);
   }, [media]);
@@ -67,7 +65,6 @@ export default function MediaList({
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        // Require 8px of movement to distinguish click vs drag
         distance: 8,
       },
     }),
@@ -97,7 +94,6 @@ export default function MediaList({
         const newIndex = currentItems.findIndex((item) => item.id === over.id);
         const newOrder = arrayMove(currentItems, oldIndex, newIndex);
 
-        // Persist ordering to the server (background, non-blocking)
         if (storyId) {
           startTransition(async () => {
             await reorderMedia(storyId, newOrder.map((item) => item.id));
@@ -115,8 +111,11 @@ export default function MediaList({
 
   if (items.length === 0) {
     return (
-      <div className="mt-6 text-sm text-gray-500 italic">
-        No media uploaded yet.
+      <div className="mt-8 flex flex-col items-center justify-center rounded-2xl border border-white/5 bg-black/20 py-12 text-center backdrop-blur-sm">
+        <svg className="w-12 h-12 text-zinc-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        <p className="text-zinc-400">No media uploaded yet.</p>
       </div>
     );
   }
@@ -124,30 +123,21 @@ export default function MediaList({
   return (
     <div className="mt-6">
       {/* Header row */}
-      <div className="flex justify-between items-center mb-3">
-        <span className="text-xs font-semibold text-gray-400 uppercase tracking-widest">
-          {items.length} {items.length === 1 ? "Item" : "Items"}
+      <div className="flex justify-between items-center mb-6 px-1">
+        <span className="text-xs font-semibold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
+          <span className="flex items-center justify-center bg-white/10 rounded-full px-2 py-0.5 text-zinc-300">
+            {items.length} {items.length === 1 ? "Item" : "Items"}
+          </span>
           {items.length > 1 && (
-            <span className="ml-2 font-normal normal-case text-gray-400">
-              · drag handle to reorder
+            <span className="font-normal normal-case text-zinc-500 hidden sm:inline">
+              · drag to reorder
             </span>
           )}
         </span>
 
         {isPending && (
-          <span className="text-xs font-semibold text-indigo-500 animate-pulse flex items-center gap-1.5">
-            <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24" fill="none">
-              <circle
-                className="opacity-25"
-                cx="12" cy="12" r="10"
-                stroke="currentColor" strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              />
-            </svg>
+          <span className="text-xs font-semibold text-rose-400 animate-pulse flex items-center gap-1.5">
+            <Loader2 className="animate-spin h-3.5 w-3.5" />
             Saving order…
           </span>
         )}
@@ -178,7 +168,6 @@ export default function MediaList({
           </div>
         </SortableContext>
 
-        {/* DragOverlay: renders a floating clone outside the grid's stacking context */}
         <DragOverlay dropAnimation={{
           duration: 180,
           easing: "cubic-bezier(0.18, 0.67, 0.6, 1.22)",

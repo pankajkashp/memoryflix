@@ -14,7 +14,7 @@ export default async function DashboardPage() {
 
   const stories = await prisma.story.findMany({
     where: { userId: session!.user.id },
-    include: { template: true, coverMedia: true },
+    include: { template: true, coverMedia: true, _count: { select: { media: true } } },
     orderBy: { createdAt: "desc" },
   });
 

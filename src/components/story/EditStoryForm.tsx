@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { updateStory, StoryActionState } from "@/app/actions/story";
 
 type Props = {
@@ -9,7 +9,6 @@ type Props = {
   initialDescription?: string | null;
   initialOccasion?: string | null;
   initialEventDate?: string | null;
-  status: string;
 };
 
 const initialState: StoryActionState = {};
@@ -19,22 +18,26 @@ export default function EditStoryForm({
   initialTitle, 
   initialDescription, 
   initialOccasion, 
-  initialEventDate, 
-  status 
+  initialEventDate,
 }: Props) {
   const updateWithId = updateStory.bind(null, storyId);
   const [state, action, pending] = useActionState(updateWithId, initialState);
+  const [successMsg, setSuccessMsg] = useState(false);
 
-  const isPublished = status === "PUBLISHED";
+  useEffect(() => {
+    if (state && !state.errors && Object.keys(state).length > 0) {
+      setSuccessMsg(true);
+      const timer = setTimeout(() => setSuccessMsg(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [state]);
 
   return (
-    <form action={action} className="space-y-4">
+    <form action={action} className="space-y-6">
+      {/* Title */}
       <div>
-        <label
-          htmlFor="title"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Story Title
+        <label htmlFor="title" className="block text-sm font-medium text-zinc-300 ml-1 mb-1.5">
+          Story Title <span className="text-rose-500">*</span>
         </label>
         <input
           id="title"
@@ -42,98 +45,93 @@ export default function EditStoryForm({
           type="text"
           required
           defaultValue={initialTitle}
-          className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
+          placeholder="e.g. Priya & Rohan's Wedding Story"
+          className="block w-full rounded-xl border border-white/10 bg-black/50 px-4 py-3 text-sm text-white placeholder-zinc-500 shadow-inner focus:border-rose-500 focus:outline-none focus:ring-1 focus:ring-rose-500 transition-colors"
         />
         {state?.errors?.title && (
-          <p className="mt-1 text-xs text-red-600">{state.errors.title[0]}</p>
+          <p className="mt-2 text-xs text-rose-400 ml-1">{state.errors.title[0]}</p>
         )}
       </div>
 
-      <div>
-        <label htmlFor="occasion" className="block text-sm font-medium text-gray-700">
-          Occasion (e.g. Wedding, Vacation)
-        </label>
-        <input
-          id="occasion"
-          name="occasion"
-          type="text"
-          defaultValue={initialOccasion || ""}
-          className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
-        />
-        {state?.errors?.occasion && (
-          <p className="mt-1 text-xs text-red-600">{state.errors.occasion[0]}</p>
-        )}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        {/* Occasion */}
+        <div>
+          <label htmlFor="occasion" className="block text-sm font-medium text-zinc-300 ml-1 mb-1.5">
+            Occasion
+          </label>
+          <input
+            id="occasion"
+            name="occasion"
+            type="text"
+            placeholder="e.g. Wedding, Vacation"
+            defaultValue={initialOccasion || ""}
+            className="block w-full rounded-xl border border-white/10 bg-black/50 px-4 py-3 text-sm text-white placeholder-zinc-500 shadow-inner focus:border-rose-500 focus:outline-none focus:ring-1 focus:ring-rose-500 transition-colors"
+          />
+          {state?.errors?.occasion && (
+            <p className="mt-2 text-xs text-rose-400 ml-1">{state.errors.occasion[0]}</p>
+          )}
+        </div>
+
+        {/* Event Date */}
+        <div>
+          <label htmlFor="eventDate" className="block text-sm font-medium text-zinc-300 ml-1 mb-1.5">
+            Event Date
+          </label>
+          <input
+            id="eventDate"
+            name="eventDate"
+            type="date"
+            defaultValue={initialEventDate || ""}
+            className="block w-full rounded-xl border border-white/10 bg-black/50 px-4 py-3 text-sm text-white placeholder-zinc-500 shadow-inner focus:border-rose-500 focus:outline-none focus:ring-1 focus:ring-rose-500 transition-colors"
+          />
+          {state?.errors?.eventDate && (
+            <p className="mt-2 text-xs text-rose-400 ml-1">{state.errors.eventDate[0]}</p>
+          )}
+        </div>
       </div>
 
+      {/* Description */}
       <div>
-        <label htmlFor="eventDate" className="block text-sm font-medium text-gray-700">
-          Event Date
-        </label>
-        <input
-          id="eventDate"
-          name="eventDate"
-          type="date"
-          defaultValue={initialEventDate || ""}
-          className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
-        />
-        {state?.errors?.eventDate && (
-          <p className="mt-1 text-xs text-red-600">{state.errors.eventDate[0]}</p>
-        )}
-      </div>
-
-      <div>
-        <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="description" className="block text-sm font-medium text-zinc-300 ml-1 mb-1.5">
           Description
         </label>
         <textarea
           id="description"
           name="description"
           rows={3}
+          placeholder="A brief summary of this memory..."
           defaultValue={initialDescription || ""}
-          className="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
+          className="block w-full rounded-xl border border-white/10 bg-black/50 px-4 py-3 text-sm text-white placeholder-zinc-500 shadow-inner focus:border-rose-500 focus:outline-none focus:ring-1 focus:ring-rose-500 transition-colors resize-none"
         />
         {state?.errors?.description && (
-          <p className="mt-1 text-xs text-red-600">{state.errors.description[0]}</p>
+          <p className="mt-2 text-xs text-rose-400 ml-1">{state.errors.description[0]}</p>
         )}
       </div>
 
-      {/* Status — read-only in this form; publishing handled separately in Phase 6 */}
-      <div>
-        <span className="block text-sm font-medium text-gray-700">Status</span>
-        <span
-          className={`mt-1 inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-            isPublished
-              ? "bg-green-50 text-green-700"
-              : "bg-amber-50 text-amber-700"
-          }`}
-        >
-          {isPublished ? "Published" : "Draft"}
-        </span>
-        <p className="mt-1 text-xs text-gray-400">
-          Publishing will be available in a future phase.
-        </p>
+      {/* Messages */}
+      <div className="min-h-[44px]">
+        {state?.errors?.general && (
+          <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200 text-center backdrop-blur-md">
+            {state.errors.general[0]}
+          </div>
+        )}
+
+        {successMsg && (
+          <div className="rounded-xl border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-300 text-center backdrop-blur-md transition-opacity animate-in fade-in slide-in-from-bottom-2">
+            Story details saved successfully.
+          </div>
+        )}
       </div>
 
-      {state?.errors?.general && (
-        <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">
-          {state.errors.general[0]}
-        </p>
-      )}
-
-      {/* Success feedback — no errors and not first render */}
-      {!state?.errors && Object.keys(state ?? {}).length > 0 && (
-        <p className="rounded-lg bg-green-50 px-4 py-3 text-sm text-green-700">
-          Story updated.
-        </p>
-      )}
-
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded-lg bg-gray-900 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-700 disabled:opacity-60"
-      >
-        {pending ? "Saving…" : "Save Changes"}
-      </button>
+      <div className="flex justify-end pt-2">
+        <button
+          type="submit"
+          disabled={pending}
+          className="rounded-full bg-white/10 px-6 py-2.5 text-sm font-semibold text-white border border-white/20 hover:bg-white/20 disabled:opacity-50 transition-colors backdrop-blur-md"
+        >
+          {pending ? "Saving…" : "Save Changes"}
+        </button>
+      </div>
     </form>
   );
 }

@@ -35,8 +35,6 @@ export default function SortableMediaItem({
     isDragging,
   } = useSortable({ id: asset.id });
 
-  // When `isDragging` is true the DragOverlay takes over rendering the visual;
-  // the original slot shows a faded placeholder so the grid gap is preserved.
   const baseTransform = CSS.Transform.toString(transform);
   const style: React.CSSProperties = {
     transform: baseTransform ?? undefined,
@@ -46,16 +44,15 @@ export default function SortableMediaItem({
   };
 
   return (
-    // Outer wrapper — owns the sortable ref & transform; not clipped so caption shows below
     <div ref={setNodeRef} style={style} className="flex flex-col">
       {/* ── Media card ──────────────────────────────────────────────────────── */}
       <div
-        className={`group relative aspect-square rounded-lg overflow-hidden bg-gray-100 border transition-all duration-150 ${
+        className={`group relative aspect-square rounded-2xl overflow-hidden bg-black/50 border transition-all duration-300 shadow-lg ${
           isBeingDragged
-            ? "opacity-40 border-indigo-300 scale-95"
+            ? "opacity-30 border-rose-500/50 scale-95"
             : isDragging
-            ? "border-indigo-500 shadow-2xl ring-2 ring-indigo-500"
-            : "border-gray-200 hover:border-gray-300"
+            ? "border-rose-500 shadow-rose-500/30 ring-2 ring-rose-500 shadow-2xl scale-105"
+            : "border-white/10 hover:border-white/20 hover:shadow-xl hover:shadow-black/50"
         }`}
       >
         {/* ── Drag Handle ─────────────────────────────────────────────────── */}
@@ -63,11 +60,11 @@ export default function SortableMediaItem({
           ref={setActivatorNodeRef}
           {...attributes}
           {...listeners}
-          className={`absolute top-2 right-2 z-20 p-1.5 rounded bg-black/50 text-white transition-all duration-150 hover:bg-black/70 cursor-grab active:cursor-grabbing backdrop-blur-sm touch-none ${
+          className={`absolute top-2 right-2 z-20 p-2 rounded-full bg-black/60 text-white transition-all duration-300 hover:bg-rose-500 cursor-grab active:cursor-grabbing backdrop-blur-md touch-none border border-white/10 ${
             isBeingDragged
               ? "opacity-0"
               : isDragging
-              ? "opacity-100 !bg-indigo-600 scale-110"
+              ? "opacity-100 !bg-rose-600 scale-110"
               : "opacity-0 group-hover:opacity-100"
           }`}
           title="Drag to reorder"
@@ -78,7 +75,7 @@ export default function SortableMediaItem({
 
         {/* ── Position badge ──────────────────────────────────────────────── */}
         {position !== undefined && (
-          <div className="absolute bottom-2 left-2 z-10 rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-bold text-white/80 pointer-events-none select-none tabular-nums">
+          <div className="absolute bottom-2 left-2 z-10 rounded-full bg-black/60 backdrop-blur-md px-2 py-1 text-[10px] font-bold text-white/90 border border-white/10 pointer-events-none select-none tabular-nums">
             #{position}
           </div>
         )}
@@ -88,14 +85,17 @@ export default function SortableMediaItem({
           <SetCoverButton storyId={storyId} mediaId={asset.id} />
         )}
         {asset.id === coverMediaId && (
-          <div className="absolute top-2 left-2 z-10 rounded bg-indigo-500 px-2 py-1 text-[10px] sm:text-xs font-bold text-white shadow-sm pointer-events-none">
+          <div className="absolute top-2 left-2 z-10 rounded-full bg-gradient-to-r from-rose-500 to-purple-600 px-3 py-1 text-[10px] font-bold text-white shadow-lg pointer-events-none tracking-wider">
             COVER
           </div>
         )}
 
         {/* ── Video badge ─────────────────────────────────────────────────── */}
         {asset.type === "VIDEO" && (
-          <div className="absolute bottom-2 right-2 z-10 rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-semibold text-white pointer-events-none">
+          <div className="absolute bottom-2 right-2 z-10 rounded-full bg-black/60 backdrop-blur-md px-2 py-1 text-[10px] font-semibold text-white pointer-events-none border border-white/10 flex items-center gap-1">
+            <svg className="w-3 h-3 text-rose-400" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z" />
+            </svg>
             VIDEO
           </div>
         )}
@@ -116,9 +116,12 @@ export default function SortableMediaItem({
             draggable={false}
           />
         )}
+        
+        {/* Subtle overlay to enhance contrast for badges */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30 pointer-events-none" />
       </div>
 
-      {/* ── Caption editor (below the card, only when storyId is known) ─────── */}
+      {/* ── Caption editor ────────────────────────────────────────────────── */}
       {storyId && (
         <CaptionEditor
           storyId={storyId}
