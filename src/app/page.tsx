@@ -1,50 +1,86 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import LandingHero from "@/components/landing/LandingHero";
-import ProductShowcase from "@/components/landing/ProductShowcase";
-import StoryExperiences from "@/components/landing/StoryExperiences";
-import LivePreviewShowcase from "@/components/landing/LivePreviewShowcase";
-import HowItWorks from "@/components/landing/HowItWorks";
-import TemplatesSection from "@/components/landing/TemplatesSection";
-import FeaturesGrid from "@/components/landing/FeaturesGrid";
+import TemplateCards from "@/components/landing/TemplateCards";
+import DemoStories from "@/components/landing/DemoStories";
 import PricingSection from "@/components/landing/PricingSection";
-import FAQSection from "@/components/landing/FAQSection";
-import CTASection from "@/components/landing/CTASection";
 
 export const metadata = {
-  title: "MemoryFlix — Your memories, cinematic",
-  description: "Turn your photo albums into premium Netflix-style stories. Beautiful layouts, elegant typography, and effortless sharing.",
+  title: "MemoryFlix — Your love story, on screen",
+  description:
+    "Transform your wedding, travels, and life moments into cinematic stories worth watching forever. Beautiful. Private. Yours.",
 };
 
 export default async function LandingPage() {
   const session = await getServerSession(authOptions);
   const isAuthenticated = !!session;
-  
+
   const ctaHref = isAuthenticated ? "/dashboard" : "/register";
-  const ctaText = isAuthenticated ? "Go to Dashboard" : "Start Creating Free";
+  const ctaText = isAuthenticated ? "Go to Dashboard" : "Begin Your Story";
 
   return (
-    <main className="min-h-screen bg-black selection:bg-red-500/30">
-      {/* Top Navigation Bar - simplified for landing page */}
+    <main className="min-h-screen bg-black selection:bg-rose-500/30">
+      {/* ── Navigation ─────────────────────────────────────────────────────── */}
       <header className="absolute inset-x-0 top-0 z-50">
-        <nav className="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
+        <nav
+          className="flex items-center justify-between p-6 lg:px-8"
+          aria-label="Global"
+        >
+          {/* Logo */}
           <div className="flex lg:flex-1">
-            <span className="text-xl font-bold tracking-tighter text-white">
-              MemoryFlix
-            </span>
+            <a
+              href="/"
+              className="flex items-center gap-2.5 group"
+              aria-label="MemoryFlix — home"
+            >
+              {/* Film-frame heart logo mark */}
+              <svg
+                className="w-8 h-8 text-rose-400 transition-transform duration-300 group-hover:scale-110"
+                viewBox="0 0 36 36"
+                fill="none"
+                aria-hidden="true"
+              >
+                <rect x="1" y="9" width="34" height="18" rx="3" fill="currentColor" opacity="0.18" />
+                <rect x="1"  y="10"   width="4" height="3" rx="1" fill="currentColor" opacity="0.6" />
+                <rect x="1"  y="16.5" width="4" height="3" rx="1" fill="currentColor" opacity="0.6" />
+                <rect x="1"  y="23"   width="4" height="3" rx="1" fill="currentColor" opacity="0.6" />
+                <rect x="31" y="10"   width="4" height="3" rx="1" fill="currentColor" opacity="0.6" />
+                <rect x="31" y="16.5" width="4" height="3" rx="1" fill="currentColor" opacity="0.6" />
+                <rect x="31" y="23"   width="4" height="3" rx="1" fill="currentColor" opacity="0.6" />
+                <path
+                  d="M18 26s-8-5.2-8-10.5a5.2 5.2 0 0 1 8-4.4 5.2 5.2 0 0 1 8 4.4C26 20.8 18 26 18 26z"
+                  fill="currentColor"
+                />
+              </svg>
+              {/* Wordmark */}
+              <span className="text-xl font-bold tracking-tight text-white group-hover:text-rose-50 transition-colors duration-200">
+                Memory<span className="text-rose-400">Flix</span>
+              </span>
+            </a>
           </div>
+
+          {/* Auth links */}
           <div className="flex flex-1 justify-end items-center gap-6">
             {!isAuthenticated ? (
               <>
-                <a href="/login" className="text-sm font-semibold leading-6 text-zinc-300 hover:text-white transition-colors">
+                <a
+                  href="/login"
+                  className="text-sm font-semibold leading-6 text-zinc-300 hover:text-white transition-colors"
+                >
                   Log in
                 </a>
-                <a href="/register" className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-black hover:bg-zinc-200 transition-colors">
-                  Sign up
+                <a
+                  href="/register"
+                  className="rounded-full bg-rose-500 px-5 py-2 text-sm font-semibold text-white hover:bg-rose-400 transition-colors shadow-md shadow-rose-600/30"
+                >
+                  Sign up free
                 </a>
               </>
             ) : (
-              <a href="/dashboard" className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-black hover:bg-zinc-200 transition-colors">
+              <a
+                href="/dashboard"
+                className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-black hover:bg-zinc-200 transition-colors"
+              >
                 Dashboard
               </a>
             )}
@@ -52,23 +88,49 @@ export default async function LandingPage() {
         </nav>
       </header>
 
-      {/* Sections */}
+      {/* ── Section 1: Hero ─────────────────────────────────────────────────── */}
       <LandingHero ctaHref={ctaHref} ctaText={ctaText} />
-      <ProductShowcase />
-      <StoryExperiences />
-      <LivePreviewShowcase />
-      <HowItWorks />
-      <TemplatesSection />
-      <FeaturesGrid />
-      <PricingSection ctaHref={ctaHref} ctaText={ctaText} />
-      <FAQSection />
-      <CTASection ctaHref={ctaHref} ctaText={ctaText} />
-      
-      {/* Footer */}
-      <footer className="bg-black py-12 border-t border-zinc-900 text-center">
-        <p className="text-sm text-zinc-500">
-          &copy; {new Date().getFullYear()} MemoryFlix. All rights reserved.
-        </p>
+
+      {/* ── Section 2: Template Cards ───────────────────────────────────────── */}
+      <TemplateCards ctaHref={ctaHref} />
+
+      {/* ── Section 3: Demo Stories ─────────────────────────────────────────── */}
+      <DemoStories />
+
+      {/* ── Section 4: Pricing ──────────────────────────────────────────────── */}
+      <PricingSection />
+
+      {/* ── Footer ──────────────────────────────────────────────────────────── */}
+      <footer className="bg-black border-t border-white/[0.04] py-12">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          {/* Logo */}
+          <a href="/" className="flex items-center gap-2 opacity-60 hover:opacity-100 transition-opacity">
+            <svg
+              className="w-5 h-5 text-rose-400"
+              viewBox="0 0 36 36"
+              fill="none"
+              aria-hidden="true"
+            >
+              <rect x="1" y="9" width="34" height="18" rx="3" fill="currentColor" opacity="0.25" />
+              <path d="M18 26s-8-5.2-8-10.5a5.2 5.2 0 0 1 8-4.4 5.2 5.2 0 0 1 8 4.4C26 20.8 18 26 18 26z" fill="currentColor" />
+            </svg>
+            <span className="text-sm font-semibold text-zinc-400">
+              Memory<span className="text-rose-400">Flix</span>
+            </span>
+          </a>
+
+          {/* Copyright */}
+          <p className="text-xs text-zinc-600 text-center">
+            &copy; {new Date().getFullYear()} MemoryFlix. Every memory deserves a premiere.
+          </p>
+
+          {/* Links */}
+          <div className="flex items-center gap-5 text-xs text-zinc-600">
+            <a href="/login" className="hover:text-zinc-400 transition-colors">Log in</a>
+            <a href="/register" className="hover:text-zinc-400 transition-colors">Sign up</a>
+            <a href="/demo" className="hover:text-zinc-400 transition-colors">Demo</a>
+          </div>
+        </div>
       </footer>
     </main>
   );
