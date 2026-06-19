@@ -133,3 +133,41 @@ export async function reorderMedia(storyId: string, mediaIds: string[]) {
 
   return { success: true };
 }
+
+// ── updateCaption ─────────────────────────────────────────────────────────────
+
+export async function updateCaption(
+  storyId: string,
+  mediaId: string,
+  caption: string
+) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  // Verify the user owns the story that contains this media
+  const story = await prisma.story.findUnique({
+    where: { id: storyId, userId: session.user.id },
+  });
+  if (!story) throw new Error("Story not found or unauthorized");
+
+  // Verify the media asset belongs to this story (double ownership check)
+  const media = await prisma.mediaAsset.findUnique({
+    where: { id: mediaId, storyId },
+  });
+  if (!media) throw new Error("Media asset not found in this story");
+
+  const trimmed = caption.trim();
+
+  const updated = await prisma.mediaAsset.update({
+    where: { id: mediaId },
+    data: { caption: trimmed.length > 0 ? trimmed : null },
+  });
+
+  revalidatePath(`/stories/${storyId}`);
+  revalidatePath(`/stories/${storyId}/preview`);
+  if (story.slug) {
+    revalidatePath(`/s/${story.slug}`);
+  }
+
+  return { success: true, asset: updated };
+}
