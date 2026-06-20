@@ -18,7 +18,11 @@ export default async function PreviewPage({ params }: PageProps) {
 
   const story = await prisma.story.findUnique({
     where: { id, userId: session.user.id },
-    include: { media: { orderBy: { position: "asc" } } },
+    include: { 
+      media: { orderBy: { position: "asc" } },
+      chapters: { orderBy: { position: "asc" } },
+      template: true,
+    },
   });
 
   if (!story) {
@@ -27,7 +31,7 @@ export default async function PreviewPage({ params }: PageProps) {
 
   return (
     <main>
-      <PreviewClientWrapper story={story} />
+      <PreviewClientWrapper story={story} isEditable={true} />
     </main>
   );
 }

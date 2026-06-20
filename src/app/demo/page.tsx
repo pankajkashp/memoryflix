@@ -21,6 +21,10 @@ export default function DemoPage() {
     coverMediaId: "media-1",
     createdAt: new Date(),
     updatedAt: new Date(),
+    template: {
+      slug: "netflix-memories",
+      name: "Netflix Memories"
+    },
     media: [
       {
         id: "media-1",

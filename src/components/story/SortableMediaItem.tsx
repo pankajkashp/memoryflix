@@ -3,15 +3,17 @@
 import React from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { MediaAsset } from "@prisma/client";
+import { MediaAsset, Chapter } from "@prisma/client";
 import { GripVertical } from "lucide-react";
 import SetCoverButton from "./SetCoverButton";
 import CaptionEditor from "./CaptionEditor";
+import ChapterAssigner from "./ChapterAssigner";
 
 interface SortableMediaItemProps {
   asset: MediaAsset;
   storyId?: string;
   coverMediaId?: string | null;
+  chapters?: Chapter[];
   /** 1-based position label shown on the card */
   position?: number;
   /** True when this item is the active drag source (overlay is floating above it) */
@@ -22,6 +24,7 @@ export default function SortableMediaItem({
   asset,
   storyId,
   coverMediaId,
+  chapters,
   position,
   isBeingDragged = false,
 }: SortableMediaItemProps) {
@@ -123,11 +126,21 @@ export default function SortableMediaItem({
 
       {/* ── Caption editor ────────────────────────────────────────────────── */}
       {storyId && (
-        <CaptionEditor
-          storyId={storyId}
-          mediaId={asset.id}
-          initialCaption={asset.caption}
-        />
+        <div className="flex flex-col gap-1 mt-2">
+          {chapters && chapters.length > 0 && (
+            <ChapterAssigner
+              storyId={storyId}
+              mediaId={asset.id}
+              currentChapterId={asset.chapterId}
+              chapters={chapters}
+            />
+          )}
+          <CaptionEditor
+            storyId={storyId}
+            mediaId={asset.id}
+            initialCaption={asset.caption}
+          />
+        </div>
       )}
     </div>
   );

@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { MediaAsset } from "@prisma/client";
+import { MediaAsset, Chapter } from "@prisma/client";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Pause, Play } from "lucide-react";
 
 interface CinematicPlayerProps {
   media: MediaAsset[];
+  chapters?: Chapter[];
   initialIndex?: number;
   onClose: () => void;
 }
@@ -17,6 +18,7 @@ const CAPTION_FADE_IN_DELAY = 0.6; // seconds after slide enters
 
 export default function CinematicPlayer({
   media,
+  chapters,
   initialIndex = 0,
   onClose,
 }: CinematicPlayerProps) {
@@ -25,6 +27,19 @@ export default function CinematicPlayer({
   const [progress, setProgress] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
   const [showCaption, setShowCaption] = useState(false);
+  
+  // Chapter transition state
+  const currentMedia = media[currentIndex];
+  const currentChapter = chapters?.find(c => c.id === currentMedia?.chapterId);
+  
+  const [showChapterTitle, setShowChapterTitle] = useState(() => {
+    // Show chapter title initially if the first item has a chapter
+    return !!currentChapter;
+  });
+  
+  const [lastSeenChapterId, setLastSeenChapterId] = useState<string | null>(
+    currentChapter?.id || null
+  );
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const progressInterval = useRef<NodeJS.Timeout | null>(null);
@@ -33,15 +48,23 @@ export default function CinematicPlayer({
   const elapsedPausedTime = useRef<number>(0);
   const lastPauseTime = useRef<number | null>(null);
 
-  const currentMedia = media[currentIndex];
-  const isVideo = currentMedia.type === "VIDEO";
-  const hasCaption = Boolean(currentMedia.caption?.trim());
+  const isVideo = currentMedia?.type === "VIDEO";
+  const hasCaption = Boolean(currentMedia?.caption?.trim());
 
   // ── Navigation ──────────────────────────────────────────────────────────────
 
   const goToNext = () => {
     if (currentIndex < media.length - 1) {
-      setCurrentIndex((prev) => prev + 1);
+      const nextIndex = currentIndex + 1;
+      const nextMedia = media[nextIndex];
+      const nextChapterId = nextMedia.chapterId || null;
+      
+      if (nextChapterId !== lastSeenChapterId && nextChapterId !== null) {
+        setLastSeenChapterId(nextChapterId);
+        setShowChapterTitle(true);
+      }
+      
+      setCurrentIndex(nextIndex);
       resetProgress();
     } else {
       setIsFinished(true);
@@ -50,7 +73,18 @@ export default function CinematicPlayer({
 
   const goToPrev = () => {
     if (currentIndex > 0) {
-      setCurrentIndex((prev) => prev - 1);
+      const prevIndex = currentIndex - 1;
+      const prevMedia = media[prevIndex];
+      const prevChapterId = prevMedia.chapterId || null;
+      
+      if (prevChapterId !== lastSeenChapterId && prevChapterId !== null) {
+        setLastSeenChapterId(prevChapterId);
+        setShowChapterTitle(true);
+      } else if (prevChapterId === null) {
+        setLastSeenChapterId(null);
+      }
+      
+      setCurrentIndex(prevIndex);
       resetProgress();
     }
   };
@@ -112,9 +146,21 @@ export default function CinematicPlayer({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentIndex, isFinished, isPaused]);
 
+  // ── Chapter Transition Timer ────────────────────────────────────────────────
+  useEffect(() => {
+    if (showChapterTitle) {
+      const timer = setTimeout(() => {
+        setShowChapterTitle(false);
+        // Reset start time so the media gets its full duration after title fades
+        startTime.current = Date.now();
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [showChapterTitle]);
+
   // ── Progress engine ───────────────────────────────────────────────────────────
   useEffect(() => {
-    if (isFinished) {
+    if (isFinished || showChapterTitle) {
       if (progressInterval.current) clearInterval(progressInterval.current);
       if (videoRef.current) videoRef.current.pause();
       return;
@@ -185,7 +231,7 @@ export default function CinematicPlayer({
                 width:
                   idx < currentIndex
                     ? "100%"
-                    : idx === currentIndex
+                    : idx === currentIndex && !showChapterTitle
                     ? `${progress}%`
                     : "0%",
               }}
@@ -272,6 +318,21 @@ export default function CinematicPlayer({
                   Close
                 </button>
               </div>
+            </motion.div>
+          ) : showChapterTitle && currentChapter ? (
+            /* ── Chapter Title Transition ─────────────────────────────────── */
+            <motion.div
+              key={`chapter-${currentChapter.id}`}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.05 }}
+              transition={{ duration: 0.8, ease: "easeInOut" }}
+              className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none bg-zinc-950 z-30"
+            >
+              <h2 className="text-4xl md:text-6xl font-bold text-white drop-shadow-2xl text-center px-4 flex items-center gap-4">
+                {currentChapter.emoji && <span>{currentChapter.emoji}</span>}
+                {currentChapter.title}
+              </h2>
             </motion.div>
           ) : (
             /* ── Active slide ─────────────────────────────────────────────── */

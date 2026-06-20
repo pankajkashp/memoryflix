@@ -1,28 +1,38 @@
 "use client";
 
 import { useState } from "react";
-import { Story, StoryTemplate, MediaAsset } from "@prisma/client";
+import { Story, StoryTemplate, MediaAsset, Chapter } from "@prisma/client";
 import EditStoryForm from "./EditStoryForm";
 import MediaUploader from "./MediaUploader";
 import MediaList from "./MediaList";
 import PublishButton from "./PublishButton";
+import ChapterEditor from "./ChapterEditor";
+import TemplateSelector from "./TemplateSelector";
 import Link from "next/link";
 
 type StoryWithRelations = Story & {
   template: StoryTemplate;
   media: MediaAsset[];
+  chapters: Chapter[];
 };
 
 const STEPS = [
   { id: 1, name: "Template" },
   { id: 2, name: "Details" },
-  { id: 3, name: "Media" },
-  { id: 4, name: "Cover" },
-  { id: 5, name: "Preview" },
-  { id: 6, name: "Publish" },
+  { id: 3, name: "Chapters" },
+  { id: 4, name: "Media" },
+  { id: 5, name: "Cover" },
+  { id: 6, name: "Preview" },
+  { id: 7, name: "Publish" },
 ];
 
-export default function StoryWizard({ story }: { story: StoryWithRelations }) {
+export default function StoryWizard({ 
+  story, 
+  templates 
+}: { 
+  story: StoryWithRelations;
+  templates?: StoryTemplate[];
+}) {
   const [currentStep, setCurrentStep] = useState(1);
 
   const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, STEPS.length));
@@ -105,15 +115,17 @@ export default function StoryWizard({ story }: { story: StoryWithRelations }) {
             <div className="animate-in fade-in slide-in-from-right-4 duration-500 h-full flex flex-col">
               <h2 className="text-2xl font-bold text-white mb-2">Cinematic Theme</h2>
               <p className="text-zinc-400 mb-8 max-w-lg">
-                Your story will use our signature Netflix-inspired cinematic layout, featuring auto-playing media, elegant typography, and smooth transitions.
+                Choose the visual language for your story. This will determine the overall aesthetic, layout, colors, and typography.
               </p>
               
-              <div className="mt-auto bg-gradient-to-br from-rose-500/20 to-purple-600/20 border border-white/10 rounded-2xl p-8 flex items-center justify-center">
-                <span className="text-3xl filter drop-shadow-md mr-4">🍿</span>
-                <div>
-                  <h3 className="text-lg font-bold text-white">{story.template.name} Template</h3>
-                  <p className="text-sm text-zinc-400">Optimized for emotional storytelling.</p>
-                </div>
+              <div className="mt-auto">
+                {templates && (
+                  <TemplateSelector 
+                    storyId={story.id} 
+                    currentTemplateId={story.templateId} 
+                    templates={templates} 
+                  />
+                )}
               </div>
             </div>
           )}
@@ -136,24 +148,36 @@ export default function StoryWizard({ story }: { story: StoryWithRelations }) {
             </div>
           )}
 
-          {/* STEP 3: MEDIA */}
+          {/* STEP 3: CHAPTERS */}
           {currentStep === 3 && (
+            <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+              <h2 className="text-2xl font-bold text-white mb-2">Memory Chapters</h2>
+              <p className="text-zinc-400 mb-8 max-w-lg">
+                Organize your story into chapters like "❤️ How We Met" or "✈️ First Trip". You'll assign media to these chapters in the next step.
+              </p>
+              
+              <ChapterEditor storyId={story.id} chapters={story.chapters} />
+            </div>
+          )}
+
+          {/* STEP 4: MEDIA */}
+          {currentStep === 4 && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-500">
               <h2 className="text-2xl font-bold text-white mb-2">Upload Memories</h2>
               <p className="text-zinc-400 mb-8 max-w-lg">
-                Add photos and videos to your story. Drag and drop them to reorder the sequence. Click the pencil icon to add captions.
+                Add photos and videos to your story. Assign them to chapters using the dropdown menu on each media card.
               </p>
               
               <MediaUploader storyId={story.id} />
               
               <div className="mt-8 border-t border-white/10 pt-8">
-                <MediaList media={story.media} storyId={story.id} coverMediaId={story.coverMediaId} />
+                <MediaList media={story.media} storyId={story.id} coverMediaId={story.coverMediaId} chapters={story.chapters} />
               </div>
             </div>
           )}
 
-          {/* STEP 4: COVER IMAGE */}
-          {currentStep === 4 && (
+          {/* STEP 5: COVER IMAGE */}
+          {currentStep === 5 && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-500">
               <h2 className="text-2xl font-bold text-white mb-2">Choose a Cover</h2>
               <p className="text-zinc-400 mb-8 max-w-lg">
@@ -161,13 +185,13 @@ export default function StoryWizard({ story }: { story: StoryWithRelations }) {
               </p>
               
               <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-                <MediaList media={story.media} storyId={story.id} coverMediaId={story.coverMediaId} />
+                <MediaList media={story.media} storyId={story.id} coverMediaId={story.coverMediaId} chapters={story.chapters} />
               </div>
             </div>
           )}
 
-          {/* STEP 5: PREVIEW */}
-          {currentStep === 5 && (
+          {/* STEP 6: PREVIEW */}
+          {currentStep === 6 && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-500 h-full flex flex-col items-center justify-center text-center py-12">
               <div className="w-24 h-24 mb-6 rounded-full bg-gradient-to-br from-rose-500/20 to-purple-600/20 border border-rose-500/30 flex items-center justify-center shadow-[0_0_40px_rgba(244,63,94,0.2)]">
                 <span className="text-4xl">🎬</span>
@@ -188,8 +212,8 @@ export default function StoryWizard({ story }: { story: StoryWithRelations }) {
             </div>
           )}
 
-          {/* STEP 6: PUBLISH */}
-          {currentStep === 6 && (
+          {/* STEP 7: PUBLISH */}
+          {currentStep === 7 && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-500 h-full flex flex-col items-center justify-center text-center py-12">
               <h2 className="text-3xl font-bold text-white mb-2">
                 {story.status === "PUBLISHED" ? "Your Story is Live!" : "Publish Your Story"}

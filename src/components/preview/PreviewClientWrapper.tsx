@@ -1,55 +1,39 @@
 "use client";
 
 import { useState } from "react";
-import { Story, MediaAsset } from "@prisma/client";
-import NetflixHero from "@/components/preview/NetflixHero";
-import MediaGallery from "@/components/preview/MediaGallery";
-import MediaViewer from "@/components/preview/MediaViewer";
-import CinematicPlayer from "@/components/preview/CinematicPlayer";
-import EmptyState from "@/components/preview/EmptyState";
+import { Story, MediaAsset, Chapter, StoryTemplate } from "@prisma/client";
+import NetflixTemplate from "./templates/NetflixTemplate";
+import AppleTemplate from "./templates/AppleTemplate";
+import TravelTemplate from "./templates/TravelTemplate";
+import WeddingTemplate from "./templates/WeddingTemplate";
+import TimelineTemplate from "./templates/TimelineTemplate";
 
-type StoryWithMedia = Story & { media: MediaAsset[] };
+export type StoryWithFullPayload = Story & { 
+  media: MediaAsset[];
+  chapters?: Chapter[];
+  template: StoryTemplate;
+};
 
-export default function PreviewClientWrapper({ story }: { story: StoryWithMedia }) {
-  const [galleryActiveIndex, setGalleryActiveIndex] = useState<number | null>(null);
-  const [isCinematicPlaying, setIsCinematicPlaying] = useState<boolean>(false);
+export default function PreviewClientWrapper({ 
+  story, 
+  isEditable = false 
+}: { 
+  story: StoryWithFullPayload;
+  isEditable?: boolean;
+}) {
+  const slug = story.template.slug;
 
-  const hasMedia = story.media && story.media.length > 0;
-  const firstImage = story.media?.find((m) => m.type === "IMAGE");
-  const coverImage = story.media?.find((m) => m.id === story.coverMediaId) || firstImage;
-
-  return (
-    <>
-      <NetflixHero 
-        story={story} 
-        heroImageUrl={coverImage?.url} 
-        onPlay={hasMedia ? () => setIsCinematicPlaying(true) : undefined}
-      />
-      
-      {hasMedia ? (
-        <MediaGallery 
-          media={story.media} 
-          onMediaClick={(index) => setGalleryActiveIndex(index)}
-        />
-      ) : (
-        <EmptyState />
-      )}
-
-      {galleryActiveIndex !== null && story.media && (
-        <MediaViewer
-          media={story.media}
-          initialIndex={galleryActiveIndex}
-          onClose={() => setGalleryActiveIndex(null)}
-        />
-      )}
-
-      {isCinematicPlaying && story.media && (
-        <CinematicPlayer
-          media={story.media}
-          initialIndex={0}
-          onClose={() => setIsCinematicPlaying(false)}
-        />
-      )}
-    </>
-  );
+  switch (slug) {
+    case "apple-memories":
+      return <AppleTemplate story={story} isEditable={isEditable} />;
+    case "travel-journal":
+      return <TravelTemplate story={story} isEditable={isEditable} />;
+    case "wedding-film":
+      return <WeddingTemplate story={story} isEditable={isEditable} />;
+    case "timeline-story":
+      return <TimelineTemplate story={story} isEditable={isEditable} />;
+    case "netflix-memories":
+    default:
+      return <NetflixTemplate story={story} isEditable={isEditable} />;
+  }
 }

@@ -38,7 +38,11 @@ export default async function PublicStoryPage({ params }: PageProps) {
   
   const story = await prisma.story.findUnique({
     where: { slug },
-    include: { media: { orderBy: { position: "asc" } } },
+    include: { 
+      media: { orderBy: { position: "asc" } },
+      chapters: { orderBy: { position: "asc" } },
+      template: true,
+    },
   });
 
   // Security check: Only allow access if the story is published

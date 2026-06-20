@@ -50,9 +50,9 @@ export async function createStory(
   // 3. Dynamic prisma import — prevents eager init at module-load time
   const { prisma } = await import("@/lib/prisma");
 
-  // 4. Get the Netflix template (the only one in MVP)
+  // 4. Get the default template (Netflix Memories)
   const template = await prisma.storyTemplate.findFirst({
-    where: { slug: "netflix", isActive: true },
+    where: { slug: "netflix-memories", isActive: true },
   });
   if (!template) {
     return { errors: { general: ["Story template not found. Please contact support."] } };
@@ -131,6 +131,38 @@ export async function updateStory(
   revalidatePath(`/stories/${storyId}`);
   revalidatePath("/dashboard");
   return {};
+}
+
+// ── updateStoryTemplate ───────────────────────────────────────────────────────
+
+export async function updateStoryTemplate(storyId: string, templateId: string) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const { prisma } = await import("@/lib/prisma");
+
+  const story = await prisma.story.findUnique({
+    where: { id: storyId, userId: session.user.id },
+  });
+  if (!story) throw new Error("Story not found or unauthorized");
+
+  const template = await prisma.storyTemplate.findUnique({
+    where: { id: templateId, isActive: true },
+  });
+  if (!template) throw new Error("Template not found or inactive");
+
+  await prisma.story.update({
+    where: { id: storyId },
+    data: { templateId },
+  });
+
+  revalidatePath(`/stories/${storyId}`);
+  revalidatePath(`/stories/${storyId}/preview`);
+  if (story.slug) {
+    revalidatePath(`/s/${story.slug}`);
+  }
+
+  return { success: true };
 }
 
 // ── deleteStory ───────────────────────────────────────────────────────────────

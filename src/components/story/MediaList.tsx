@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useTransition } from "react";
-import { MediaAsset } from "@prisma/client";
+import { MediaAsset, Chapter } from "@prisma/client";
 import {
   DndContext,
   closestCenter,
@@ -49,10 +49,12 @@ export default function MediaList({
   media,
   storyId,
   coverMediaId,
+  chapters,
 }: {
   media: MediaAsset[];
   storyId?: string;
   coverMediaId?: string | null;
+  chapters?: Chapter[];
 }) {
   const [items, setItems] = useState(media);
   const [activeAsset, setActiveAsset] = useState<MediaAsset | null>(null);
@@ -161,6 +163,7 @@ export default function MediaList({
                 asset={asset}
                 storyId={storyId}
                 coverMediaId={coverMediaId}
+                chapters={chapters}
                 position={index + 1}
                 isBeingDragged={activeAsset?.id === asset.id}
               />

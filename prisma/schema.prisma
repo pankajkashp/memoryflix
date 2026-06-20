@@ -65,6 +65,7 @@ model Story {
   template   StoryTemplate @relation(fields: [templateId], references: [id])
   media      MediaAsset[]  @relation("StoryMedia")
   coverMedia MediaAsset?   @relation("StoryCover", fields: [coverMediaId], references: [id], onDelete: SetNull)
+  chapters   Chapter[]
 }
 
 model MediaAsset {
@@ -78,10 +79,25 @@ model MediaAsset {
   position        Int       @default(0)
   durationSeconds Int?
   sizeBytes       Int?
+  chapterId       String?
   createdAt       DateTime  @default(now())
 
-  story Story @relation("StoryMedia", fields: [storyId], references: [id], onDelete: Cascade)
-  user  User  @relation(fields: [userId], references: [id])
+  story   Story    @relation("StoryMedia", fields: [storyId], references: [id], onDelete: Cascade)
+  user    User     @relation(fields: [userId], references: [id])
+  chapter Chapter? @relation(fields: [chapterId], references: [id], onDelete: SetNull)
 
   storyCover Story[] @relation("StoryCover")
+}
+
+model Chapter {
+  id        String   @id @default(cuid())
+  storyId   String
+  title     String
+  emoji     String?
+  position  Int      @default(0)
+  layout    String   @default("MASONRY")
+  createdAt DateTime @default(now())
+
+  story     Story        @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  media     MediaAsset[]
 }

@@ -171,3 +171,71 @@ export async function updateCaption(
 
   return { success: true, asset: updated };
 }
+
+// ── assignMediaToChapter ────────────────────────────────────────────────────────
+
+export async function assignMediaToChapter(
+  storyId: string,
+  mediaId: string,
+  chapterId: string | null
+) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const story = await prisma.story.findUnique({
+    where: { id: storyId, userId: session.user.id },
+  });
+  if (!story) throw new Error("Story not found or unauthorized");
+
+  if (chapterId) {
+    const chapter = await prisma.chapter.findUnique({
+      where: { id: chapterId, storyId },
+    });
+    if (!chapter) throw new Error("Chapter not found in this story");
+  }
+
+  const updated = await prisma.mediaAsset.update({
+    where: { id: mediaId, storyId },
+    data: { chapterId },
+  });
+
+  revalidatePath(`/stories/${storyId}`);
+  revalidatePath(`/stories/${storyId}/preview`);
+  if (story.slug) {
+    revalidatePath(`/s/${story.slug}`);
+  }
+
+  return { success: true, asset: updated };
+}
+
+// ── deleteMedia ─────────────────────────────────────────────────────────────
+
+export async function deleteMedia(storyId: string, mediaId: string) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const story = await prisma.story.findUnique({
+    where: { id: storyId, userId: session.user.id },
+  });
+  if (!story) throw new Error("Story not found or unauthorized");
+
+  const media = await prisma.mediaAsset.findUnique({
+    where: { id: mediaId, storyId },
+  });
+  if (!media) throw new Error("Media asset not found in this story");
+
+  await prisma.mediaAsset.delete({
+    where: { id: mediaId },
+  });
+
+  // Could also delete from Cloudinary here using media.storageKey
+  // cloudinary.uploader.destroy(media.storageKey)
+
+  revalidatePath(`/stories/${storyId}`);
+  revalidatePath(`/stories/${storyId}/preview`);
+  if (story.slug) {
+    revalidatePath(`/s/${story.slug}`);
+  }
+
+  return { success: true };
+}

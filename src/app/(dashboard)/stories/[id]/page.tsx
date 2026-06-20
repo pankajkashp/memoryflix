@@ -31,15 +31,21 @@ export default async function StoryEditorPage({ params }: PageProps) {
     where: { id, userId: session!.user.id },
     include: {
       template: true,
-      media: { orderBy: { position: "asc" } }
+      media: { orderBy: { position: "asc" } },
+      chapters: { orderBy: { position: "asc" } },
     },
   });
 
   if (!story) notFound();
 
+  const templates = await prisma.storyTemplate.findMany({
+    where: { isActive: true },
+    orderBy: { createdAt: "asc" },
+  });
+
   return (
     <div className="min-h-[calc(100vh-80px)] w-full">
-      <StoryWizard story={story} />
+      <StoryWizard story={story} templates={templates} />
     </div>
   );
 }

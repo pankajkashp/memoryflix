@@ -20,11 +20,11 @@ export default function CreateStoryForm() {
         </p>
       </div>
 
-      {/* Template badge — Netflix only in MVP */}
+      {/* Template selection will happen in the Story Wizard (Step 1) */}
       <div className="relative z-10 mt-4 mb-8 flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-5 py-4 backdrop-blur-md">
-        <span className="text-sm font-medium text-zinc-300">Selected Template:</span>
-        <span className="rounded-full bg-gradient-to-r from-red-600 to-rose-600 px-3 py-1 text-xs font-bold text-white shadow-lg shadow-red-600/20 tracking-wider uppercase">
-          Cinematic
+        <span className="text-sm font-medium text-zinc-300">Template Selection:</span>
+        <span className="text-xs text-zinc-400 tracking-wider">
+          You'll choose a template in the next step.
         </span>
       </div>
 
