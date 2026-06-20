@@ -90,13 +90,16 @@ model MediaAsset {
 }
 
 model Chapter {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   storyId   String
   title     String
   emoji     String?
-  position  Int      @default(0)
-  layout    String   @default("MASONRY")
-  createdAt DateTime @default(now())
+  subtitle  String?
+  location  String?
+  date      DateTime?
+  position  Int       @default(0)
+  layout    String    @default("MASONRY")
+  createdAt DateTime  @default(now())
 
   story     Story        @relation(fields: [storyId], references: [id], onDelete: Cascade)
   media     MediaAsset[]

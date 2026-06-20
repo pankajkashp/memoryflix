@@ -239,3 +239,49 @@ export async function deleteMedia(storyId: string, mediaId: string) {
 
   return { success: true };
 }
+
+// ── replaceMedia ────────────────────────────────────────────────────────────
+
+export async function replaceMedia(
+  storyId: string, 
+  mediaId: string,
+  data: {
+    url: string;
+    publicId: string;
+    type: "IMAGE" | "VIDEO";
+    bytes?: number;
+    duration?: number;
+  }
+) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const story = await prisma.story.findUnique({
+    where: { id: storyId, userId: session.user.id },
+  });
+  if (!story) throw new Error("Story not found or unauthorized");
+
+  const media = await prisma.mediaAsset.findUnique({
+    where: { id: mediaId, storyId },
+  });
+  if (!media) throw new Error("Media asset not found in this story");
+
+  const updated = await prisma.mediaAsset.update({
+    where: { id: mediaId },
+    data: {
+      url: data.url,
+      storageKey: data.publicId,
+      type: data.type,
+      sizeBytes: data.bytes,
+      durationSeconds: data.duration ? Math.round(data.duration) : null,
+    },
+  });
+
+  revalidatePath(`/stories/${storyId}`);
+  revalidatePath(`/stories/${storyId}/preview`);
+  if (story.slug) {
+    revalidatePath(`/s/${story.slug}`);
+  }
+
+  return { success: true, asset: updated };
+}

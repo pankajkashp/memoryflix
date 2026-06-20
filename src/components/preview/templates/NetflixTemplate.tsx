@@ -158,15 +158,40 @@ export default function NetflixTemplate({ story, isEditable = false }: { story: 
               ref={(el) => { sectionRefs.current[`chapter-${chapter.id}`] = el; }}
               className="group/chapter relative"
             >
-              {/* 3. Cinematic Chapter Introduction */}
-              <div className="mb-12 max-w-3xl">
-                <p className="text-rose-500 font-bold tracking-widest uppercase mb-2 text-sm opacity-80">
-                  Chapter {chapter.position + 1}
-                </p>
-                <h2 className="text-4xl md:text-6xl font-bold tracking-tight text-white flex items-center gap-4">
-                  {chapter.emoji && <span>{chapter.emoji}</span>}
+              {/* 3. Cinematic Chapter Introduction (Movie Title Card) */}
+              <div className="flex flex-col items-center justify-center text-center py-32 md:py-48 max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-1000">
+                <div className="w-32 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent mb-12"></div>
+                
+                <div className="flex items-center gap-4 text-rose-500/80 font-bold tracking-[0.4em] uppercase mb-6 text-sm md:text-base">
+                  <span>Chapter {chapter.position + 1}</span>
+                  {chapter.date && (
+                    <>
+                      <span>•</span>
+                      <span>
+                        {new Date(chapter.date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                      </span>
+                    </>
+                  )}
+                  {chapter.location && (
+                    <>
+                      <span>•</span>
+                      <span>{chapter.location}</span>
+                    </>
+                  )}
+                </div>
+                
+                <h2 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter text-white mb-8 drop-shadow-2xl flex flex-col items-center gap-8">
+                  {chapter.emoji && <span className="text-6xl md:text-8xl drop-shadow-xl transform hover:scale-110 transition-transform duration-500 block">{chapter.emoji}</span>}
                   {chapter.title}
                 </h2>
+                
+                {chapter.subtitle && (
+                  <p className="text-xl md:text-2xl text-zinc-300 italic font-medium max-w-2xl drop-shadow-md">
+                    &quot;{chapter.subtitle}&quot;
+                  </p>
+                )}
+                
+                <div className="w-32 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent mt-12"></div>
               </div>
               
               {/* 4 & 5. Layout System & Editable Preview */}
@@ -183,9 +208,9 @@ export default function NetflixTemplate({ story, isEditable = false }: { story: 
           ))}
 
           {unassignedMedia.length > 0 && (
-            <div className="pt-12 border-t border-white/10">
-              <div className="mb-12">
-                <h2 className="text-3xl font-bold text-white">More Memories</h2>
+            <div className="pt-24 border-t border-white/5">
+              <div className="mb-8 flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-white">More From This Story</h2>
               </div>
               <ChapterLayoutRenderer
                 mediaItems={unassignedMedia}
@@ -195,6 +220,59 @@ export default function NetflixTemplate({ story, isEditable = false }: { story: 
                 isEditable={isEditable}
                 onMediaSelect={(index) => setGalleryActiveIndex(index)}
               />
+            </div>
+          )}
+
+          {/* 6. Netflix Feel - Recommended Memories & Continue The Story */}
+          {hasMedia && (
+            <div className="pt-24 pb-12 border-t border-white/5 space-y-16">
+              <div>
+                <h3 className="text-xl font-bold text-white mb-6">Recommended Memories</h3>
+                <div className="flex overflow-x-auto gap-4 pb-4 hide-scrollbar snap-x snap-mandatory">
+                  {story.media.slice(0, Math.min(5, story.media.length)).map((item, idx) => (
+                    <div 
+                      key={`rec-${item.id}`}
+                      onClick={() => setGalleryActiveIndex(idx)}
+                      className="snap-start shrink-0 w-64 md:w-80 aspect-video rounded-xl bg-zinc-900 overflow-hidden relative group cursor-pointer border border-white/10"
+                    >
+                      {item.type === "VIDEO" ? (
+                        <video src={item.url} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100" />
+                      ) : (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={item.url} alt="Rec" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100" />
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
+                        <Play className="w-8 h-8 text-white fill-current mb-2 drop-shadow-md" />
+                        <p className="text-white font-bold drop-shadow-md">Play Highlight</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <div>
+                <h3 className="text-xl font-bold text-white mb-6">Continue The Story</h3>
+                <div className="flex overflow-x-auto gap-4 pb-4 hide-scrollbar snap-x snap-mandatory">
+                  {[...story.media].reverse().slice(0, Math.min(4, story.media.length)).map((item, idx) => (
+                    <div 
+                      key={`cont-${item.id}`}
+                      onClick={() => setGalleryActiveIndex(story.media.length - 1 - idx)}
+                      className="snap-start shrink-0 w-72 md:w-96 aspect-[4/3] rounded-xl bg-zinc-900 overflow-hidden relative group cursor-pointer border border-white/10"
+                    >
+                      {item.type === "VIDEO" ? (
+                        <video src={item.url} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100" />
+                      ) : (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={item.url} alt="Cont" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100" />
+                      )}
+                      <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500" />
+                      <div className="absolute top-4 left-4">
+                        <div className="bg-rose-500 text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Recently Added</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
         </div>

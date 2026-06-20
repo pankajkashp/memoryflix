@@ -20,7 +20,7 @@ async function verifyOwnership(storyId: string) {
   return session.user.id;
 }
 
-export async function createChapter(storyId: string, title: string, emoji: string | null = null) {
+export async function createChapter(storyId: string, title: string, emoji: string | null = null, subtitle: string | null = null, date: string | null = null, location: string | null = null) {
   await verifyOwnership(storyId);
 
   // Get current max position
@@ -35,6 +35,9 @@ export async function createChapter(storyId: string, title: string, emoji: strin
       storyId,
       title,
       emoji,
+      subtitle,
+      date: date ? new Date(date) : null,
+      location,
       position,
     },
   });
@@ -42,12 +45,18 @@ export async function createChapter(storyId: string, title: string, emoji: strin
   revalidatePath(`/stories/${storyId}`);
 }
 
-export async function updateChapter(storyId: string, chapterId: string, title: string, emoji: string | null = null) {
+export async function updateChapter(storyId: string, chapterId: string, title: string, emoji: string | null = null, subtitle: string | null = null, date: string | null = null, location: string | null = null) {
   await verifyOwnership(storyId);
 
   await prisma.chapter.update({
     where: { id: chapterId },
-    data: { title, emoji },
+    data: { 
+      title, 
+      emoji,
+      subtitle,
+      date: date ? new Date(date) : null,
+      location 
+    },
   });
 
   revalidatePath(`/stories/${storyId}`);

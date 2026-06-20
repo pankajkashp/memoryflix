@@ -28,9 +28,18 @@ function SortableChapterItem({ chapter, storyId }: { chapter: Chapter; storyId: 
   const [emoji, setEmoji] = useState(chapter.emoji || "");
   const [isPending, startTransition] = useTransition();
 
+  const [layout, setLayout] = useState(chapter.layout || "MASONRY");
+  const [subtitle, setSubtitle] = useState(chapter.subtitle || "");
+  const [location, setLocation] = useState(chapter.location || "");
+  const [date, setDate] = useState(chapter.date ? new Date(chapter.date).toISOString().split('T')[0] : "");
+
   useEffect(() => {
     setTitle(chapter.title);
     setEmoji(chapter.emoji || "");
+    setLayout(chapter.layout || "MASONRY");
+    setSubtitle(chapter.subtitle || "");
+    setLocation(chapter.location || "");
+    setDate(chapter.date ? new Date(chapter.date).toISOString().split('T')[0] : "");
   }, [chapter]);
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: chapter.id });
@@ -44,7 +53,20 @@ function SortableChapterItem({ chapter, storyId }: { chapter: Chapter; storyId: 
   const handleSave = () => {
     if (!title.trim()) return;
     startTransition(async () => {
-      await updateChapter(storyId, chapter.id, title, emoji || null);
+      await updateChapter(
+        storyId, 
+        chapter.id, 
+        title, 
+        emoji || null,
+        subtitle || null,
+        date || null,
+        location || null
+      );
+      if (layout !== chapter.layout) {
+        // Assume updateChapterLayout is imported
+        const { updateChapterLayout } = await import("@/app/actions/chapter");
+        await updateChapterLayout(storyId, chapter.id, layout);
+      }
       setIsEditing(false);
     });
   };
@@ -70,29 +92,69 @@ function SortableChapterItem({ chapter, storyId }: { chapter: Chapter; storyId: 
       </div>
 
       {isEditing ? (
-        <div className="flex-1 flex items-center gap-2">
-          <input
-            type="text"
-            value={emoji}
-            onChange={(e) => setEmoji(e.target.value)}
-            placeholder="😀"
-            maxLength={2}
-            className="w-12 text-center rounded-lg border border-white/10 bg-black/50 px-2 py-1.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-rose-500"
-          />
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="flex-1 rounded-lg border border-white/10 bg-black/50 px-3 py-1.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-rose-500"
-            autoFocus
-            onKeyDown={(e) => e.key === "Enter" && handleSave()}
-          />
-          <button onClick={handleSave} disabled={isPending} className="p-1.5 text-green-400 hover:bg-green-400/10 rounded-lg">
-            {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-          </button>
-          <button onClick={() => setIsEditing(false)} disabled={isPending} className="p-1.5 text-zinc-400 hover:bg-white/10 rounded-lg">
-            <X className="w-4 h-4" />
-          </button>
+        <div className="flex-1 flex flex-col gap-3">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <input
+                type="text"
+                value={emoji}
+                onChange={(e) => setEmoji(e.target.value)}
+                placeholder="😀"
+                maxLength={2}
+                className="w-12 text-center rounded-lg border border-white/10 bg-black/50 px-2 py-1.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-rose-500"
+              />
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Chapter Title"
+                className="flex-1 sm:w-48 rounded-lg border border-white/10 bg-black/50 px-3 py-1.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-rose-500"
+                autoFocus
+                onKeyDown={(e) => e.key === "Enter" && handleSave()}
+              />
+            </div>
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <select
+                value={layout}
+                onChange={(e) => setLayout(e.target.value)}
+                className="flex-1 sm:flex-none sm:w-40 rounded-lg border border-white/10 bg-black/50 px-2 py-1.5 text-sm text-white focus:outline-none focus:border-rose-500 appearance-none"
+              >
+                <option value="MASONRY">Masonry Grid</option>
+                <option value="FILM_STRIP">Film Strip</option>
+                <option value="POLAROID">Polaroid Memories</option>
+                <option value="TIMELINE">Timeline Story</option>
+              </select>
+              <button onClick={handleSave} disabled={isPending} className="p-1.5 text-green-400 hover:bg-green-400/10 rounded-lg shrink-0">
+                {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+              </button>
+              <button onClick={() => setIsEditing(false)} disabled={isPending} className="p-1.5 text-zinc-400 hover:bg-white/10 rounded-lg shrink-0">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row items-center gap-2">
+            <input
+              type="text"
+              value={subtitle}
+              onChange={(e) => setSubtitle(e.target.value)}
+              placeholder="Subtitle (e.g. Our first adventure)"
+              className="w-full sm:flex-1 rounded-lg border border-white/10 bg-black/50 px-3 py-1.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-rose-500"
+            />
+            <input
+              type="text"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              placeholder="Location (e.g. Paris, France)"
+              className="w-full sm:w-48 rounded-lg border border-white/10 bg-black/50 px-3 py-1.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-rose-500"
+            />
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="w-full sm:w-40 rounded-lg border border-white/10 bg-black/50 px-3 py-1.5 text-sm text-white focus:outline-none focus:border-rose-500"
+            />
+          </div>
         </div>
       ) : (
         <>
