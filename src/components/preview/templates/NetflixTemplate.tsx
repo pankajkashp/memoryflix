@@ -7,8 +7,18 @@ import EmptyState from "@/components/preview/EmptyState";
 import { StoryWithFullPayload } from "../PreviewClientWrapper";
 import ChapterLayoutRenderer from "./../ChapterLayoutRenderer";
 import { Play, Share2 } from "lucide-react";
+import { getPresetConfig } from "@/lib/typography-presets";
 
-export default function NetflixTemplate({ story, isEditable = false }: { story: StoryWithFullPayload, isEditable?: boolean }) {
+export default function NetflixTemplate({ 
+  story, 
+  isEditable = false,
+  onChapterChange
+}: { 
+  story: StoryWithFullPayload, 
+  isEditable?: boolean,
+  onChapterChange?: (chapterId: string | null) => void 
+}) {
+  const presetConfig = getPresetConfig(story.typographyPreset);
   const [galleryActiveIndex, setGalleryActiveIndex] = useState<number | null>(null);
   const [isCinematicPlaying, setIsCinematicPlaying] = useState<boolean>(false);
   const [activeChapterId, setActiveChapterId] = useState<string | null>(null);
@@ -38,7 +48,9 @@ export default function NetflixTemplate({ story, isEditable = false }: { story: 
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            setActiveChapterId(entry.target.id);
+            const chapId = entry.target.id.replace("chapter-", "");
+            setActiveChapterId(`chapter-${chapId}`);
+            if (onChapterChange) onChapterChange(chapId);
           }
         });
       },
@@ -87,7 +99,7 @@ export default function NetflixTemplate({ story, isEditable = false }: { story: 
               {story.occasion}
             </p>
           )}
-          <h1 className="text-6xl md:text-8xl font-black tracking-tight text-white mb-6 drop-shadow-xl leading-none">
+          <h1 className={`${presetConfig.heroStyle} mb-6 leading-none`}>
             {story.title}
           </h1>
           <div className="flex items-center gap-4 text-zinc-300 font-medium mb-8 text-lg drop-shadow-md">
@@ -180,7 +192,7 @@ export default function NetflixTemplate({ story, isEditable = false }: { story: 
                   )}
                 </div>
                 
-                <h2 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter text-white mb-8 drop-shadow-2xl flex flex-col items-center gap-8">
+                <h2 className={`${presetConfig.chapterStyle} mb-8 drop-shadow-2xl flex flex-col items-center gap-8`}>
                   {chapter.emoji && <span className="text-6xl md:text-8xl drop-shadow-xl transform hover:scale-110 transition-transform duration-500 block">{chapter.emoji}</span>}
                   {chapter.title}
                 </h2>

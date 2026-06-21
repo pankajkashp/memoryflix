@@ -114,3 +114,35 @@ export async function updateChapterLayout(storyId: string, chapterId: string, la
     revalidatePath(`/s/${story.slug}`);
   }
 }
+
+export async function updateChapterMusicConfig(
+  storyId: string,
+  chapterId: string,
+  config: { 
+    type: "BUILT_IN" | "CUSTOM" | "NONE"; 
+    url?: string; 
+    source?: string; 
+    trackId?: string 
+  }
+) {
+  await verifyOwnership(storyId);
+
+  await prisma.chapter.update({
+    where: { id: chapterId },
+    data: { 
+      musicType: config.type,
+      musicUrl: config.url || null,
+      musicSource: config.source || null,
+      musicTrack: config.trackId || null,
+    },
+  });
+
+  revalidatePath(`/stories/${storyId}`);
+  revalidatePath(`/stories/${storyId}/preview`);
+  const story = await prisma.story.findUnique({ where: { id: storyId }});
+  if (story?.slug) {
+    revalidatePath(`/s/${story.slug}`);
+  }
+
+  return { success: true };
+}

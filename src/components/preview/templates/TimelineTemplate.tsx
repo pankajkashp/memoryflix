@@ -7,7 +7,15 @@ import EmptyState from "@/components/preview/EmptyState";
 import { StoryWithFullPayload } from "../PreviewClientWrapper";
 import { Play, BookOpen } from "lucide-react";
 
-export default function TimelineTemplate({ story, isEditable = false }: { story: StoryWithFullPayload, isEditable?: boolean }) {
+export default function TimelineTemplate({ 
+  story, 
+  isEditable = false,
+  onChapterChange
+}: { 
+  story: StoryWithFullPayload, 
+  isEditable?: boolean,
+  onChapterChange?: (chapterId: string | null) => void
+}) {
   const [galleryActiveIndex, setGalleryActiveIndex] = useState<number | null>(null);
   const [isCinematicPlaying, setIsCinematicPlaying] = useState<boolean>(false);
 

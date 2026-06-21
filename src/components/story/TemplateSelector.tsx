@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { StoryTemplate } from "@prisma/client";
 import { updateStoryTemplate } from "@/app/actions/story";
 import { Loader2, CheckCircle2 } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function TemplateSelector({
   storyId,
@@ -31,33 +32,35 @@ export default function TemplateSelector({
         const isSelected = selectedId === template.id;
         
         return (
-          <button
+          <motion.div
             key={template.id}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => handleSelect(template.id)}
-            disabled={isPending}
             className={`
-              relative flex flex-col text-left p-6 rounded-2xl border-2 transition-all duration-300
-              ${
-                isSelected
-                  ? "border-rose-500 bg-rose-500/10 shadow-[0_0_20px_rgba(244,63,94,0.2)]"
-                  : "border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20"
-              }
+              group relative flex flex-col text-left p-1 rounded-2xl cursor-pointer overflow-hidden
             `}
           >
-            {isSelected && (
-              <div className="absolute top-4 right-4 text-rose-500">
-                {isPending ? (
-                  <Loader2 className="w-6 h-6 animate-spin" />
-                ) : (
-                  <CheckCircle2 className="w-6 h-6" />
-                )}
-              </div>
-            )}
-            
-            <h3 className="text-xl font-bold text-white mb-2 pr-8">{template.name}</h3>
-            <p className="text-sm text-zinc-400 leading-relaxed">
-              {template.description}
-            </p>
+            {/* Animated border glow */}
+            <div className={`absolute inset-0 transition-opacity duration-500 ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+              <div className={`absolute inset-0 bg-gradient-to-r ${isSelected ? 'from-rose-500 to-purple-600' : 'from-white/20 to-white/10'} rounded-2xl`} />
+            </div>
+
+            <div className={`relative h-full bg-[#0a0a0a] rounded-[14px] p-6 flex flex-col z-10 transition-colors ${isSelected ? 'bg-[#110508]' : ''}`}>
+              {isSelected && (
+                <div className="absolute top-4 right-4 text-rose-500 z-20 bg-black/50 rounded-full p-1 backdrop-blur-md">
+                  {isPending ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <CheckCircle2 className="w-5 h-5" />
+                  )}
+                </div>
+              )}
+              
+              <h3 className={`text-2xl font-black mb-2 pr-8 tracking-tight ${isSelected ? 'text-white' : 'text-zinc-300 group-hover:text-white transition-colors'}`}>{template.name}</h3>
+              <p className="text-sm text-zinc-500 leading-relaxed max-w-[90%]">
+                {template.description}
+              </p>
             
             {/* Visual preview placeholder based on slug */}
             <div className="mt-6 w-full h-24 rounded-lg overflow-hidden relative border border-white/10 bg-black/50">
@@ -92,7 +95,8 @@ export default function TemplateSelector({
                 </div>
               )}
             </div>
-          </button>
+            </div>
+          </motion.div>
         );
       })}
     </div>

@@ -33,10 +33,10 @@ export default function EditStoryForm({
   }, [state]);
 
   return (
-    <form action={action} className="space-y-6">
+    <form action={action} className="space-y-8 max-w-2xl">
       {/* Title */}
-      <div>
-        <label htmlFor="title" className="block text-sm font-medium text-zinc-300 ml-1 mb-1.5">
+      <div className="relative group">
+        <label htmlFor="title" className="block text-xs font-bold uppercase tracking-widest text-zinc-500 mb-2 transition-colors group-focus-within:text-rose-500">
           Story Title <span className="text-rose-500">*</span>
         </label>
         <input
@@ -46,17 +46,17 @@ export default function EditStoryForm({
           required
           defaultValue={initialTitle}
           placeholder="e.g. Priya & Rohan's Wedding Story"
-          className="block w-full rounded-xl border border-white/10 bg-black/50 px-4 py-3 text-sm text-white placeholder-zinc-500 shadow-inner focus:border-rose-500 focus:outline-none focus:ring-1 focus:ring-rose-500 transition-colors"
+          className="block w-full bg-transparent border-0 border-b-2 border-white/10 px-0 py-2 text-3xl md:text-5xl font-black text-white placeholder-zinc-700 focus:border-rose-500 focus:ring-0 transition-colors"
         />
         {state?.errors?.title && (
-          <p className="mt-2 text-xs text-rose-400 ml-1">{state.errors.title[0]}</p>
+          <p className="mt-2 text-xs text-rose-400">{state.errors.title[0]}</p>
         )}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
         {/* Occasion */}
-        <div>
-          <label htmlFor="occasion" className="block text-sm font-medium text-zinc-300 ml-1 mb-1.5">
+        <div className="relative group">
+          <label htmlFor="occasion" className="block text-xs font-bold uppercase tracking-widest text-zinc-500 mb-2 transition-colors group-focus-within:text-rose-500">
             Occasion
           </label>
           <input
@@ -65,16 +65,16 @@ export default function EditStoryForm({
             type="text"
             placeholder="e.g. Wedding, Vacation"
             defaultValue={initialOccasion || ""}
-            className="block w-full rounded-xl border border-white/10 bg-black/50 px-4 py-3 text-sm text-white placeholder-zinc-500 shadow-inner focus:border-rose-500 focus:outline-none focus:ring-1 focus:ring-rose-500 transition-colors"
+            className="block w-full bg-transparent border-0 border-b-2 border-white/10 px-0 py-2 text-xl md:text-2xl font-bold text-white placeholder-zinc-700 focus:border-rose-500 focus:ring-0 transition-colors"
           />
           {state?.errors?.occasion && (
-            <p className="mt-2 text-xs text-rose-400 ml-1">{state.errors.occasion[0]}</p>
+            <p className="mt-2 text-xs text-rose-400">{state.errors.occasion[0]}</p>
           )}
         </div>
 
         {/* Event Date */}
-        <div>
-          <label htmlFor="eventDate" className="block text-sm font-medium text-zinc-300 ml-1 mb-1.5">
+        <div className="relative group">
+          <label htmlFor="eventDate" className="block text-xs font-bold uppercase tracking-widest text-zinc-500 mb-2 transition-colors group-focus-within:text-rose-500">
             Event Date
           </label>
           <input
@@ -82,17 +82,17 @@ export default function EditStoryForm({
             name="eventDate"
             type="date"
             defaultValue={initialEventDate || ""}
-            className="block w-full rounded-xl border border-white/10 bg-black/50 px-4 py-3 text-sm text-white placeholder-zinc-500 shadow-inner focus:border-rose-500 focus:outline-none focus:ring-1 focus:ring-rose-500 transition-colors"
+            className="block w-full bg-transparent border-0 border-b-2 border-white/10 px-0 py-2 text-xl md:text-2xl font-bold text-white placeholder-zinc-700 focus:border-rose-500 focus:ring-0 transition-colors"
           />
           {state?.errors?.eventDate && (
-            <p className="mt-2 text-xs text-rose-400 ml-1">{state.errors.eventDate[0]}</p>
+            <p className="mt-2 text-xs text-rose-400">{state.errors.eventDate[0]}</p>
           )}
         </div>
       </div>
 
       {/* Description */}
-      <div>
-        <label htmlFor="description" className="block text-sm font-medium text-zinc-300 ml-1 mb-1.5">
+      <div className="relative group">
+        <label htmlFor="description" className="block text-xs font-bold uppercase tracking-widest text-zinc-500 mb-2 transition-colors group-focus-within:text-rose-500">
           Description
         </label>
         <textarea
@@ -101,33 +101,33 @@ export default function EditStoryForm({
           rows={3}
           placeholder="A brief summary of this memory..."
           defaultValue={initialDescription || ""}
-          className="block w-full rounded-xl border border-white/10 bg-black/50 px-4 py-3 text-sm text-white placeholder-zinc-500 shadow-inner focus:border-rose-500 focus:outline-none focus:ring-1 focus:ring-rose-500 transition-colors resize-none"
+          className="block w-full bg-transparent border-0 border-b-2 border-white/10 px-0 py-2 text-lg text-zinc-300 placeholder-zinc-700 focus:border-rose-500 focus:ring-0 transition-colors resize-none leading-relaxed"
         />
         {state?.errors?.description && (
-          <p className="mt-2 text-xs text-rose-400 ml-1">{state.errors.description[0]}</p>
+          <p className="mt-2 text-xs text-rose-400">{state.errors.description[0]}</p>
         )}
       </div>
 
       {/* Messages */}
       <div className="min-h-[44px]">
         {state?.errors?.general && (
-          <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200 text-center backdrop-blur-md">
+          <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200 text-left backdrop-blur-md">
             {state.errors.general[0]}
           </div>
         )}
 
         {successMsg && (
-          <div className="rounded-xl border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-300 text-center backdrop-blur-md transition-opacity animate-in fade-in slide-in-from-bottom-2">
+          <div className="rounded-xl border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-300 text-left backdrop-blur-md transition-opacity animate-in fade-in slide-in-from-bottom-2">
             Story details saved successfully.
           </div>
         )}
       </div>
 
-      <div className="flex justify-end pt-2">
+      <div className="flex justify-start pt-4">
         <button
           type="submit"
           disabled={pending}
-          className="rounded-full bg-white/10 px-6 py-2.5 text-sm font-semibold text-white border border-white/20 hover:bg-white/20 disabled:opacity-50 transition-colors backdrop-blur-md"
+          className="rounded-full bg-white text-black px-8 py-3 text-sm font-bold shadow-lg shadow-white/10 hover:bg-zinc-200 disabled:opacity-50 transition-all hover:scale-105 active:scale-95"
         >
           {pending ? "Saving…" : "Save Changes"}
         </button>

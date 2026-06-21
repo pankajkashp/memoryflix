@@ -1,15 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import MediaViewer from "@/components/preview/MediaViewer";
 import CinematicPlayer from "@/components/preview/CinematicPlayer";
 import EmptyState from "@/components/preview/EmptyState";
 import { StoryWithFullPayload } from "../PreviewClientWrapper";
 import { Play } from "lucide-react";
 
-export default function AppleTemplate({ story, isEditable = false }: { story: StoryWithFullPayload, isEditable?: boolean }) {
+export default function AppleTemplate({ 
+  story, 
+  isEditable = false,
+  onChapterChange
+}: { 
+  story: StoryWithFullPayload, 
+  isEditable?: boolean,
+  onChapterChange?: (chapterId: string | null) => void
+}) {
   const [galleryActiveIndex, setGalleryActiveIndex] = useState<number | null>(null);
   const [isCinematicPlaying, setIsCinematicPlaying] = useState<boolean>(false);
+  const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
   const hasMedia = story.media && story.media.length > 0;
   const firstImage = story.media?.find((m) => m.type === "IMAGE");
@@ -23,6 +32,27 @@ export default function AppleTemplate({ story, isEditable = false }: { story: St
         .filter((m) => m.item.chapterId === chapter.id),
     }))
     .filter((c) => c.mediaItems.length > 0) || [];
+
+  useEffect(() => {
+    if (!onChapterChange) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const chapId = entry.target.id.replace("chapter-", "");
+            onChapterChange(chapId);
+          }
+        });
+      },
+      { rootMargin: "-20% 0px -80% 0px" }
+    );
+
+    Object.values(sectionRefs.current).forEach((ref) => {
+      if (ref) observer.observe(ref);
+    });
+
+    return () => observer.disconnect();
+  }, [chaptersWithMedia, onChapterChange]);
 
   const unassignedMedia = story.media
     .map((item, index) => ({ item, index }))
@@ -76,7 +106,12 @@ export default function AppleTemplate({ story, isEditable = false }: { story: St
       {hasMedia ? (
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-16 space-y-24">
           {chaptersWithMedia.map(({ chapter, mediaItems }) => (
-            <div key={chapter.id} className="space-y-6">
+            <div 
+              key={chapter.id} 
+              id={`chapter-${chapter.id}`}
+              ref={(el) => { sectionRefs.current[`chapter-${chapter.id}`] = el; }}
+              className="space-y-6"
+            >
               <div className="border-b border-[#D2D2D7] pb-4">
                 <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-[#1D1D1F] flex items-center gap-3">
                   {chapter.emoji && <span>{chapter.emoji}</span>}

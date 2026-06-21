@@ -57,7 +57,9 @@ model Story {
   slug         String?     @unique
   status       StoryStatus @default(DRAFT)
   publishedAt  DateTime?
-  coverMediaId String?
+  coverMediaId     String?
+  typographyPreset String?
+  accentColor      String?
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 
@@ -97,9 +99,13 @@ model Chapter {
   subtitle  String?
   location  String?
   date      DateTime?
-  position  Int       @default(0)
-  layout    String    @default("MASONRY")
-  createdAt DateTime  @default(now())
+  position    Int       @default(0)
+  layout      String    @default("MASONRY")
+  musicTrack  String?
+  musicType   String?     // "BUILT_IN", "CUSTOM", "NONE"
+  musicUrl    String?
+  musicSource String?
+  createdAt   DateTime  @default(now())
 
   story     Story        @relation(fields: [storyId], references: [id], onDelete: Cascade)
   media     MediaAsset[]

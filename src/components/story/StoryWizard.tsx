@@ -9,6 +9,9 @@ import PublishButton from "./PublishButton";
 import ChapterEditor from "./ChapterEditor";
 import TemplateSelector from "./TemplateSelector";
 import Link from "next/link";
+import MusicSelector from "./MusicSelector";
+import TypographySelector from "./TypographySelector";
+import { motion, AnimatePresence } from "framer-motion";
 
 type StoryWithRelations = Story & {
   template: StoryTemplate;
@@ -22,8 +25,9 @@ const STEPS = [
   { id: 3, name: "Chapters" },
   { id: 4, name: "Media" },
   { id: 5, name: "Cover" },
-  { id: 6, name: "Preview" },
-  { id: 7, name: "Publish" },
+  { id: 6, name: "Typography" },
+  { id: 7, name: "Preview" },
+  { id: 8, name: "Publish" },
 ];
 
 export default function StoryWizard({ 
@@ -62,9 +66,11 @@ export default function StoryWizard({
       {/* ── Progress Timeline ──────────────────────────────────────────────── */}
       <div className="mb-12 relative">
         <div className="absolute top-1/2 left-0 w-full h-[2px] bg-white/10 -translate-y-1/2 rounded-full hidden sm:block" />
-        <div 
-          className="absolute top-1/2 left-0 h-[2px] bg-gradient-to-r from-rose-500 to-purple-600 -translate-y-1/2 rounded-full transition-all duration-500 hidden sm:block"
-          style={{ width: `${((currentStep - 1) / (STEPS.length - 1)) * 100}%` }}
+        <motion.div 
+          className="absolute top-1/2 left-0 h-[2px] bg-gradient-to-r from-rose-500 to-purple-600 -translate-y-1/2 rounded-full hidden sm:block shadow-[0_0_15px_rgba(244,63,94,0.5)]"
+          initial={{ width: 0 }}
+          animate={{ width: `${((currentStep - 1) / (STEPS.length - 1)) * 100}%` }}
+          transition={{ duration: 0.5, ease: "easeInOut" }}
         />
         <div className="flex justify-between relative z-10 overflow-x-auto sm:overflow-visible pb-4 sm:pb-0 hide-scrollbar gap-4 sm:gap-0">
           {STEPS.map((step) => {
@@ -73,17 +79,18 @@ export default function StoryWizard({
             return (
               <div 
                 key={step.id} 
-                className="flex flex-col items-center gap-2 min-w-[60px] cursor-pointer"
+                className="flex flex-col items-center gap-2 min-w-[60px] cursor-pointer group"
                 onClick={() => setCurrentStep(step.id)}
               >
-                <div 
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 shadow-lg border-2 ${
+                <motion.div 
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all shadow-lg border-2 relative ${
                     isActive 
-                      ? "bg-rose-500 text-white border-rose-400 shadow-rose-500/30 scale-110" 
+                      ? "bg-rose-500 text-white border-rose-400 shadow-[0_0_20px_rgba(244,63,94,0.5)] scale-110" 
                       : isPast 
-                      ? "bg-rose-500/20 text-rose-300 border-rose-500/30" 
-                      : "bg-black/50 text-zinc-500 border-white/10"
+                      ? "bg-rose-500/20 text-rose-300 border-rose-500/30 group-hover:bg-rose-500/30" 
+                      : "bg-black/50 text-zinc-500 border-white/10 group-hover:border-white/30 group-hover:bg-white/5"
                   }`}
+                  animate={isActive ? { scale: 1.1 } : { scale: 1 }}
                 >
                   {isPast ? (
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -92,9 +99,17 @@ export default function StoryWizard({
                   ) : (
                     step.id
                   )}
-                </div>
-                <span className={`text-[10px] sm:text-xs font-semibold uppercase tracking-wider ${
-                  isActive ? "text-rose-400" : isPast ? "text-zinc-400" : "text-zinc-600"
+                  {isActive && (
+                    <motion.div 
+                      className="absolute inset-0 rounded-full border border-rose-400"
+                      initial={{ scale: 1, opacity: 1 }}
+                      animate={{ scale: 1.5, opacity: 0 }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                    />
+                  )}
+                </motion.div>
+                <span className={`text-[10px] sm:text-xs font-semibold uppercase tracking-wider transition-colors ${
+                  isActive ? "text-rose-400 drop-shadow-[0_0_8px_rgba(244,63,94,0.8)]" : isPast ? "text-zinc-400" : "text-zinc-600 group-hover:text-zinc-400"
                 }`}>
                   {step.name}
                 </span>
@@ -105,237 +120,293 @@ export default function StoryWizard({
       </div>
 
       {/* ── Wizard Content Card ────────────────────────────────────────────── */}
-      <div className="w-full rounded-[2rem] border border-white/10 bg-black/40 p-6 sm:p-10 shadow-2xl backdrop-blur-2xl relative overflow-hidden min-h-[400px] flex flex-col">
+      <div className="w-full rounded-[2rem] border border-white/10 bg-black/40 p-6 sm:p-10 shadow-2xl backdrop-blur-2xl relative overflow-hidden min-h-[500px] flex flex-col">
         {/* Subtle internal glow */}
         <div className="absolute inset-0 bg-gradient-to-br from-rose-500/5 via-transparent to-purple-500/5 pointer-events-none" />
 
         <div className="relative z-10 flex-grow">
-          {/* STEP 1: TEMPLATE */}
-          {currentStep === 1 && (
-            <div className="animate-in fade-in slide-in-from-right-4 duration-500 h-full flex flex-col">
-              <h2 className="text-2xl font-bold text-white mb-2">Cinematic Theme</h2>
-              <p className="text-zinc-400 mb-8 max-w-lg">
-                Choose the visual language for your story. This will determine the overall aesthetic, layout, colors, and typography.
-              </p>
-              
-              <div className="mt-auto">
-                {templates && (
-                  <TemplateSelector 
-                    storyId={story.id} 
-                    currentTemplateId={story.templateId} 
-                    templates={templates} 
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentStep}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="h-full"
+            >
+              {/* STEP 1: TEMPLATE */}
+              {currentStep === 1 && (
+                <div className="h-full flex flex-col">
+                  <h2 className="text-3xl font-black tracking-tight text-white mb-2">Cinematic Theme</h2>
+                  <p className="text-zinc-400 mb-8 max-w-xl text-lg">
+                    Choose the visual language for your story. This will determine the overall aesthetic, layout, colors, and typography.
+                  </p>
+                  
+                  <div className="mt-auto">
+                    {templates && (
+                      <TemplateSelector 
+                        storyId={story.id} 
+                        currentTemplateId={story.templateId} 
+                        templates={templates} 
+                      />
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 2: DETAILS */}
+              {currentStep === 2 && (
+                <div>
+                  <h2 className="text-3xl font-black tracking-tight text-white mb-2">Story Details</h2>
+                  <p className="text-zinc-400 mb-8 max-w-xl text-lg">
+                    Set the scene. Add a title, date, and description for your memory.
+                  </p>
+                  
+                  <EditStoryForm
+                    storyId={story.id}
+                    initialTitle={story.title}
+                    initialDescription={story.description}
+                    initialOccasion={story.occasion}
+                    initialEventDate={story.eventDate ? story.eventDate.toISOString().split("T")[0] : null}
                   />
-                )}
-              </div>
-            </div>
-          )}
+                </div>
+              )}
 
-          {/* STEP 2: DETAILS */}
-          {currentStep === 2 && (
-            <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-              <h2 className="text-2xl font-bold text-white mb-2">Story Details</h2>
-              <p className="text-zinc-400 mb-8 max-w-lg">
-                Set the scene. Add a title, date, and description for your memory. Be sure to click "Save Changes" before moving to the next step.
-              </p>
-              
-              <EditStoryForm
-                storyId={story.id}
-                initialTitle={story.title}
-                initialDescription={story.description}
-                initialOccasion={story.occasion}
-                initialEventDate={story.eventDate ? story.eventDate.toISOString().split("T")[0] : null}
-              />
-            </div>
-          )}
+              {/* STEP 3: CHAPTERS */}
+              {currentStep === 3 && (
+                <div>
+                  <h2 className="text-3xl font-black tracking-tight text-white mb-2">Memory Chapters</h2>
+                  <p className="text-zinc-400 mb-8 max-w-xl text-lg">
+                    Organize your story into chapters. You'll assign media to these chapters in the next step.
+                  </p>
+                  
+                  <ChapterEditor storyId={story.id} chapters={story.chapters} />
+                </div>
+              )}
 
-          {/* STEP 3: CHAPTERS */}
-          {currentStep === 3 && (
-            <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-              <h2 className="text-2xl font-bold text-white mb-2">Memory Chapters</h2>
-              <p className="text-zinc-400 mb-8 max-w-lg">
-                Organize your story into chapters like "❤️ How We Met" or "✈️ First Trip". You'll assign media to these chapters in the next step.
-              </p>
-              
-              <ChapterEditor storyId={story.id} chapters={story.chapters} />
-            </div>
-          )}
-
-          {/* STEP 4: MEDIA */}
-          {currentStep === 4 && (
-            <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-              <h2 className="text-2xl font-bold text-white mb-2">Upload Memories</h2>
-              <p className="text-zinc-400 mb-8 max-w-lg">
-                Add photos and videos to your story. Assign them to chapters using the dropdown menu on each media card.
-              </p>
-              
-              <MediaUploader storyId={story.id} />
-              
-              <div className="mt-8 border-t border-white/10 pt-8">
-                <MediaList media={story.media} storyId={story.id} coverMediaId={story.coverMediaId} chapters={story.chapters} />
-              </div>
-            </div>
-          )}
-
-          {/* STEP 5: COVER IMAGE */}
-          {currentStep === 5 && (
-            <div className="animate-in fade-in slide-in-from-right-4 duration-500">
-              <h2 className="text-2xl font-bold text-white mb-2">Choose a Cover</h2>
-              <p className="text-zinc-400 mb-8 max-w-lg">
-                Hover over an image below and click "Set Cover" to use it as the main poster for your story.
-              </p>
-              
-              <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-                <MediaList media={story.media} storyId={story.id} coverMediaId={story.coverMediaId} chapters={story.chapters} />
-              </div>
-            </div>
-          )}
-
-          {/* STEP 6: PREVIEW */}
-          {currentStep === 6 && (() => {
-            const hasTitle = story.title && story.title !== "Untitled Story";
-            const hasCover = !!story.coverMediaId;
-            const hasChapter = story.chapters.length > 0;
-            const hasMinMedia = story.media.length >= 4;
-            const isReadyForPreview = hasTitle && hasCover && hasChapter && hasMinMedia;
-
-            return (
-              <div className="animate-in fade-in slide-in-from-right-4 duration-500 h-full flex flex-col items-center justify-center text-center py-12">
-                {!isReadyForPreview ? (
-                  <div className="bg-black/50 border border-rose-500/30 rounded-2xl p-8 max-w-md w-full mx-auto text-left">
-                    <h3 className="text-xl font-bold text-white mb-2">Almost there!</h3>
-                    <p className="text-zinc-400 text-sm mb-6">Complete these steps to unlock the Cinematic Preview.</p>
-                    <ul className="space-y-3">
-                      <li className="flex items-center gap-3">
-                        <div className={`w-5 h-5 rounded-full flex items-center justify-center ${hasTitle ? 'bg-green-500' : 'border border-zinc-500'}`}>
-                          {hasTitle && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
-                        </div>
-                        <span className={hasTitle ? 'text-zinc-300' : 'text-zinc-500'}>Set Story Title</span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <div className={`w-5 h-5 rounded-full flex items-center justify-center ${hasCover ? 'bg-green-500' : 'border border-zinc-500'}`}>
-                          {hasCover && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
-                        </div>
-                        <span className={hasCover ? 'text-zinc-300' : 'text-zinc-500'}>Choose Cover Image</span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <div className={`w-5 h-5 rounded-full flex items-center justify-center ${hasChapter ? 'bg-green-500' : 'border border-zinc-500'}`}>
-                          {hasChapter && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
-                        </div>
-                        <span className={hasChapter ? 'text-zinc-300' : 'text-zinc-500'}>Create at least 1 Chapter</span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <div className={`w-5 h-5 rounded-full flex items-center justify-center ${hasMinMedia ? 'bg-green-500' : 'border border-zinc-500'}`}>
-                          {hasMinMedia && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
-                        </div>
-                        <span className={hasMinMedia ? 'text-zinc-300' : 'text-zinc-500'}>Upload 4 Media Assets ({story.media.length}/4)</span>
-                      </li>
-                    </ul>
+              {/* STEP 4: MEDIA */}
+              {currentStep === 4 && (
+                <div>
+                  <h2 className="text-3xl font-black tracking-tight text-white mb-2">Upload Memories</h2>
+                  <p className="text-zinc-400 mb-8 max-w-xl text-lg">
+                    Add photos and videos to your story. Assign them to chapters using the dropdown menu on each media card.
+                  </p>
+                  
+                  <MediaUploader storyId={story.id} />
+                  
+                  <div className="mt-8 border-t border-white/10 pt-8">
+                    <MediaList media={story.media} storyId={story.id} coverMediaId={story.coverMediaId} chapters={story.chapters} />
                   </div>
-                ) : (
-                  <>
-                    <div className="w-24 h-24 mb-6 rounded-full bg-gradient-to-br from-rose-500/20 to-purple-600/20 border border-rose-500/30 flex items-center justify-center shadow-[0_0_40px_rgba(244,63,94,0.2)]">
-                      <span className="text-4xl">🎬</span>
-                    </div>
-                    <h2 className="text-3xl font-bold text-white mb-4">Ready to Watch?</h2>
-                    <p className="text-zinc-400 mb-8 max-w-md mx-auto">
-                      Take a look at how your story flows. Make sure the sequence is right and the captions are perfect before publishing.
-                    </p>
-                    
-                    <Link
-                      href={`/stories/${story.id}/preview`}
-                      target="_blank"
-                      className="inline-flex items-center justify-center gap-2 rounded-full bg-white text-black px-8 py-4 font-bold hover:bg-zinc-200 transition-colors shadow-lg hover:scale-105 active:scale-95"
+                </div>
+              )}
+
+              {/* STEP 5: COVER IMAGE */}
+              {currentStep === 5 && (
+                <div>
+                  <h2 className="text-3xl font-black tracking-tight text-white mb-2">The Poster</h2>
+                  <p className="text-zinc-400 mb-8 max-w-xl text-lg">
+                    Hover over an image below and click "Set Cover" to use it as the cinematic poster for your story.
+                  </p>
+                  
+                  <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+                    <MediaList media={story.media} storyId={story.id} coverMediaId={story.coverMediaId} chapters={story.chapters} />
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 6: TYPOGRAPHY */}
+              {currentStep === 6 && (
+                <div>
+                  <h2 className="text-3xl font-black tracking-tight text-white mb-2">Typography & Mood</h2>
+                  <p className="text-zinc-400 mb-8 max-w-xl text-lg">
+                    Choose an emotional preset that matches the tone of your story.
+                  </p>
+                  
+                  <TypographySelector 
+                    storyId={story.id} 
+                    currentPresetId={story.typographyPreset} 
+                    currentAccentId={story.accentColor} 
+                  />
+                </div>
+              )}
+
+              {/* STEP 7: PREVIEW */}
+              {currentStep === 7 && (() => {
+                const hasTitle = story.title && story.title !== "Untitled Story";
+                const hasCover = !!story.coverMediaId;
+                const hasChapter = story.chapters.length > 0;
+                const hasMinMedia = story.media.length >= 4;
+                const isReadyForPreview = hasTitle && hasCover && hasChapter && hasMinMedia;
+
+                return (
+                  <div className="h-full flex flex-col items-center justify-center text-center py-12">
+                    {!isReadyForPreview ? (
+                      <div className="bg-black/50 border border-rose-500/30 rounded-2xl p-8 max-w-md w-full mx-auto text-left backdrop-blur-md">
+                        <h3 className="text-2xl font-black tracking-tight text-white mb-2">Almost there!</h3>
+                        <p className="text-zinc-400 text-sm mb-6">Complete these steps to unlock the Cinematic Preview.</p>
+                        <ul className="space-y-4">
+                          <li className="flex items-center gap-3">
+                            <div className={`w-6 h-6 rounded-full flex items-center justify-center ${hasTitle ? 'bg-green-500' : 'border border-zinc-500'}`}>
+                              {hasTitle && <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
+                            </div>
+                            <span className={hasTitle ? 'text-zinc-300 font-medium' : 'text-zinc-500'}>Set Story Title</span>
+                          </li>
+                          <li className="flex items-center gap-3">
+                            <div className={`w-6 h-6 rounded-full flex items-center justify-center ${hasCover ? 'bg-green-500' : 'border border-zinc-500'}`}>
+                              {hasCover && <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
+                            </div>
+                            <span className={hasCover ? 'text-zinc-300 font-medium' : 'text-zinc-500'}>Choose Cover Image</span>
+                          </li>
+                          <li className="flex items-center gap-3">
+                            <div className={`w-6 h-6 rounded-full flex items-center justify-center ${hasChapter ? 'bg-green-500' : 'border border-zinc-500'}`}>
+                              {hasChapter && <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
+                            </div>
+                            <span className={hasChapter ? 'text-zinc-300 font-medium' : 'text-zinc-500'}>Create at least 1 Chapter</span>
+                          </li>
+                          <li className="flex items-center gap-3">
+                            <div className={`w-6 h-6 rounded-full flex items-center justify-center ${hasMinMedia ? 'bg-green-500' : 'border border-zinc-500'}`}>
+                              {hasMinMedia && <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
+                            </div>
+                            <span className={hasMinMedia ? 'text-zinc-300 font-medium' : 'text-zinc-500'}>Upload 4 Media Assets ({story.media.length}/4)</span>
+                          </li>
+                        </ul>
+                      </div>
+                    ) : (
+                      <>
+                        <motion.div 
+                          initial={{ scale: 0.8, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ duration: 0.5, delay: 0.2 }}
+                          className="w-32 h-32 mb-8 rounded-full bg-gradient-to-br from-rose-500/20 to-purple-600/20 border border-rose-500/30 flex items-center justify-center shadow-[0_0_60px_rgba(244,63,94,0.3)]"
+                        >
+                          <span className="text-6xl drop-shadow-xl">🍿</span>
+                        </motion.div>
+                        <h2 className="text-4xl font-black tracking-tight text-white mb-4">Ready for Premiere?</h2>
+                        <p className="text-zinc-400 mb-10 max-w-md mx-auto text-lg">
+                          Grab some popcorn. Take a look at how your story flows before you publish it to the world.
+                        </p>
+                        
+                        <Link
+                          href={`/stories/${story.id}/preview`}
+                          target="_blank"
+                          className="inline-flex items-center justify-center gap-3 rounded-full bg-white text-black px-10 py-5 font-black text-lg hover:bg-zinc-200 transition-all shadow-xl shadow-white/10 hover:scale-105 active:scale-95 group"
+                        >
+                          Watch Cinematic Preview
+                          <svg className="w-5 h-5 ml-1 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                        </Link>
+                      </>
+                    )}
+                  </div>
+                );
+              })()}
+
+              {/* STEP 8: PUBLISH */}
+              {currentStep === 8 && (() => {
+                const hasTitle = story.title && story.title !== "Untitled Story";
+                const hasCover = !!story.coverMediaId;
+                const hasChapter = story.chapters.length > 0;
+                const hasMinMedia = story.media.length >= 6;
+                const hasDescription = story.description && story.description.trim().length > 0;
+                
+                const isReadyForPublish = hasTitle && hasCover && hasChapter && hasMinMedia && hasDescription;
+
+                return (
+                  <div className="h-full flex flex-col items-center justify-center text-center py-12">
+                    <motion.h2 
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      className="text-4xl font-black tracking-tight text-white mb-4"
                     >
-                      Open Cinematic Preview
-                      <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-                    </Link>
-                  </>
-                )}
-              </div>
-            );
-          })()}
+                      {story.status === "PUBLISHED" ? "Your Story is Live!" : "Publish Your Masterpiece"}
+                    </motion.h2>
+                    <motion.p 
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.1 }}
+                      className="text-zinc-400 mb-10 max-w-md mx-auto text-lg"
+                    >
+                      {story.status === "PUBLISHED" 
+                        ? "Share this link with friends and family." 
+                        : "Make your story public to get a shareable link. You can still make edits later."}
+                    </motion.p>
 
-          {/* STEP 7: PUBLISH */}
-          {currentStep === 7 && (() => {
-            const hasTitle = story.title && story.title !== "Untitled Story";
-            const hasCover = !!story.coverMediaId;
-            const hasChapter = story.chapters.length > 0;
-            const hasMinMedia = story.media.length >= 6;
-            const hasDescription = story.description && story.description.trim().length > 0;
-            
-            const isReadyForPublish = hasTitle && hasCover && hasChapter && hasMinMedia && hasDescription;
-
-            return (
-              <div className="animate-in fade-in slide-in-from-right-4 duration-500 h-full flex flex-col items-center justify-center text-center py-12">
-                <h2 className="text-3xl font-bold text-white mb-2">
-                  {story.status === "PUBLISHED" ? "Your Story is Live!" : "Publish Your Story"}
-                </h2>
-                <p className="text-zinc-400 mb-8 max-w-md mx-auto">
-                  {story.status === "PUBLISHED" 
-                    ? "Share this link with friends and family." 
-                    : "Make your story public to get a shareable link. You can still make edits later."}
-                </p>
-
-                {story.status === "DRAFT" ? (
-                  !isReadyForPublish ? (
-                    <div className="bg-black/50 border border-rose-500/30 rounded-2xl p-8 max-w-md w-full mx-auto text-left mt-4">
-                      <h3 className="text-xl font-bold text-white mb-2">Completion Requirements</h3>
-                      <p className="text-zinc-400 text-sm mb-6">Ensure your story meets MemoryFlix quality standards before publishing.</p>
-                      <ul className="space-y-3">
-                        <li className="flex items-center gap-3">
-                          <div className={`w-5 h-5 rounded-full flex items-center justify-center ${hasTitle ? 'bg-green-500' : 'border border-zinc-500'}`}>
-                            {hasTitle && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
-                          </div>
-                          <span className={hasTitle ? 'text-zinc-300' : 'text-zinc-500'}>Set Story Title</span>
-                        </li>
-                        <li className="flex items-center gap-3">
-                          <div className={`w-5 h-5 rounded-full flex items-center justify-center ${hasCover ? 'bg-green-500' : 'border border-zinc-500'}`}>
-                            {hasCover && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
-                          </div>
-                          <span className={hasCover ? 'text-zinc-300' : 'text-zinc-500'}>Choose Cover Image</span>
-                        </li>
-                        <li className="flex items-center gap-3">
-                          <div className={`w-5 h-5 rounded-full flex items-center justify-center ${hasDescription ? 'bg-green-500' : 'border border-zinc-500'}`}>
-                            {hasDescription && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
-                          </div>
-                          <span className={hasDescription ? 'text-zinc-300' : 'text-zinc-500'}>Add Description (Step 2)</span>
-                        </li>
-                        <li className="flex items-center gap-3">
-                          <div className={`w-5 h-5 rounded-full flex items-center justify-center ${hasChapter ? 'bg-green-500' : 'border border-zinc-500'}`}>
-                            {hasChapter && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
-                          </div>
-                          <span className={hasChapter ? 'text-zinc-300' : 'text-zinc-500'}>Create at least 1 Chapter</span>
-                        </li>
-                        <li className="flex items-center gap-3">
-                          <div className={`w-5 h-5 rounded-full flex items-center justify-center ${hasMinMedia ? 'bg-green-500' : 'border border-zinc-500'}`}>
-                            {hasMinMedia && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
-                          </div>
-                          <span className={hasMinMedia ? 'text-zinc-300' : 'text-zinc-500'}>Upload 6 Media Assets ({story.media.length}/6)</span>
-                        </li>
-                      </ul>
-                    </div>
-                  ) : (
-                    <div className="scale-125 origin-center">
-                      <PublishButton storyId={story.id} />
-                    </div>
-                  )
-                ) : (
-                  <div className="w-full max-w-md rounded-2xl border border-rose-500/30 bg-rose-500/10 p-6 backdrop-blur-md">
-                    <p className="text-sm font-semibold text-rose-300 uppercase tracking-widest mb-3">Public Link</p>
-                    <div className="bg-black/50 border border-white/10 rounded-xl p-4 flex items-center justify-between gap-4">
-                      <Link 
-                        href={`/s/${story.slug}`} 
-                        target="_blank" 
-                        className="text-white hover:text-rose-400 font-medium truncate underline underline-offset-4 decoration-white/20"
+                    {story.status === "DRAFT" ? (
+                      !isReadyForPublish ? (
+                        <motion.div 
+                          initial={{ scale: 0.95, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ delay: 0.2 }}
+                          className="bg-black/50 border border-rose-500/30 rounded-2xl p-8 max-w-md w-full mx-auto text-left mt-4 backdrop-blur-md"
+                        >
+                          <h3 className="text-2xl font-black tracking-tight text-white mb-2">Requirements</h3>
+                          <p className="text-zinc-400 text-sm mb-6">Ensure your story meets MemoryFlix quality standards before publishing.</p>
+                          <ul className="space-y-4">
+                            <li className="flex items-center gap-3">
+                              <div className={`w-6 h-6 rounded-full flex items-center justify-center ${hasTitle ? 'bg-green-500' : 'border border-zinc-500'}`}>
+                                {hasTitle && <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
+                              </div>
+                              <span className={hasTitle ? 'text-zinc-300 font-medium' : 'text-zinc-500'}>Set Story Title</span>
+                            </li>
+                            <li className="flex items-center gap-3">
+                              <div className={`w-6 h-6 rounded-full flex items-center justify-center ${hasCover ? 'bg-green-500' : 'border border-zinc-500'}`}>
+                                {hasCover && <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
+                              </div>
+                              <span className={hasCover ? 'text-zinc-300 font-medium' : 'text-zinc-500'}>Choose Cover Image</span>
+                            </li>
+                            <li className="flex items-center gap-3">
+                              <div className={`w-6 h-6 rounded-full flex items-center justify-center ${hasDescription ? 'bg-green-500' : 'border border-zinc-500'}`}>
+                                {hasDescription && <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
+                              </div>
+                              <span className={hasDescription ? 'text-zinc-300 font-medium' : 'text-zinc-500'}>Add Description (Step 2)</span>
+                            </li>
+                            <li className="flex items-center gap-3">
+                              <div className={`w-6 h-6 rounded-full flex items-center justify-center ${hasChapter ? 'bg-green-500' : 'border border-zinc-500'}`}>
+                                {hasChapter && <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
+                              </div>
+                              <span className={hasChapter ? 'text-zinc-300 font-medium' : 'text-zinc-500'}>Create at least 1 Chapter</span>
+                            </li>
+                            <li className="flex items-center gap-3">
+                              <div className={`w-6 h-6 rounded-full flex items-center justify-center ${hasMinMedia ? 'bg-green-500' : 'border border-zinc-500'}`}>
+                                {hasMinMedia && <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
+                              </div>
+                              <span className={hasMinMedia ? 'text-zinc-300 font-medium' : 'text-zinc-500'}>Upload 6 Media Assets ({story.media.length}/6)</span>
+                            </li>
+                          </ul>
+                        </motion.div>
+                      ) : (
+                        <motion.div 
+                          initial={{ scale: 0.8, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ delay: 0.2 }}
+                          className="scale-125 origin-center"
+                        >
+                          <PublishButton storyId={story.id} />
+                        </motion.div>
+                      )
+                    ) : (
+                      <motion.div 
+                        initial={{ scale: 0.95, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: 0.2 }}
+                        className="w-full max-w-md rounded-2xl border border-rose-500/30 bg-rose-500/10 p-8 backdrop-blur-md shadow-[0_0_40px_rgba(244,63,94,0.1)]"
                       >
-                        memoryflix.com/s/{story.slug}
-                      </Link>
-                    </div>
+                        <p className="text-sm font-bold text-rose-400 uppercase tracking-widest mb-4">Public Link</p>
+                        <div className="bg-black/50 border border-white/10 rounded-xl p-5 flex items-center justify-between gap-4">
+                          <Link 
+                            href={`/s/${story.slug}`} 
+                            target="_blank" 
+                            className="text-white hover:text-rose-400 font-bold truncate underline underline-offset-4 decoration-white/20 text-lg"
+                          >
+                            memoryflix.com/s/{story.slug}
+                          </Link>
+                        </div>
+                      </motion.div>
+                    )}
                   </div>
-                )}
-              </div>
-            );
-          })()}
+                );
+              })()}
+            </motion.div>
+          </AnimatePresence>
         </div>
 
         {/* ── Footer Navigation ────────────────────────────────────────────── */}

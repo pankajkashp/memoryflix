@@ -222,3 +222,31 @@ export async function publishStory(storyId: string) {
   
   return { success: true, slug };
 }
+
+// ── updateStoryTypography ──────────────────────────────────────────────────────
+
+export async function updateStoryTypography(storyId: string, typographyPreset: string | null, accentColor: string | null) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const { prisma } = await import("@/lib/prisma");
+
+  const story = await prisma.story.findUnique({
+    where: { id: storyId, userId: session.user.id },
+  });
+
+  if (!story) throw new Error("Story not found or unauthorized");
+
+  await prisma.story.update({
+    where: { id: storyId },
+    data: { typographyPreset, accentColor },
+  });
+
+  revalidatePath(`/stories/${storyId}`);
+  revalidatePath(`/stories/${storyId}/preview`);
+  if (story.slug) {
+    revalidatePath(`/s/${story.slug}`);
+  }
+
+  return { success: true };
+}

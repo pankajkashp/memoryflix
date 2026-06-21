@@ -3,6 +3,7 @@
 import { CldUploadWidget } from "next-cloudinary";
 import { useState } from "react";
 import { saveMediaAsset } from "@/app/actions/media";
+import { motion } from "framer-motion";
 
 export default function MediaUploader({ storyId }: { storyId: string }) {
   const [isUploading, setIsUploading] = useState(false);
@@ -43,24 +44,29 @@ export default function MediaUploader({ storyId }: { storyId: string }) {
       >
         {({ open }) => {
           return (
-            <button
+            <motion.button
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
               type="button"
               onClick={() => open()}
               disabled={isUploading}
-              className="group relative w-full flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-white/20 bg-white/5 py-12 text-center transition-all hover:bg-white/10 hover:border-rose-500/50 hover:shadow-[0_0_30px_rgba(244,63,94,0.15)] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group relative w-full flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-white/20 bg-[#0a0a0a] py-20 text-center transition-all hover:bg-white/5 hover:border-white/40 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
             >
-              <div className="rounded-full bg-rose-500/20 p-4 mb-4 text-rose-400 group-hover:scale-110 group-hover:text-rose-300 transition-all duration-300">
-                <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              {/* Animated glow on hover */}
+              <div className="absolute inset-0 bg-gradient-to-br from-rose-500/10 via-transparent to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+
+              <div className="relative z-10 rounded-full bg-white/5 border border-white/10 p-6 mb-6 group-hover:scale-110 group-hover:bg-white/10 transition-all duration-300">
+                <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold text-white mb-1">
-                {isUploading ? "Processing Upload..." : "Upload Photos & Videos"}
+              <h3 className="relative z-10 text-2xl font-black text-white mb-2 tracking-tight">
+                {isUploading ? "Processing Upload..." : "Select Media"}
               </h3>
-              <p className="text-sm text-zinc-400">
-                Drag and drop or click to browse files
+              <p className="relative z-10 text-zinc-400 text-lg">
+                Drag and drop your photos and videos here
               </p>
-            </button>
+            </motion.button>
           );
         }}
       </CldUploadWidget>
