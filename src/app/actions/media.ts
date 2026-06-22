@@ -33,6 +33,7 @@ export async function saveMediaAsset(data: {
   type: "IMAGE" | "VIDEO";
   bytes?: number;
   duration?: number;
+  chapterId?: string;
 }) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) throw new Error("Unauthorized");
@@ -45,7 +46,7 @@ export async function saveMediaAsset(data: {
   if (!story) throw new Error("Story not found or unauthorized");
 
   const position = await prisma.mediaAsset.count({
-    where: { storyId: data.storyId },
+    where: { storyId: data.storyId, chapterId: data.chapterId || null },
   });
 
   const asset = await prisma.mediaAsset.create({
@@ -58,6 +59,7 @@ export async function saveMediaAsset(data: {
       position,
       sizeBytes: data.bytes,
       durationSeconds: data.duration ? Math.round(data.duration) : null,
+      chapterId: data.chapterId || null,
     },
   });
 

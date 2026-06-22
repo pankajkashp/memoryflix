@@ -146,3 +146,15 @@ export async function updateChapterMusicConfig(
 
   return { success: true };
 }
+
+export async function setChapterCover(storyId: string, chapterId: string, mediaId: string) {
+  await verifyOwnership(storyId);
+
+  await prisma.chapter.update({
+    where: { id: chapterId },
+    data: { coverMediaId: mediaId },
+  });
+
+  revalidatePath(`/stories/${storyId}`);
+  revalidatePath(`/stories/${storyId}/preview`);
+}

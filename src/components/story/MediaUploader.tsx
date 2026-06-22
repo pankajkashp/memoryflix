@@ -4,8 +4,9 @@ import { CldUploadWidget } from "next-cloudinary";
 import { useState } from "react";
 import { saveMediaAsset } from "@/app/actions/media";
 import { motion } from "framer-motion";
+import { UploadCloud } from "lucide-react";
 
-export default function MediaUploader({ storyId }: { storyId: string }) {
+export default function MediaUploader({ storyId, chapterId }: { storyId: string, chapterId?: string }) {
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,6 +24,7 @@ export default function MediaUploader({ storyId }: { storyId: string }) {
         type,
         bytes: info.bytes,
         duration: info.duration,
+        chapterId,
       });
     } catch (err: any) {
       setError(err.message || "Failed to save media asset");
@@ -39,10 +41,26 @@ export default function MediaUploader({ storyId }: { storyId: string }) {
         options={{
           folder: "memoryflix",
           resourceType: "auto",
-          theme: "minimal", // Try to use minimal theme to blend better
+          theme: "minimal",
         }}
       >
         {({ open }) => {
+          if (chapterId) {
+            // Compact Mode
+            return (
+              <button
+                type="button"
+                onClick={() => open()}
+                disabled={isUploading}
+                className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl text-sm font-bold text-white transition-all disabled:opacity-50"
+              >
+                <UploadCloud className="w-4 h-4" />
+                {isUploading ? "Uploading..." : "Upload Photos"}
+              </button>
+            );
+          }
+
+          // Default Large Mode
           return (
             <motion.button
               whileHover={{ scale: 1.01 }}
@@ -52,7 +70,6 @@ export default function MediaUploader({ storyId }: { storyId: string }) {
               disabled={isUploading}
               className="group relative w-full flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-white/20 bg-[#0a0a0a] py-20 text-center transition-all hover:bg-white/5 hover:border-white/40 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
             >
-              {/* Animated glow on hover */}
               <div className="absolute inset-0 bg-gradient-to-br from-rose-500/10 via-transparent to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
               <div className="relative z-10 rounded-full bg-white/5 border border-white/10 p-6 mb-6 group-hover:scale-110 group-hover:bg-white/10 transition-all duration-300">

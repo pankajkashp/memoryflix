@@ -24,7 +24,9 @@ import { GripVertical, Plus, Trash2, Edit2, Check, X, Loader2, Music } from "luc
 import { motion, AnimatePresence } from "framer-motion";
 import MusicSelector from "./MusicSelector";
 
-function SortableChapterItem({ chapter, storyId, mediaCount }: { chapter: Chapter; storyId: string; mediaCount: number }) {
+import ChapterMediaManager from "./ChapterMediaManager";
+
+function SortableChapterItem({ chapter, storyId, mediaCount, allMedia }: { chapter: Chapter; storyId: string; mediaCount: number; allMedia: MediaAsset[] }) {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(chapter.title);
   const [emoji, setEmoji] = useState(chapter.emoji || "");
@@ -175,6 +177,12 @@ function SortableChapterItem({ chapter, storyId, mediaCount }: { chapter: Chapte
               currentMusicUrl={chapter.musicUrl}
             />
           </div>
+
+          <ChapterMediaManager 
+            storyId={storyId} 
+            chapter={chapter as any} 
+            allMedia={allMedia} 
+          />
         </div>
       ) : (
         <>
@@ -319,7 +327,7 @@ export default function ChapterEditor({ storyId, chapters, media = [] }: { story
             <div className="space-y-3">
               {items.map((chapter) => {
                 const count = media.filter(m => m.chapterId === chapter.id && m.type === "IMAGE").length;
-                return <SortableChapterItem key={chapter.id} chapter={chapter} storyId={storyId} mediaCount={count} />;
+                return <SortableChapterItem key={chapter.id} chapter={chapter} storyId={storyId} mediaCount={count} allMedia={media} />;
               })}
             </div>
           </SortableContext>

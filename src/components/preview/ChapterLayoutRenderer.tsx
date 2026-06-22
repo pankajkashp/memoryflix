@@ -297,14 +297,24 @@ export default function ChapterLayoutRenderer({
   coverMediaId,
   isEditable,
   onMediaSelect,
+  nextChapter,
+  onNextChapter,
+  chapterIndex,
+  totalChapters,
+  videoCount,
 }: {
-  chapter?: Chapter; // If undefined, it's the "Unassigned" section
+  chapter?: Chapter;
   mediaItems: { item: MediaAsset, index: number }[];
   storyId: string;
   chapters: Chapter[];
   coverMediaId?: string | null;
   isEditable: boolean;
   onMediaSelect: (index: number) => void;
+  nextChapter?: Chapter | null;
+  onNextChapter?: () => void;
+  chapterIndex?: number;
+  totalChapters?: number;
+  videoCount?: number;
 }) {
   const [isPending, startTransition] = useTransition();
 
@@ -377,6 +387,53 @@ export default function ChapterLayoutRenderer({
         {layout === "POLAROID" && <PolaroidLayout items={mediaItems} renderItem={renderItem} />}
         {layout === "TIMELINE" && <TimelineLayout items={mediaItems} renderItem={renderItem} />}
       </div>
+
+      {/* ── End of Chapter Card ── */}
+      {chapter && onNextChapter !== undefined && typeof chapterIndex === "number" && typeof totalChapters === "number" && (
+        <div className="mt-24 py-24 border-t border-white/10 text-center">
+          <div className="w-16 h-[1px] bg-gradient-to-r from-transparent via-rose-500/50 to-transparent mx-auto mb-10" />
+          <p className="text-rose-500 font-bold tracking-[0.4em] uppercase text-xs mb-4">
+            End of Chapter {chapterIndex + 1}
+          </p>
+          <h3 className="text-4xl md:text-6xl font-black text-white mb-3">
+            {chapter.emoji && <span className="mr-4">{chapter.emoji}</span>}
+            {chapter.title}
+          </h3>
+          <div className="flex items-center justify-center gap-4 text-zinc-500 font-medium text-sm mt-4 mb-12">
+            <span>{mediaItems.length} Memories</span>
+            {(videoCount ?? 0) > 0 && <><span>•</span><span>{videoCount} Videos</span></>}
+            {chapter.date && <><span>•</span><span>{new Date(chapter.date).toLocaleDateString("en-US", { month: "long", year: "numeric" })}</span></>}
+          </div>
+          <div className="w-16 h-[1px] bg-gradient-to-r from-transparent via-rose-500/50 to-transparent mx-auto mb-12" />
+
+          {nextChapter ? (
+            <div>
+              <p className="text-zinc-500 text-sm font-medium mb-6 uppercase tracking-widest">Next Chapter</p>
+              <button
+                onClick={onNextChapter}
+                className="group inline-flex flex-col items-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-rose-500/40 rounded-2xl px-12 py-8 transition-all hover:shadow-[0_0_40px_rgba(244,63,94,0.15)] hover:-translate-y-1"
+              >
+                {nextChapter.emoji && <span className="text-4xl">{nextChapter.emoji}</span>}
+                <span className="text-2xl font-black text-white group-hover:text-rose-200 transition-colors">
+                  {nextChapter.title}
+                </span>
+                {nextChapter.subtitle && (
+                  <span className="text-zinc-500 italic text-sm">&quot;{nextChapter.subtitle}&quot;</span>
+                )}
+                <span className="mt-3 flex items-center gap-2 bg-rose-500 text-white font-bold px-6 py-2.5 rounded-full text-sm group-hover:bg-rose-400 transition-colors">
+                  Continue Story →
+                </span>
+              </button>
+            </div>
+          ) : (
+            <div>
+              <p className="text-zinc-500 text-sm font-medium mb-4">You&apos;ve reached the end of the story.</p>
+              <div className="text-4xl mb-4">❤️</div>
+              <p className="text-zinc-600 text-sm italic">&quot;Every memory deserves a premiere.&quot;</p>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

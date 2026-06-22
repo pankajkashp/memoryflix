@@ -89,6 +89,7 @@ model MediaAsset {
   chapter Chapter? @relation(fields: [chapterId], references: [id], onDelete: SetNull)
 
   storyCover Story[] @relation("StoryCover")
+  chapterCover Chapter[] @relation("ChapterCover")
 }
 
 model Chapter {
@@ -105,8 +106,10 @@ model Chapter {
   musicType   String?     // "BUILT_IN", "CUSTOM", "NONE"
   musicUrl    String?
   musicSource String?
+  coverMediaId String?
   createdAt   DateTime  @default(now())
 
   story     Story        @relation(fields: [storyId], references: [id], onDelete: Cascade)
   media     MediaAsset[]
+  coverMedia MediaAsset? @relation("ChapterCover", fields: [coverMediaId], references: [id], onDelete: SetNull)
 }
