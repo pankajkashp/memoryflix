@@ -7,18 +7,31 @@ type StoryWithRelations = Story & {
   coverMedia: MediaAsset | null;
   _count?: {
     media: number;
+    chapters: number;
   };
 };
+
+function timeAgo(date: Date) {
+  const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
+  let interval = seconds / 31536000;
+  if (interval > 1) return Math.floor(interval) + " years ago";
+  interval = seconds / 2592000;
+  if (interval > 1) return Math.floor(interval) + " months ago";
+  interval = seconds / 86400;
+  if (interval > 1) return Math.floor(interval) + " days ago";
+  interval = seconds / 3600;
+  if (interval > 1) return Math.floor(interval) + " hours ago";
+  interval = seconds / 60;
+  if (interval > 1) return Math.floor(interval) + " minutes ago";
+  return Math.floor(seconds) + " seconds ago";
+}
 
 export default function StoryCard({ story }: { story: StoryWithRelations }) {
   const isPublished = story.status === "PUBLISHED";
   const mediaCount = story._count?.media || 0;
+  const chapterCount = story._count?.chapters || 0;
   
-  // Format date elegantly
-  const formattedDate = new Intl.DateTimeFormat("en-US", {
-    month: "long",
-    year: "numeric",
-  }).format(new Date(story.createdAt));
+  const lastEdited = timeAgo(new Date(story.updatedAt));
 
   // Determine cover image
   const coverImageUrl =
@@ -56,21 +69,31 @@ export default function StoryCard({ story }: { story: StoryWithRelations }) {
           </span>
         </div>
         
-        {/* Media count */}
-        <div className="bg-black/40 backdrop-blur-md rounded-full px-2 py-1 flex items-center gap-1.5 border border-white/10">
-          <svg className="w-3 h-3 text-zinc-400" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm0 2v12h16V6H4zm2 2h3v8H6V8zm5 0h7v2h-7V8zm0 3h7v2h-7v-2zm0 3h7v2h-7v-2z"/>
-          </svg>
-          <span className="text-[10px] font-bold text-white">{mediaCount}</span>
+        {/* Media & Chapter counts */}
+        <div className="flex items-center gap-2">
+          {chapterCount > 0 && (
+            <div className="bg-black/40 backdrop-blur-md rounded-full px-2 py-1 flex items-center gap-1.5 border border-white/10">
+              <svg className="w-3 h-3 text-purple-400" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z" />
+              </svg>
+              <span className="text-[10px] font-bold text-white">{chapterCount}</span>
+            </div>
+          )}
+          <div className="bg-black/40 backdrop-blur-md rounded-full px-2 py-1 flex items-center gap-1.5 border border-white/10">
+            <svg className="w-3 h-3 text-zinc-400" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm0 2v12h16V6H4zm2 2h3v8H6V8zm5 0h7v2h-7V8zm0 3h7v2h-7v-2zm0 3h7v2h-7v-2z"/>
+            </svg>
+            <span className="text-[10px] font-bold text-white">{mediaCount}</span>
+          </div>
         </div>
       </div>
 
       {/* ── Content (Bottom) ──────────────────────────────────────────────── */}
       <div className="absolute inset-x-0 bottom-0 p-5 z-10 flex flex-col justify-end">
         
-        {/* Occasion / Date */}
+        {/* Occasion / Last Edited */}
         <p className="text-xs text-rose-300/80 font-medium tracking-widest uppercase mb-1.5 drop-shadow-md">
-          {story.occasion ? `${story.occasion} • ` : ""}{formattedDate}
+          {story.occasion ? `${story.occasion} • ` : ""}Edited {lastEdited}
         </p>
         
         <h2 className="line-clamp-2 text-xl font-bold text-white leading-tight drop-shadow-lg mb-4">
@@ -98,7 +121,7 @@ export default function StoryCard({ story }: { story: StoryWithRelations }) {
             href={`/stories/${story.id}`}
             className="flex-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 px-3 py-2 text-center text-xs font-semibold text-white hover:bg-white/20 transition-colors flex items-center justify-center h-10"
           >
-            Edit
+            Edit Story
           </Link>
           
           {/* Share Button (Only if published) */}

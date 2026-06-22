@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition, useEffect } from "react";
-import { Chapter } from "@prisma/client";
+import { Chapter, MediaAsset } from "@prisma/client";
 import { createChapter, updateChapter, deleteChapter, reorderChapters } from "@/app/actions/chapter";
 import {
   DndContext,
@@ -24,7 +24,7 @@ import { GripVertical, Plus, Trash2, Edit2, Check, X, Loader2, Music } from "luc
 import { motion, AnimatePresence } from "framer-motion";
 import MusicSelector from "./MusicSelector";
 
-function SortableChapterItem({ chapter, storyId }: { chapter: Chapter; storyId: string }) {
+function SortableChapterItem({ chapter, storyId, mediaCount }: { chapter: Chapter; storyId: string; mediaCount: number }) {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(chapter.title);
   const [emoji, setEmoji] = useState(chapter.emoji || "");
@@ -127,6 +127,9 @@ function SortableChapterItem({ chapter, storyId }: { chapter: Chapter; storyId: 
                 <option value="FILM_STRIP">Film Strip</option>
                 <option value="POLAROID">Polaroid Memories</option>
                 <option value="TIMELINE">Timeline Story</option>
+                <option value="HEART" disabled={mediaCount < 12}>
+                  Heart Layout {mediaCount < 12 ? "(12+ Photos)" : "❤️"}
+                </option>
               </select>
               <button onClick={handleSave} disabled={isPending} className="p-1.5 text-green-400 hover:bg-green-400/10 rounded-lg shrink-0">
                 {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
@@ -227,7 +230,7 @@ function SortableChapterItem({ chapter, storyId }: { chapter: Chapter; storyId: 
   );
 }
 
-export default function ChapterEditor({ storyId, chapters }: { storyId: string; chapters: Chapter[] }) {
+export default function ChapterEditor({ storyId, chapters, media = [] }: { storyId: string; chapters: Chapter[], media?: MediaAsset[] }) {
   const [items, setItems] = useState(chapters);
   const [isPending, startTransition] = useTransition();
   const [isCreating, setIsCreating] = useState(false);
@@ -272,17 +275,58 @@ export default function ChapterEditor({ storyId, chapters }: { storyId: string; 
 
   return (
     <div className="space-y-6">
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext items={items.map(c => c.id)} strategy={verticalListSortingStrategy}>
-          <div className="space-y-3">
-            {items.map((chapter) => (
-              <SortableChapterItem key={chapter.id} chapter={chapter} storyId={storyId} />
-            ))}
+      {items.length === 0 && !isCreating && (
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="rounded-3xl border border-rose-500/30 bg-black/60 p-8 overflow-hidden relative shadow-[0_0_40px_rgba(244,63,94,0.1)] backdrop-blur-md"
+        >
+          <div className="absolute top-0 right-0 p-4 opacity-10">
+            <svg className="w-48 h-48 text-rose-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
           </div>
-        </SortableContext>
-      </DndContext>
+          <div className="relative z-10">
+            <h3 className="text-2xl font-black text-white mb-4">How Chapters Work</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <div className="space-y-2">
+                <div className="w-10 h-10 rounded-full bg-rose-500/20 text-rose-500 flex items-center justify-center font-bold text-lg mb-4 border border-rose-500/30">1</div>
+                <h4 className="font-bold text-white">Create a Chapter</h4>
+                <p className="text-sm text-zinc-400">Give it a title, date, and emoji. e.g. "Paris 2026"</p>
+              </div>
+              <div className="space-y-2">
+                <div className="w-10 h-10 rounded-full bg-purple-500/20 text-purple-500 flex items-center justify-center font-bold text-lg mb-4 border border-purple-500/30">2</div>
+                <h4 className="font-bold text-white">Upload Photos</h4>
+                <p className="text-sm text-zinc-400">Add your media and assign them to the chapter in the next step.</p>
+              </div>
+              <div className="space-y-2">
+                <div className="w-10 h-10 rounded-full bg-blue-500/20 text-blue-500 flex items-center justify-center font-bold text-lg mb-4 border border-blue-500/30">3</div>
+                <h4 className="font-bold text-white">Cinematic Experience</h4>
+                <p className="text-sm text-zinc-400">We automatically turn them into beautiful Netflix-style episodes.</p>
+              </div>
+            </div>
+            <button 
+              onClick={() => setIsCreating(true)}
+              className="mt-8 bg-rose-500 hover:bg-rose-600 text-white font-bold py-3 px-8 rounded-full transition-colors shadow-lg shadow-rose-500/20 flex items-center gap-2"
+            >
+              <Plus className="w-5 h-5" /> Start First Chapter
+            </button>
+          </div>
+        </motion.div>
+      )}
 
-      {isCreating ? (
+      {items.length > 0 && (
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={items.map(c => c.id)} strategy={verticalListSortingStrategy}>
+            <div className="space-y-3">
+              {items.map((chapter) => {
+                const count = media.filter(m => m.chapterId === chapter.id && m.type === "IMAGE").length;
+                return <SortableChapterItem key={chapter.id} chapter={chapter} storyId={storyId} mediaCount={count} />;
+              })}
+            </div>
+          </SortableContext>
+        </DndContext>
+      )}
+
+      {isCreating && (
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -316,7 +360,9 @@ export default function ChapterEditor({ storyId, chapters }: { storyId: string; 
             </button>
           </div>
         </motion.div>
-      ) : (
+      )}
+
+      {!isCreating && items.length > 0 && (
         <motion.button
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.99 }}

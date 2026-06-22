@@ -22,6 +22,7 @@ export default function NetflixTemplate({
   const [galleryActiveIndex, setGalleryActiveIndex] = useState<number | null>(null);
   const [isCinematicPlaying, setIsCinematicPlaying] = useState<boolean>(false);
   const [activeChapterId, setActiveChapterId] = useState<string | null>(null);
+  const [selectedChapterView, setSelectedChapterView] = useState<string | null>(null);
 
   const hasMedia = story.media && story.media.length > 0;
   const firstImage = story.media?.find((m) => m.type === "IMAGE");
@@ -162,26 +163,28 @@ export default function NetflixTemplate({
 
       {/* Chapters Content */}
       {hasMedia ? (
-        <div className="px-4 md:px-16 py-12 space-y-32">
-          {chaptersWithMedia.map(({ chapter, mediaItems }) => (
-            <div 
-              key={chapter.id} 
-              id={`chapter-${chapter.id}`}
-              ref={(el) => { sectionRefs.current[`chapter-${chapter.id}`] = el; }}
-              className="group/chapter relative"
-            >
-              {/* 3. Cinematic Chapter Introduction (Movie Title Card) */}
-              <div className="flex flex-col items-center justify-center text-center py-32 md:py-48 max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-1000">
+        selectedChapterView ? (() => {
+          const chapterData = chaptersWithMedia.find(c => c.chapter.id === selectedChapterView);
+          if (!chapterData) return null;
+          const { chapter, mediaItems } = chapterData;
+          return (
+            <div className="px-4 md:px-16 py-12 min-h-screen bg-[#0f0f0f] animate-in fade-in duration-500">
+              <button 
+                onClick={() => setSelectedChapterView(null)}
+                className="sticky top-24 z-50 mb-12 flex items-center gap-2 text-zinc-400 hover:text-white bg-black/50 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 transition-colors w-fit"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                Back to Story
+              </button>
+              
+              <div className="flex flex-col items-center justify-center text-center py-24 max-w-4xl mx-auto">
                 <div className="w-32 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent mb-12"></div>
-                
                 <div className="flex items-center gap-4 text-rose-500/80 font-bold tracking-[0.4em] uppercase mb-6 text-sm md:text-base">
                   <span>Chapter {chapter.position + 1}</span>
                   {chapter.date && (
                     <>
                       <span>•</span>
-                      <span>
-                        {new Date(chapter.date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-                      </span>
+                      <span>{new Date(chapter.date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
                     </>
                   )}
                   {chapter.location && (
@@ -191,22 +194,18 @@ export default function NetflixTemplate({
                     </>
                   )}
                 </div>
-                
                 <h2 className={`${presetConfig.chapterStyle} mb-8 drop-shadow-2xl flex flex-col items-center gap-8`}>
-                  {chapter.emoji && <span className="text-6xl md:text-8xl drop-shadow-xl transform hover:scale-110 transition-transform duration-500 block">{chapter.emoji}</span>}
+                  {chapter.emoji && <span className="text-6xl md:text-8xl drop-shadow-xl block">{chapter.emoji}</span>}
                   {chapter.title}
                 </h2>
-                
                 {chapter.subtitle && (
                   <p className="text-xl md:text-2xl text-zinc-300 italic font-medium max-w-2xl drop-shadow-md">
                     &quot;{chapter.subtitle}&quot;
                   </p>
                 )}
-                
                 <div className="w-32 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent mt-12"></div>
               </div>
-              
-              {/* 4 & 5. Layout System & Editable Preview */}
+
               <ChapterLayoutRenderer
                 chapter={chapter}
                 mediaItems={mediaItems}
@@ -217,27 +216,71 @@ export default function NetflixTemplate({
                 onMediaSelect={(index) => setGalleryActiveIndex(index)}
               />
             </div>
-          ))}
-
-          {unassignedMedia.length > 0 && (
-            <div className="pt-24 border-t border-white/5">
-              <div className="mb-8 flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-white">More From This Story</h2>
+          );
+        })() : (
+          <div className="px-4 md:px-16 py-12 space-y-24">
+            {/* Episodes / Chapter Cards */}
+            {chaptersWithMedia.length > 0 && (
+              <div>
+                <h2 className="text-3xl font-bold text-white mb-8 flex items-center gap-3">
+                  <span className="w-2 h-8 bg-rose-500 rounded-full"></span>
+                  Chapters
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {chaptersWithMedia.map(({ chapter, mediaItems }) => {
+                    const firstMedia = mediaItems[0]?.item;
+                    return (
+                      <div 
+                        key={chapter.id}
+                        className="group relative rounded-xl overflow-hidden bg-zinc-900 border border-white/10 cursor-pointer transition-all duration-500 hover:scale-[1.02] hover:border-white/30 hover:shadow-2xl hover:shadow-rose-500/20"
+                        onClick={() => setSelectedChapterView(chapter.id)}
+                      >
+                        <div className="aspect-video relative overflow-hidden">
+                          {firstMedia?.type === "VIDEO" ? (
+                            <video src={firstMedia.url} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100" />
+                          ) : (
+                            <img src={firstMedia?.url || "/placeholder.jpg"} alt={chapter.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100" />
+                          )}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80" />
+                          
+                          <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between">
+                            <div>
+                              <div className="flex items-center gap-2 mb-1">
+                                {chapter.emoji && <span className="text-xl drop-shadow-md">{chapter.emoji}</span>}
+                                <h3 className="text-xl font-bold text-white drop-shadow-md truncate">{chapter.title}</h3>
+                              </div>
+                              <p className="text-sm font-medium text-zinc-300">{mediaItems.length} Memories</p>
+                            </div>
+                            <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center group-hover:bg-rose-500 transition-colors">
+                              <Play className="w-5 h-5 text-white fill-current translate-x-0.5" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-              <ChapterLayoutRenderer
-                mediaItems={unassignedMedia}
-                storyId={story.id}
-                chapters={story.chapters || []}
-                coverMediaId={story.coverMediaId}
-                isEditable={isEditable}
-                onMediaSelect={(index) => setGalleryActiveIndex(index)}
-              />
-            </div>
-          )}
+            )}
 
-          {/* 6. Netflix Feel - Recommended Memories & Continue The Story */}
-          {hasMedia && (
-            <div className="pt-24 pb-12 border-t border-white/5 space-y-16">
+            {unassignedMedia.length > 0 && (
+              <div className="pt-12 border-t border-white/5">
+                <div className="mb-8 flex items-center justify-between">
+                  <h2 className="text-2xl font-bold text-white">More From This Story</h2>
+                </div>
+                <ChapterLayoutRenderer
+                  mediaItems={unassignedMedia}
+                  storyId={story.id}
+                  chapters={story.chapters || []}
+                  coverMediaId={story.coverMediaId}
+                  isEditable={isEditable}
+                  onMediaSelect={(index) => setGalleryActiveIndex(index)}
+                />
+              </div>
+            )}
+
+            {/* Netflix Feel - Recommended Memories & Continue The Story */}
+            <div className="pt-12 border-t border-white/5 space-y-16">
               <div>
                 <h3 className="text-xl font-bold text-white mb-6">Recommended Memories</h3>
                 <div className="flex overflow-x-auto gap-4 pb-4 hide-scrollbar snap-x snap-mandatory">
@@ -250,7 +293,6 @@ export default function NetflixTemplate({
                       {item.type === "VIDEO" ? (
                         <video src={item.url} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100" />
                       ) : (
-                        // eslint-disable-next-line @next/next/no-img-element
                         <img src={item.url} alt="Rec" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100" />
                       )}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
@@ -274,7 +316,6 @@ export default function NetflixTemplate({
                       {item.type === "VIDEO" ? (
                         <video src={item.url} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100" />
                       ) : (
-                        // eslint-disable-next-line @next/next/no-img-element
                         <img src={item.url} alt="Cont" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100" />
                       )}
                       <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500" />
@@ -286,8 +327,8 @@ export default function NetflixTemplate({
                 </div>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )
       ) : (
         <EmptyState />
       )}

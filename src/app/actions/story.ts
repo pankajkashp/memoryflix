@@ -108,7 +108,7 @@ export async function updateStory(
   const { prisma } = await import("@/lib/prisma");
 
   // Verify ownership before updating
-  const story = await prisma.story.findUnique({
+  const story = await prisma.story.findFirst({
     where: { id: storyId, userId: session.user.id },
   });
   if (!story) {
@@ -141,7 +141,7 @@ export async function updateStoryTemplate(storyId: string, templateId: string) {
 
   const { prisma } = await import("@/lib/prisma");
 
-  const story = await prisma.story.findUnique({
+  const story = await prisma.story.findFirst({
     where: { id: storyId, userId: session.user.id },
   });
   if (!story) throw new Error("Story not found or unauthorized");
@@ -175,7 +175,7 @@ export async function deleteStory(storyId: string): Promise<void> {
   const { prisma } = await import("@/lib/prisma");
 
   // Guard: story must exist and belong to this user
-  const story = await prisma.story.findUnique({
+  const story = await prisma.story.findFirst({
     where: { id: storyId, userId: session.user.id },
   });
   if (!story) return;
@@ -194,7 +194,7 @@ export async function publishStory(storyId: string) {
 
   const { prisma } = await import("@/lib/prisma");
 
-  const story = await prisma.story.findUnique({
+  const story = await prisma.story.findFirst({
     where: { id: storyId, userId: session.user.id },
   });
 
@@ -231,7 +231,7 @@ export async function updateStoryTypography(storyId: string, typographyPreset: s
 
   const { prisma } = await import("@/lib/prisma");
 
-  const story = await prisma.story.findUnique({
+  const story = await prisma.story.findFirst({
     where: { id: storyId, userId: session.user.id },
   });
 

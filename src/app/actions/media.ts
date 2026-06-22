@@ -38,7 +38,7 @@ export async function saveMediaAsset(data: {
   if (!session?.user?.id) throw new Error("Unauthorized");
 
   // Verify ownership of the story
-  const story = await prisma.story.findUnique({
+  const story = await prisma.story.findFirst({
     where: { id: data.storyId, userId: session.user.id },
   });
 
@@ -73,14 +73,14 @@ export async function setCoverMedia(storyId: string, mediaId: string) {
   if (!session?.user?.id) throw new Error("Unauthorized");
 
   // Verify the user owns the story
-  const story = await prisma.story.findUnique({
+  const story = await prisma.story.findFirst({
     where: { id: storyId, userId: session.user.id },
   });
 
   if (!story) throw new Error("Story not found or unauthorized");
 
   // Verify the media exists, belongs to the story, and is an IMAGE
-  const media = await prisma.mediaAsset.findUnique({
+  const media = await prisma.mediaAsset.findFirst({
     where: { id: mediaId, storyId },
   });
 
@@ -109,7 +109,7 @@ export async function reorderMedia(storyId: string, mediaIds: string[]) {
   if (!session?.user?.id) throw new Error("Unauthorized");
 
   // Verify the user owns the story
-  const story = await prisma.story.findUnique({
+  const story = await prisma.story.findFirst({
     where: { id: storyId, userId: session.user.id },
   });
 
@@ -118,7 +118,7 @@ export async function reorderMedia(storyId: string, mediaIds: string[]) {
   // Update positions in a transaction to ensure atomicity
   await prisma.$transaction(
     mediaIds.map((id, index) =>
-      prisma.mediaAsset.update({
+      prisma.mediaAsset.updateMany({
         where: { id, storyId },
         data: { position: index },
       })
@@ -145,13 +145,13 @@ export async function updateCaption(
   if (!session?.user?.id) throw new Error("Unauthorized");
 
   // Verify the user owns the story that contains this media
-  const story = await prisma.story.findUnique({
+  const story = await prisma.story.findFirst({
     where: { id: storyId, userId: session.user.id },
   });
   if (!story) throw new Error("Story not found or unauthorized");
 
   // Verify the media asset belongs to this story (double ownership check)
-  const media = await prisma.mediaAsset.findUnique({
+  const media = await prisma.mediaAsset.findFirst({
     where: { id: mediaId, storyId },
   });
   if (!media) throw new Error("Media asset not found in this story");
@@ -182,19 +182,19 @@ export async function assignMediaToChapter(
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) throw new Error("Unauthorized");
 
-  const story = await prisma.story.findUnique({
+  const story = await prisma.story.findFirst({
     where: { id: storyId, userId: session.user.id },
   });
   if (!story) throw new Error("Story not found or unauthorized");
 
   if (chapterId) {
-    const chapter = await prisma.chapter.findUnique({
+    const chapter = await prisma.chapter.findFirst({
       where: { id: chapterId, storyId },
     });
     if (!chapter) throw new Error("Chapter not found in this story");
   }
 
-  const updated = await prisma.mediaAsset.update({
+  const updated = await prisma.mediaAsset.updateMany({
     where: { id: mediaId, storyId },
     data: { chapterId },
   });
@@ -208,18 +208,55 @@ export async function assignMediaToChapter(
   return { success: true, asset: updated };
 }
 
+export async function assignMultipleMediaToChapter(
+  storyId: string,
+  mediaIds: string[],
+  chapterId: string | null
+) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const story = await prisma.story.findFirst({
+    where: { id: storyId, userId: session.user.id },
+  });
+  if (!story) throw new Error("Story not found or unauthorized");
+
+  if (chapterId) {
+    const chapter = await prisma.chapter.findFirst({
+      where: { id: chapterId, storyId },
+    });
+    if (!chapter) throw new Error("Chapter not found in this story");
+  }
+
+  const updated = await prisma.mediaAsset.updateMany({
+    where: { 
+      id: { in: mediaIds }, 
+      storyId 
+    },
+    data: { chapterId },
+  });
+
+  revalidatePath(`/stories/${storyId}`);
+  revalidatePath(`/stories/${storyId}/preview`);
+  if (story.slug) {
+    revalidatePath(`/s/${story.slug}`);
+  }
+
+  return { success: true, count: updated.count };
+}
+
 // ── deleteMedia ─────────────────────────────────────────────────────────────
 
 export async function deleteMedia(storyId: string, mediaId: string) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) throw new Error("Unauthorized");
 
-  const story = await prisma.story.findUnique({
+  const story = await prisma.story.findFirst({
     where: { id: storyId, userId: session.user.id },
   });
   if (!story) throw new Error("Story not found or unauthorized");
 
-  const media = await prisma.mediaAsset.findUnique({
+  const media = await prisma.mediaAsset.findFirst({
     where: { id: mediaId, storyId },
   });
   if (!media) throw new Error("Media asset not found in this story");
@@ -256,12 +293,12 @@ export async function replaceMedia(
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) throw new Error("Unauthorized");
 
-  const story = await prisma.story.findUnique({
+  const story = await prisma.story.findFirst({
     where: { id: storyId, userId: session.user.id },
   });
   if (!story) throw new Error("Story not found or unauthorized");
 
-  const media = await prisma.mediaAsset.findUnique({
+  const media = await prisma.mediaAsset.findFirst({
     where: { id: mediaId, storyId },
   });
   if (!media) throw new Error("Media asset not found in this story");

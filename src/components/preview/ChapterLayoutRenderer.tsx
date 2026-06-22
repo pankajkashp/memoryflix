@@ -6,6 +6,7 @@ import { deleteMedia, assignMediaToChapter, setCoverMedia, replaceMedia } from "
 import { updateChapterLayout } from "@/app/actions/chapter";
 import { Play, MoreVertical, Trash2, MapPin, Image as ImageIcon, LayoutGrid, Heart, Film, Image as PolaroidIcon, List, Replace } from "lucide-react";
 import { CldUploadWidget } from "next-cloudinary";
+import HeartLayout from "./templates/layouts/HeartLayout";
 
 type EditableMediaItemProps = {
   item: MediaAsset;
@@ -81,6 +82,14 @@ function EditableMediaCard({ item, storyId, chapters, isEditable, coverMediaId, 
         {item.id === coverMediaId && (
           <div className="absolute top-3 left-3 bg-rose-500 rounded-md px-2 py-0.5 text-[10px] font-bold text-white shadow-lg tracking-wider">
             COVER
+          </div>
+        )}
+
+        {item.caption && (
+          <div className="absolute bottom-4 left-4 right-4 bg-black/60 backdrop-blur-md rounded-xl p-3 border border-white/10 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <p className="text-sm font-medium text-white/90 italic leading-snug line-clamp-2">
+              "{item.caption}"
+            </p>
           </div>
         )}
       </div>
@@ -231,33 +240,7 @@ const MasonryLayout = ({ items, renderItem }: { items: any[], renderItem: (i: an
   );
 };
 
-const HeartLayout = ({ items, renderItem }: { items: any[], renderItem: (i: any) => React.ReactNode }) => {
-  // A simplified CSS grid approach that roughly mimics a heart shape for ~8 items
-  return (
-    <div className="flex justify-center">
-      <div className="grid grid-cols-5 gap-2 md:gap-4 max-w-3xl w-full">
-        {items.map((item, idx) => {
-          let colSpan = "col-span-1";
-          let rowSpan = "row-span-1";
-          // Basic manual positioning for a heart-like staggered look
-          if (idx === 0) colSpan = "col-span-1 col-start-2 row-start-1";
-          if (idx === 1) colSpan = "col-span-1 col-start-4 row-start-1";
-          if (idx === 2) colSpan = "col-span-1 col-start-1 row-start-2";
-          if (idx === 3) colSpan = "col-span-1 col-start-5 row-start-2";
-          if (idx === 4) colSpan = "col-span-1 col-start-2 row-start-3";
-          if (idx === 5) colSpan = "col-span-1 col-start-4 row-start-3";
-          if (idx === 6) colSpan = "col-span-1 col-start-3 row-start-4";
-          
-          return (
-            <div key={item.item.id} className={`aspect-square ${colSpan} ${rowSpan}`}>
-              {renderItem(item)}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-};
+
 
 const FilmStripLayout = ({ items, renderItem }: { items: any[], renderItem: (i: any) => React.ReactNode }) => (
   <div className="flex overflow-x-auto gap-4 pb-8 snap-x snap-mandatory hide-scrollbar">

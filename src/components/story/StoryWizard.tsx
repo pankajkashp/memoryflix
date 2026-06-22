@@ -12,6 +12,7 @@ import Link from "next/link";
 import MusicSelector from "./MusicSelector";
 import TypographySelector from "./TypographySelector";
 import { motion, AnimatePresence } from "framer-motion";
+import NetflixTemplate from "../preview/templates/NetflixTemplate";
 
 type StoryWithRelations = Story & {
   template: StoryTemplate;
@@ -46,7 +47,7 @@ export default function StoryWizard({
   // e.g. Step 3 requires media to proceed to Step 4? Not strictly enforcing to keep it flexible, but we could.
 
   return (
-    <div className="mx-auto max-w-4xl pt-4 pb-24">
+    <div className={`mx-auto pt-4 pb-24 transition-all duration-500 px-4 ${currentStep === 3 ? "max-w-[90rem]" : "max-w-4xl"}`}>
       {/* ── Header & Navigation ────────────────────────────────────────────── */}
       <div className="mb-8 flex items-center justify-between">
         <Link
@@ -174,13 +175,35 @@ export default function StoryWizard({
 
               {/* STEP 3: CHAPTERS */}
               {currentStep === 3 && (
-                <div>
-                  <h2 className="text-3xl font-black tracking-tight text-white mb-2">Memory Chapters</h2>
-                  <p className="text-zinc-400 mb-8 max-w-xl text-lg">
-                    Organize your story into chapters. You'll assign media to these chapters in the next step.
-                  </p>
-                  
-                  <ChapterEditor storyId={story.id} chapters={story.chapters} />
+                <div className="h-full flex flex-col lg:flex-row gap-8">
+                  <div className="flex-1 lg:max-w-xl flex flex-col">
+                    <h2 className="text-3xl font-black tracking-tight text-white mb-2">Memory Chapters</h2>
+                    <p className="text-zinc-400 mb-8 max-w-xl text-lg">
+                      Organize your story into chapters. You'll assign media to these chapters in the next step.
+                    </p>
+                    
+                    <ChapterEditor storyId={story.id} chapters={story.chapters} media={story.media} />
+                  </div>
+
+                  <div className="hidden lg:flex flex-1 bg-black/50 border border-white/10 rounded-2xl overflow-hidden shadow-2xl relative flex-col h-[700px]">
+                    <div className="h-10 bg-[#1a1a1a] border-b border-white/10 flex items-center px-4 shrink-0">
+                      <div className="flex gap-1.5">
+                        <div className="w-3 h-3 rounded-full bg-red-500/50" />
+                        <div className="w-3 h-3 rounded-full bg-yellow-500/50" />
+                        <div className="w-3 h-3 rounded-full bg-green-500/50" />
+                      </div>
+                      <div className="mx-auto bg-black/50 px-4 py-1 rounded-md text-[10px] font-mono text-zinc-500 border border-white/5">
+                        memoryflix.com/s/preview
+                      </div>
+                    </div>
+                    <div className="flex-1 relative bg-[#0f0f0f] overflow-hidden">
+                      <div className="absolute inset-0 overflow-y-auto overflow-x-hidden custom-scrollbar">
+                        <div className="origin-top scale-[0.65] w-[153%]">
+                          <NetflixTemplate story={story as any} isEditable={false} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
 
