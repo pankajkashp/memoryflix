@@ -42,7 +42,13 @@ export default function MediaViewer({
   if (!media || media.length === 0) return null;
 
   const currentMedia = media[currentIndex];
-  const hasCaption = Boolean(currentMedia.caption?.trim());
+  const hasMetadata = Boolean(
+    currentMedia?.title || 
+    currentMedia?.memoryNote || 
+    currentMedia?.location || 
+    currentMedia?.memoryDate ||
+    currentMedia?.caption
+  );
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/95 backdrop-blur-sm">
@@ -120,7 +126,7 @@ export default function MediaViewer({
                 controls
                 autoPlay
                 className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
-                style={{ maxHeight: hasCaption ? "calc(100vh - 160px)" : "90vh" }}
+                style={{ maxHeight: hasMetadata ? "calc(100vh - 200px)" : "90vh" }}
               />
             ) : (
               // eslint-disable-next-line @next/next/no-img-element
@@ -129,17 +135,17 @@ export default function MediaViewer({
                 src={currentMedia.url}
                 alt={currentMedia.caption || "Fullscreen media"}
                 className="max-w-full object-contain rounded-lg shadow-2xl select-none"
-                style={{ maxHeight: hasCaption ? "calc(100vh - 160px)" : "90vh" }}
+                style={{ maxHeight: hasMetadata ? "calc(100vh - 200px)" : "90vh" }}
                 draggable={false}
               />
             )}
           </div>
 
-          {/* Caption — glassmorphism pill */}
+          {/* Metadata — glassmorphism pill */}
           <AnimatePresence>
-            {hasCaption && (
+            {hasMetadata && (
               <motion.div
-                key={`viewer-caption-${currentMedia.id}`}
+                key={`viewer-metadata-${currentMedia.id}`}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 6 }}
@@ -151,14 +157,27 @@ export default function MediaViewer({
                     bg-white/10 backdrop-blur-xl
                     border border-white/15
                     rounded-2xl
-                    px-6 py-3
+                    px-6 py-4
                     text-center
                     shadow-xl shadow-black/30
+                    flex flex-col gap-2
                   "
                 >
-                  <p className="opacity-90 text-sm md:text-base font-light leading-relaxed tracking-wide">
-                    {currentMedia.caption}
-                  </p>
+                  {currentMedia.title && (
+                    <h4 className="text-lg font-bold text-white leading-tight">{currentMedia.title}</h4>
+                  )}
+                  {(currentMedia.memoryNote || currentMedia.caption) && (
+                    <p className="text-base md:text-lg opacity-90 font-serif italic leading-relaxed tracking-wide text-zinc-200">
+                      {currentMedia.memoryNote || currentMedia.caption}
+                    </p>
+                  )}
+                  {(currentMedia.location || currentMedia.memoryDate) && (
+                    <div className="flex items-center justify-center gap-2 text-xs font-medium text-zinc-400 uppercase tracking-widest mt-1">
+                      {currentMedia.location && <span>{currentMedia.location}</span>}
+                      {currentMedia.location && currentMedia.memoryDate && <span>•</span>}
+                      {currentMedia.memoryDate && <span>{new Date(currentMedia.memoryDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>}
+                    </div>
+                  )}
                 </div>
               </motion.div>
             )}

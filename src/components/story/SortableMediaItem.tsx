@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
+import React, { useState, useTransition, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { MediaAsset, Chapter } from "@prisma/client";
 import { GripVertical, MoreVertical, Trash2, MapPin, Image as ImageIcon, Type } from "lucide-react";
 import { deleteMedia, assignMediaToChapter, setCoverMedia } from "@/app/actions/media";
+import MediaDetailsDrawer from "./MediaDetailsDrawer";
 
 interface SortableMediaItemProps {
   asset: MediaAsset;
@@ -44,6 +46,29 @@ export default function SortableMediaItem({
 
   const [isPending, startTransition] = useTransition();
   const [showMenu, setShowMenu] = useState(false);
+  const [menuRect, setMenuRect] = useState<DOMRect | null>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+
+  // Close menu on scroll or resize
+  useEffect(() => {
+    if (!showMenu) return;
+    const handleScroll = () => setShowMenu(false);
+    window.addEventListener("scroll", handleScroll, true);
+    window.addEventListener("resize", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll, true);
+      window.removeEventListener("resize", handleScroll);
+    };
+  }, [showMenu]);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    if (!showMenu) return;
+    const handleClick = () => setShowMenu(false);
+    document.addEventListener("click", handleClick);
+    return () => document.removeEventListener("click", handleClick);
+  }, [showMenu]);
   
   // For caption editing within the hover menu
   const [isEditingCaption, setIsEditingCaption] = useState(false);
@@ -150,14 +175,28 @@ export default function SortableMediaItem({
         <div className={`absolute top-2 right-12 z-40 transition-opacity duration-300 ${isBeingDragged || isDragging ? "opacity-0" : "opacity-0 group-hover:opacity-100"}`}>
           <div className="relative">
             <button 
-              onClick={(e) => { e.stopPropagation(); setShowMenu(!showMenu); }}
+              ref={buttonRef}
+              onClick={(e) => { 
+                e.stopPropagation(); 
+                if (!showMenu && buttonRef.current) {
+                  setMenuRect(buttonRef.current.getBoundingClientRect());
+                }
+                setShowMenu(!showMenu); 
+              }}
               className="bg-black/60 backdrop-blur-md hover:bg-rose-500 p-2 rounded-full text-white transition-colors border border-white/10"
             >
               <MoreVertical className="w-4 h-4" />
             </button>
             
-            {showMenu && (
-              <div className="absolute top-full left-0 mt-2 w-48 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-2xl py-1 z-50">
+            {showMenu && menuRect && createPortal(
+              <div 
+                className="fixed w-48 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-2xl py-1 z-[9999]"
+                style={{
+                  top: menuRect.bottom + 8,
+                  left: menuRect.right - 192, // align right (192px = w-48)
+                }}
+                onClick={(e) => e.stopPropagation()}
+              >
                 {asset.type === "IMAGE" && (
                   <button
                     onClick={(e) => { e.stopPropagation(); handleSetCover(); }}
@@ -168,35 +207,30 @@ export default function SortableMediaItem({
                   </button>
                 )}
                 
-                <div className="border-t border-white/5 my-1" />
-                <div className="px-4 py-1 text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Move to Chapter</div>
-                {chapters?.map(c => (
-                  <button
-                    key={c.id}
-                    onClick={(e) => { e.stopPropagation(); handleMove(c.id); }}
-                    disabled={isPending || asset.chapterId === c.id}
-                    className="w-full text-left px-4 py-2 text-sm text-zinc-300 hover:bg-white/5 hover:text-white disabled:opacity-50 flex items-center gap-2 truncate"
-                  >
-                    <MapPin className="w-4 h-4 shrink-0" /> <span className="truncate">{c.emoji} {c.title}</span>
-                  </button>
-                ))}
                 <button
-                  onClick={(e) => { e.stopPropagation(); handleMove(null); }}
-                  disabled={isPending || !asset.chapterId}
-                  className="w-full text-left px-4 py-2 text-sm text-zinc-400 hover:bg-white/5 disabled:opacity-50 flex items-center gap-2"
+                  onClick={(e) => { e.stopPropagation(); setShowMenu(false); setShowDetailsModal(true); }}
+                  className="w-full text-left px-4 py-2 text-sm text-zinc-300 hover:bg-white/5 hover:text-white flex items-center gap-2"
                 >
-                  Unassign Chapter
+                  <Type className="w-4 h-4" /> Edit Memory
+                </button>
+
+                <button
+                  onClick={(e) => { e.stopPropagation(); setShowMenu(false); setShowDetailsModal(true); }}
+                  className="w-full text-left px-4 py-2 text-sm text-zinc-300 hover:bg-white/5 hover:text-white flex items-center gap-2"
+                >
+                  <MapPin className="w-4 h-4" /> Add Location
                 </button>
                 
                 <div className="border-t border-white/5 my-1" />
                 <button
-                  onClick={(e) => { e.stopPropagation(); handleDelete(); }}
+                  onClick={(e) => { e.stopPropagation(); setShowMenu(false); handleDelete(); }}
                   disabled={isPending}
                   className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 disabled:opacity-50 flex items-center gap-2"
                 >
-                  <Trash2 className="w-4 h-4" /> Delete Media
+                  <Trash2 className="w-4 h-4" /> Remove Photo
                 </button>
-              </div>
+              </div>,
+              document.body
             )}
           </div>
         </div>
@@ -247,6 +281,20 @@ export default function SortableMediaItem({
         {/* Subtle overlay to enhance contrast for badges */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30 pointer-events-none" />
       </div>
+
+      {showDetailsModal && storyId && (
+        <MediaDetailsDrawer
+          storyId={storyId}
+          mediaId={asset.id}
+          initialData={{
+            title: asset.title,
+            memoryNote: asset.memoryNote,
+            location: asset.location,
+            memoryDate: asset.memoryDate,
+          }}
+          onClose={() => setShowDetailsModal(false)}
+        />
+      )}
     </div>
   );
 }

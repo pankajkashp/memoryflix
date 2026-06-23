@@ -59,12 +59,12 @@ function EditableMediaCard({ item, storyId, chapters, isEditable, coverMediaId, 
 
   return (
     <div 
-      className="relative group w-full h-full cursor-pointer"
+      className="relative group w-full h-full flex flex-col cursor-pointer"
       onMouseLeave={() => setShowMenu(false)}
     >
       <div 
         onClick={onSelect}
-        className="w-full h-full"
+        className="w-full relative flex-1 min-h-[200px]"
       >
         {item.type === "VIDEO" ? (
           <video src={item.url} className="w-full h-full object-cover rounded-xl" autoPlay muted loop playsInline />
@@ -84,15 +84,28 @@ function EditableMediaCard({ item, storyId, chapters, isEditable, coverMediaId, 
             COVER
           </div>
         )}
-
-        {item.caption && (
-          <div className="absolute bottom-4 left-4 right-4 bg-black/60 backdrop-blur-md rounded-xl p-3 border border-white/10 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <p className="text-sm font-medium opacity-90 italic leading-snug line-clamp-2">
-              "{item.caption}"
-            </p>
-          </div>
-        )}
       </div>
+
+      {/* Memory Notes Metadata */}
+      {(item.title || item.memoryNote || item.location || item.memoryDate) && (
+        <div className="pt-4 pb-2 px-1 flex flex-col gap-2">
+          {item.title && (
+            <h4 className="text-lg font-bold text-white leading-tight">{item.title}</h4>
+          )}
+          {item.memoryNote && (
+            <p className="text-base md:text-lg text-zinc-300 font-serif italic leading-relaxed">
+              {item.memoryNote}
+            </p>
+          )}
+          {(item.location || item.memoryDate) && (
+            <div className="flex items-center gap-2 text-xs font-medium text-zinc-500 uppercase tracking-widest mt-1">
+              {item.location && <span>{item.location}</span>}
+              {item.location && item.memoryDate && <span>•</span>}
+              {item.memoryDate && <span>{new Date(item.memoryDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>}
+            </div>
+          )}
+        </div>
+      )}
 
       {isEditable && (
         <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">

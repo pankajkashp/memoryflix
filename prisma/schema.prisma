@@ -78,6 +78,10 @@ model MediaAsset {
   url             String
   storageKey      String
   caption         String?
+  title           String?
+  memoryNote      String?
+  location        String?
+  memoryDate      DateTime?
   position        Int       @default(0)
   durationSeconds Int?
   sizeBytes       Int?

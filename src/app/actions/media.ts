@@ -174,6 +174,50 @@ export async function updateCaption(
   return { success: true, asset: updated };
 }
 
+// ── updateMediaDetails ────────────────────────────────────────────────────────
+
+export async function updateMediaDetails(
+  storyId: string,
+  mediaId: string,
+  data: {
+    title?: string;
+    memoryNote?: string;
+    location?: string;
+    memoryDate?: string | Date | null;
+  }
+) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const story = await prisma.story.findFirst({
+    where: { id: storyId, userId: session.user.id },
+  });
+  if (!story) throw new Error("Story not found or unauthorized");
+
+  const media = await prisma.mediaAsset.findFirst({
+    where: { id: mediaId, storyId },
+  });
+  if (!media) throw new Error("Media asset not found in this story");
+
+  const updated = await prisma.mediaAsset.update({
+    where: { id: mediaId },
+    data: {
+      title: data.title?.trim() || null,
+      memoryNote: data.memoryNote?.trim() || null,
+      location: data.location?.trim() || null,
+      memoryDate: data.memoryDate ? new Date(data.memoryDate) : null,
+    },
+  });
+
+  revalidatePath(`/stories/${storyId}`);
+  revalidatePath(`/stories/${storyId}/preview`);
+  if (story.slug) {
+    revalidatePath(`/s/${story.slug}`);
+  }
+
+  return { success: true, asset: updated };
+}
+
 // ── assignMediaToChapter ────────────────────────────────────────────────────────
 
 export async function assignMediaToChapter(
