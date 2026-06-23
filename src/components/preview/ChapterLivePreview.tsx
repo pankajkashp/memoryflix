@@ -43,7 +43,7 @@ export default function ChapterLivePreview({
 
   const presetConfig = getPresetConfig(story.typographyPreset || "MODERN_MINIMAL");
   const accentConfig = getAccentConfig(story.accentColor || "WHITE");
-  const fontClassName = getFontClassName(presetConfig.fontFamily);
+  const fontClassName = getFontClassName(presetConfig.fontId);
 
   // Get media for this chapter
   const allMedia = story.media || [];
