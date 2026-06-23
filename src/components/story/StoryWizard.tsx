@@ -13,6 +13,7 @@ import MusicSelector from "./MusicSelector";
 import TypographySelector from "./TypographySelector";
 import { motion, AnimatePresence } from "framer-motion";
 import NetflixTemplate from "../preview/templates/NetflixTemplate";
+import ChapterLivePreview from "../preview/ChapterLivePreview";
 
 type StoryWithRelations = Story & {
   template: StoryTemplate;
@@ -39,6 +40,10 @@ export default function StoryWizard({
   templates?: StoryTemplate[];
 }) {
   const [currentStep, setCurrentStep] = useState(1);
+  
+  // Chapter live preview state
+  const [activeChapterId, setActiveChapterId] = useState<string | null>(null);
+  const [chapterDraft, setChapterDraft] = useState<Partial<Chapter> | null>(null);
 
   const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, STEPS.length));
   const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
@@ -182,7 +187,14 @@ export default function StoryWizard({
                       Organize your story into chapters. You'll assign media to these chapters in the next step.
                     </p>
                     
-                    <ChapterEditor storyId={story.id} chapters={story.chapters} media={story.media} />
+                    <ChapterEditor 
+                      storyId={story.id} 
+                      chapters={story.chapters} 
+                      media={story.media} 
+                      activeChapterId={activeChapterId}
+                      setActiveChapterId={setActiveChapterId}
+                      onDraftChange={setChapterDraft}
+                    />
                   </div>
 
                   <div className="hidden lg:flex flex-1 bg-black/50 border border-white/10 rounded-2xl overflow-hidden shadow-2xl relative flex-col h-[700px]">
@@ -193,13 +205,17 @@ export default function StoryWizard({
                         <div className="w-3 h-3 rounded-full bg-green-500/50" />
                       </div>
                       <div className="mx-auto bg-black/50 px-4 py-1 rounded-md text-[10px] font-mono text-zinc-500 border border-white/5">
-                        memoryflix.com/s/preview
+                        Live Chapter Preview
                       </div>
                     </div>
                     <div className="flex-1 relative bg-[#0f0f0f] overflow-hidden">
                       <div className="absolute inset-0 overflow-y-auto overflow-x-hidden custom-scrollbar">
-                        <div className="origin-top scale-[0.65] w-[153%]">
-                          <NetflixTemplate story={story as any} isEditable={false} />
+                        <div className="origin-top scale-[0.65] w-[153%] h-[153%]">
+                          <ChapterLivePreview 
+                            story={story as any} 
+                            activeChapterId={activeChapterId}
+                            chapterDraft={chapterDraft}
+                          />
                         </div>
                       </div>
                     </div>

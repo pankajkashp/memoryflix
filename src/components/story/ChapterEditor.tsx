@@ -26,8 +26,24 @@ import MusicSelector from "./MusicSelector";
 
 import ChapterMediaManager from "./ChapterMediaManager";
 
-function SortableChapterItem({ chapter, storyId, mediaCount, allMedia }: { chapter: Chapter; storyId: string; mediaCount: number; allMedia: MediaAsset[] }) {
-  const [isEditing, setIsEditing] = useState(false);
+function SortableChapterItem({ 
+  chapter, 
+  storyId, 
+  mediaCount, 
+  allMedia,
+  activeChapterId,
+  setActiveChapterId,
+  onDraftChange
+}: { 
+  chapter: Chapter; 
+  storyId: string; 
+  mediaCount: number; 
+  allMedia: MediaAsset[];
+  activeChapterId: string | null;
+  setActiveChapterId: (id: string | null) => void;
+  onDraftChange: (draft: Partial<Chapter> | null) => void;
+}) {
+  const isEditing = activeChapterId === chapter.id;
   const [title, setTitle] = useState(chapter.title);
   const [emoji, setEmoji] = useState(chapter.emoji || "");
   const [isPending, startTransition] = useTransition();
@@ -38,13 +54,55 @@ function SortableChapterItem({ chapter, storyId, mediaCount, allMedia }: { chapt
   const [date, setDate] = useState(chapter.date ? new Date(chapter.date).toISOString().split('T')[0] : "");
 
   useEffect(() => {
-    setTitle(chapter.title);
-    setEmoji(chapter.emoji || "");
-    setLayout(chapter.layout || "MASONRY");
-    setSubtitle(chapter.subtitle || "");
-    setLocation(chapter.location || "");
-    setDate(chapter.date ? new Date(chapter.date).toISOString().split('T')[0] : "");
-  }, [chapter]);
+    // Only sync from server if we are NOT currently editing this chapter.
+    // Otherwise, server revalidations can overwrite the user's active typing.
+    if (!isEditing) {
+      setTitle(chapter.title);
+      setEmoji(chapter.emoji || "");
+      setLayout(chapter.layout || "MASONRY");
+      setSubtitle(chapter.subtitle || "");
+      setLocation(chapter.location || "");
+      setDate(chapter.date ? new Date(chapter.date).toISOString().split('T')[0] : "");
+    }
+  }, [chapter, isEditing]);
+
+  useEffect(() => {
+    if (isEditing) {
+      // 1. Instantly update draft for UI live preview
+      onDraftChange({
+        id: chapter.id,
+        title,
+        emoji,
+        layout,
+        subtitle,
+        location,
+        date: date ? new Date(date) : null
+      } as any);
+
+      // 2. Debounced save to DB for persistence
+      if (title.trim() && (title !== chapter.title || emoji !== (chapter.emoji || "") || layout !== (chapter.layout || "MASONRY") || subtitle !== (chapter.subtitle || "") || location !== (chapter.location || "") || date !== (chapter.date ? new Date(chapter.date).toISOString().split('T')[0] : ""))) {
+        const timeoutId = setTimeout(() => {
+          startTransition(async () => {
+            const { updateChapter, updateChapterLayout } = await import("@/app/actions/chapter");
+            await updateChapter(
+              storyId, 
+              chapter.id, 
+              title, 
+              emoji || null,
+              subtitle || null,
+              date || null,
+              location || null
+            );
+            if (layout !== chapter.layout) {
+              await updateChapterLayout(storyId, chapter.id, layout);
+            }
+          });
+        }, 1000);
+
+        return () => clearTimeout(timeoutId);
+      }
+    }
+  }, [isEditing, title, emoji, layout, subtitle, location, date, chapter, storyId, onDraftChange]);
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: chapter.id });
 
@@ -57,6 +115,7 @@ function SortableChapterItem({ chapter, storyId, mediaCount, allMedia }: { chapt
   const handleSave = () => {
     if (!title.trim()) return;
     startTransition(async () => {
+      const { updateChapter, updateChapterLayout } = await import("@/app/actions/chapter");
       await updateChapter(
         storyId, 
         chapter.id, 
@@ -67,11 +126,10 @@ function SortableChapterItem({ chapter, storyId, mediaCount, allMedia }: { chapt
         location || null
       );
       if (layout !== chapter.layout) {
-        // Assume updateChapterLayout is imported
-        const { updateChapterLayout } = await import("@/app/actions/chapter");
         await updateChapterLayout(storyId, chapter.id, layout);
       }
-      setIsEditing(false);
+      setActiveChapterId(null);
+      onDraftChange(null);
     });
   };
 
@@ -136,7 +194,7 @@ function SortableChapterItem({ chapter, storyId, mediaCount, allMedia }: { chapt
               <button onClick={handleSave} disabled={isPending} className="p-1.5 text-green-400 hover:bg-green-400/10 rounded-lg shrink-0">
                 {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
               </button>
-              <button onClick={() => setIsEditing(false)} disabled={isPending} className="p-1.5 text-zinc-400 hover:bg-white/10 rounded-lg shrink-0">
+              <button onClick={() => { setActiveChapterId(null); onDraftChange(null); }} disabled={isPending} className="p-1.5 text-zinc-400 hover:bg-white/10 rounded-lg shrink-0">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -218,7 +276,7 @@ function SortableChapterItem({ chapter, storyId, mediaCount, allMedia }: { chapt
           </div>
           
           <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity absolute right-4 top-1/2 -translate-y-1/2 bg-black/80 backdrop-blur-md p-2 rounded-xl border border-white/10">
-            <button onClick={() => setIsEditing(true)} className="p-2 text-zinc-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
+            <button onClick={() => setActiveChapterId(chapter.id)} className="p-2 text-zinc-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
               <Edit2 className="w-4 h-4" />
             </button>
             <div className="w-[1px] h-4 bg-white/10" />
@@ -228,7 +286,7 @@ function SortableChapterItem({ chapter, storyId, mediaCount, allMedia }: { chapt
           </div>
           {/* Mobile fallback */}
           <div className="flex items-center gap-2 sm:hidden">
-            <button onClick={() => setIsEditing(true)} className="p-2 text-zinc-400 hover:text-white bg-white/5 rounded-lg">
+            <button onClick={() => setActiveChapterId(chapter.id)} className="p-2 text-zinc-400 hover:text-white bg-white/5 rounded-lg">
               <Edit2 className="w-4 h-4" />
             </button>
           </div>
@@ -238,12 +296,23 @@ function SortableChapterItem({ chapter, storyId, mediaCount, allMedia }: { chapt
   );
 }
 
-export default function ChapterEditor({ storyId, chapters, media = [] }: { storyId: string; chapters: Chapter[], media?: MediaAsset[] }) {
+export default function ChapterEditor({ 
+  storyId, 
+  chapters, 
+  media = [],
+  activeChapterId,
+  setActiveChapterId,
+  onDraftChange
+}: { 
+  storyId: string; 
+  chapters: Chapter[]; 
+  media?: MediaAsset[];
+  activeChapterId: string | null;
+  setActiveChapterId: (id: string | null) => void;
+  onDraftChange: (draft: Partial<Chapter> | null) => void;
+}) {
   const [items, setItems] = useState(chapters);
   const [isPending, startTransition] = useTransition();
-  const [isCreating, setIsCreating] = useState(false);
-  const [newTitle, setNewTitle] = useState("");
-  const [newEmoji, setNewEmoji] = useState("");
   
   useEffect(() => {
     setItems(chapters);
@@ -271,19 +340,16 @@ export default function ChapterEditor({ storyId, chapters, media = [] }: { story
     }
   };
 
-  const handleCreate = () => {
-    if (!newTitle.trim()) return;
+  const handleCreateEmpty = () => {
     startTransition(async () => {
-      await createChapter(storyId, newTitle, newEmoji || null);
-      setIsCreating(false);
-      setNewTitle("");
-      setNewEmoji("");
+      const newChapter = await createChapter(storyId, "Untitled Chapter", "✨");
+      setActiveChapterId(newChapter.id);
     });
   };
 
   return (
     <div className="space-y-6">
-      {items.length === 0 && !isCreating && (
+      {items.length === 0 && (
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -312,10 +378,11 @@ export default function ChapterEditor({ storyId, chapters, media = [] }: { story
               </div>
             </div>
             <button 
-              onClick={() => setIsCreating(true)}
-              className="mt-8 bg-rose-500 hover:bg-rose-600 text-white font-bold py-3 px-8 rounded-full transition-colors shadow-lg shadow-rose-500/20 flex items-center gap-2"
+              onClick={handleCreateEmpty}
+              disabled={isPending}
+              className="mt-8 bg-rose-500 hover:bg-rose-600 text-white font-bold py-3 px-8 rounded-full transition-colors shadow-lg shadow-rose-500/20 flex items-center gap-2 disabled:opacity-50"
             >
-              <Plus className="w-5 h-5" /> Start First Chapter
+              {isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Plus className="w-5 h-5" />} Start First Chapter
             </button>
           </div>
         </motion.div>
@@ -327,55 +394,20 @@ export default function ChapterEditor({ storyId, chapters, media = [] }: { story
             <div className="space-y-3">
               {items.map((chapter) => {
                 const count = media.filter(m => m.chapterId === chapter.id && m.type === "IMAGE").length;
-                return <SortableChapterItem key={chapter.id} chapter={chapter} storyId={storyId} mediaCount={count} allMedia={media} />;
+                return <SortableChapterItem key={chapter.id} chapter={chapter} storyId={storyId} mediaCount={count} allMedia={media} activeChapterId={activeChapterId} setActiveChapterId={setActiveChapterId} onDraftChange={onDraftChange} />;
               })}
             </div>
           </SortableContext>
         </DndContext>
       )}
 
-      {isCreating && (
-        <motion.div 
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col sm:flex-row items-center gap-3 p-4 rounded-2xl border border-white/20 bg-black/60 backdrop-blur-xl shadow-[0_0_30px_rgba(255,255,255,0.05)]"
-        >
-          <div className="flex w-full sm:w-auto gap-3">
-            <input
-              type="text"
-              value={newEmoji}
-              onChange={(e) => setNewEmoji(e.target.value)}
-              placeholder="😀"
-              maxLength={2}
-              className="w-14 text-2xl text-center rounded-xl border border-white/10 bg-black/50 px-2 py-3 text-white placeholder-zinc-500 focus:outline-none focus:border-rose-500"
-            />
-            <input
-              type="text"
-              value={newTitle}
-              onChange={(e) => setNewTitle(e.target.value)}
-              placeholder="Chapter Title (e.g. How We Met)"
-              className="flex-1 sm:w-64 rounded-xl border border-white/10 bg-black/50 px-4 py-3 text-lg font-bold text-white placeholder-zinc-500 focus:outline-none focus:border-rose-500"
-              autoFocus
-              onKeyDown={(e) => e.key === "Enter" && handleCreate()}
-            />
-          </div>
-          <div className="flex w-full sm:w-auto justify-end gap-2 mt-2 sm:mt-0">
-            <button onClick={handleCreate} disabled={isPending} className="flex-1 sm:flex-none px-6 py-3 text-white bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl font-bold transition-all hover:scale-105 active:scale-95 flex items-center justify-center">
-              {isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : "Save Chapter"}
-            </button>
-            <button onClick={() => setIsCreating(false)} disabled={isPending} className="px-4 py-3 text-zinc-400 hover:text-white hover:bg-white/10 rounded-xl transition-colors flex items-center justify-center">
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-        </motion.div>
-      )}
-
-      {!isCreating && items.length > 0 && (
+      {items.length > 0 && (
         <motion.button
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.99 }}
-          onClick={() => setIsCreating(true)}
-          className="w-full flex flex-col items-center justify-center gap-3 py-8 rounded-2xl border-2 border-dashed border-white/20 text-zinc-400 hover:text-white hover:border-white/40 hover:bg-white/5 transition-colors group"
+          onClick={handleCreateEmpty}
+          disabled={isPending}
+          className="w-full flex flex-col items-center justify-center gap-3 py-8 rounded-2xl border-2 border-dashed border-white/20 text-zinc-400 hover:text-white hover:border-white/40 hover:bg-white/5 transition-colors group disabled:opacity-50"
         >
           <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-colors">
             <Plus className="w-6 h-6" />

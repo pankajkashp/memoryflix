@@ -87,7 +87,7 @@ function EditableMediaCard({ item, storyId, chapters, isEditable, coverMediaId, 
 
         {item.caption && (
           <div className="absolute bottom-4 left-4 right-4 bg-black/60 backdrop-blur-md rounded-xl p-3 border border-white/10 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <p className="text-sm font-medium text-white/90 italic leading-snug line-clamp-2">
+            <p className="text-sm font-medium opacity-90 italic leading-snug line-clamp-2">
               "{item.caption}"
             </p>
           </div>

@@ -99,10 +99,10 @@ export default function NetflixTemplate({
     const totalChapters = chaptersWithMedia.length;
 
     return (
-      <div className={`${fontClassName} bg-[#0f0f0f] min-h-screen text-white flex flex-col items-center justify-center relative overflow-hidden`}>
+      <div className={`${fontClassName} bg-black min-h-screen text-white flex flex-col items-center justify-center relative overflow-hidden`}>
         {/* Cinematic full-screen background */}
         {chapterCover && (
-          <div className="absolute inset-0 z-0 overflow-hidden bg-[#0f0f0f]">
+          <div className="absolute inset-0 z-0 overflow-hidden bg-black">
             {chapterCover.type === "IMAGE" ? (
               <motion.img
                 initial={{ scale: 1 }}
@@ -122,7 +122,7 @@ export default function NetflixTemplate({
                 className="w-full h-full object-cover opacity-60"
               />
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f0f] via-[#0f0f0f]/60 to-[#0f0f0f]/40" />
+            <div className="absolute inset-0 bg-black/80" />
           </div>
         )}
 
@@ -153,7 +153,7 @@ export default function NetflixTemplate({
             </div>
           )}
 
-          <h1 className={`${presetConfig.heroStyle} mb-4`}>
+          <h1 className={`${presetConfig.heroStyle} ${accentConfig.text} mb-4`}>
             {chapter.title}
           </h1>
 
@@ -283,7 +283,7 @@ export default function NetflixTemplate({
             {chapter.date && <><span>•</span><span>{new Date(chapter.date).toLocaleDateString("en-US", { month: "long", year: "numeric" })}</span></>}
             {chapter.location && <><span>•</span><span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{chapter.location}</span></>}
           </div>
-          <h2 className={`${presetConfig.chapterStyle} text-white mb-3 flex items-center gap-4`}>
+          <h2 className={`${presetConfig.chapterStyle} ${accentConfig.text} mb-3 flex items-center gap-4`}>
             {chapter.emoji && <span className="text-5xl md:text-7xl">{chapter.emoji}</span>}
             {chapter.title}
           </h2>
@@ -346,7 +346,7 @@ export default function NetflixTemplate({
               {story.occasion}
             </p>
           )}
-          <h1 className={`${presetConfig.heroStyle} mb-6 leading-none text-white`}>{story.title}</h1>
+          <h1 className={`${presetConfig.heroStyle} ${accentConfig.text} mb-6 leading-none`}>{story.title}</h1>
           <div className="flex items-center gap-4 text-zinc-300 font-medium mb-8 text-lg drop-shadow-md">
             {story.eventDate && <span>{new Date(story.eventDate).getFullYear()}</span>}
             {story.eventDate && chaptersWithMedia.length > 0 && <span>•</span>}
@@ -544,7 +544,7 @@ function ChapterPosterCard({
         <div className="absolute bottom-0 left-0 right-0 p-4">
           <div className="flex items-center gap-2 mb-2">
             {chapter.emoji && <span className="text-2xl drop-shadow-lg">{chapter.emoji}</span>}
-            <h3 className="text-xl font-black text-white drop-shadow-lg leading-tight">{chapter.title}</h3>
+            <h3 className={`text-xl font-black drop-shadow-lg leading-tight ${accentColor}`}>{chapter.title}</h3>
           </div>
           {chapter.subtitle && (
             <p className="text-xs text-zinc-400 italic mb-2 line-clamp-1">&quot;{chapter.subtitle}&quot;</p>

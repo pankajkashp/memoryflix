@@ -156,7 +156,7 @@ export default function MediaViewer({
                     shadow-xl shadow-black/30
                   "
                 >
-                  <p className="text-white/90 text-sm md:text-base font-light leading-relaxed tracking-wide">
+                  <p className="opacity-90 text-sm md:text-base font-light leading-relaxed tracking-wide">
                     {currentMedia.caption}
                   </p>
                 </div>

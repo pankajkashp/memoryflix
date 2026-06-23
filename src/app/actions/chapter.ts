@@ -30,7 +30,7 @@ export async function createChapter(storyId: string, title: string, emoji: strin
   });
   const position = lastChapter ? lastChapter.position + 1 : 0;
 
-  await prisma.chapter.create({
+  const newChapter = await prisma.chapter.create({
     data: {
       storyId,
       title,
@@ -43,6 +43,8 @@ export async function createChapter(storyId: string, title: string, emoji: strin
   });
 
   revalidatePath(`/stories/${storyId}`);
+  
+  return newChapter;
 }
 
 export async function updateChapter(storyId: string, chapterId: string, title: string, emoji: string | null = null, subtitle: string | null = null, date: string | null = null, location: string | null = null) {

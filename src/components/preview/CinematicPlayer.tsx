@@ -329,7 +329,7 @@ export default function CinematicPlayer({
               transition={{ duration: 0.8, ease: "easeInOut" }}
               className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none bg-zinc-950 z-30"
             >
-              <h2 className="text-4xl md:text-6xl font-bold text-white drop-shadow-2xl text-center px-4 flex items-center gap-4">
+              <h2 className="text-4xl md:text-6xl font-bold drop-shadow-2xl text-center px-4 flex items-center gap-4">
                 {currentChapter.emoji && <span>{currentChapter.emoji}</span>}
                 {currentChapter.title}
               </h2>
@@ -397,7 +397,7 @@ export default function CinematicPlayer({
                       >
                         <p
                           className="
-                            text-white text-center
+                            text-center opacity-90
                             text-sm sm:text-base md:text-lg
                             font-medium leading-relaxed
                             drop-shadow-md
