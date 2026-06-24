@@ -61,7 +61,7 @@ export default async function DashboardPage() {
             Welcome Back, {userName} ❤️
           </h1>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-4 backdrop-blur-md hover:bg-white/10 transition-colors">
               <div className="w-10 h-10 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center">
                 <Film className="w-5 h-5" />
@@ -109,12 +109,12 @@ export default async function DashboardPage() {
           <div className="mb-16">
             <h2 className="text-sm font-bold text-zinc-500 tracking-widest uppercase mb-4">Continue Creating</h2>
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white/5 border border-white/10 rounded-3xl backdrop-blur-xl shadow-2xl hover:bg-white/[0.07] transition-all group">
-              <div className="flex items-center gap-5 w-full">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 w-full">
                 <div 
-                  className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-cover bg-center shrink-0 border border-white/10 shadow-inner group-hover:scale-105 transition-transform"
-                  style={{ backgroundImage: `url(${lastEditedStory.coverMedia?.url || 'https://images.unsplash.com/photo-1516483638261-f40af5ff13f0?q=80&w=200&auto=format&fit=crop'})` }}
+                  className="w-full h-40 sm:w-24 sm:h-24 rounded-2xl bg-cover bg-center shrink-0 border border-white/10 shadow-inner group-hover:scale-105 transition-transform"
+                  style={{ backgroundImage: `url(${lastEditedStory.coverMedia?.url || 'https://images.unsplash.com/photo-1516483638261-f40af5ff13f0?q=80&w=600&auto=format&fit=crop'})` }}
                 />
-                <div className="flex-1">
+                <div className="flex-1 w-full mt-2 sm:mt-0">
                   <h3 className="text-xl sm:text-2xl font-bold text-white mb-1 line-clamp-1 group-hover:text-rose-200 transition-colors">
                     {lastEditedStory.title}
                   </h3>

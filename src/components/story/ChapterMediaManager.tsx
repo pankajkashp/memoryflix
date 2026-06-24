@@ -148,13 +148,13 @@ export default function ChapterMediaManager({
           <p className="text-sm text-zinc-400 mt-1">{chapterMedia.length} memories assigned</p>
         </div>
         
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2 w-full sm:w-auto">
           <MediaUploader storyId={storyId} chapterId={chapter.id} />
           
           <button
             type="button"
             onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-sm font-bold text-white transition-all"
+            className="min-h-[44px] w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-sm font-bold text-white transition-all"
           >
             <Plus className="w-4 h-4" /> Add Existing
           </button>
@@ -163,7 +163,7 @@ export default function ChapterMediaManager({
             type="button"
             onClick={() => setShowCoverModal(true)}
             disabled={chapterMedia.length === 0}
-            className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-sm font-bold text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="min-h-[44px] w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-sm font-bold text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <ImageIcon className="w-4 h-4" /> Choose Cover
           </button>
@@ -198,7 +198,7 @@ export default function ChapterMediaManager({
                 <h3 className="text-xl font-black text-white">Add Existing Media</h3>
                 <p className="text-zinc-400 text-sm mt-1">Select unassigned photos to add to {chapter.title}</p>
               </div>
-              <button onClick={() => setShowAddModal(false)} className="p-2 text-zinc-400 hover:text-white bg-white/5 rounded-xl"><X className="w-5 h-5" /></button>
+              <button onClick={() => setShowAddModal(false)} className="min-h-[44px] min-w-[44px] flex items-center justify-center text-zinc-400 hover:text-white bg-white/5 rounded-xl"><X className="w-5 h-5" /></button>
             </div>
             
             <div className="p-6 overflow-y-auto flex-1">
@@ -221,8 +221,8 @@ export default function ChapterMediaManager({
                         )}
                         <div className={`absolute inset-0 transition-opacity ${isSelected ? "bg-rose-500/20" : "bg-black/0"}`} />
                         {isSelected && (
-                          <div className="absolute top-2 right-2 w-6 h-6 bg-rose-500 rounded-full flex items-center justify-center">
-                            <Check className="w-4 h-4 text-white" />
+                          <div className="absolute top-2 right-2 w-8 h-8 bg-rose-500 rounded-full flex items-center justify-center shadow-lg">
+                            <Check className="w-5 h-5 text-white" />
                           </div>
                         )}
                       </div>
@@ -237,7 +237,7 @@ export default function ChapterMediaManager({
               <button
                 onClick={handleAddExisting}
                 disabled={selectedForAdd.length === 0 || isPending}
-                className="px-6 py-2.5 bg-rose-500 text-white font-bold rounded-xl hover:bg-rose-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all"
+                className="min-h-[44px] w-full sm:w-auto px-6 py-2.5 bg-rose-500 text-white font-bold rounded-xl hover:bg-rose-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all"
               >
                 {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
                 Add to Chapter
@@ -257,7 +257,7 @@ export default function ChapterMediaManager({
                 <h3 className="text-xl font-black text-white">Choose Chapter Cover</h3>
                 <p className="text-zinc-400 text-sm mt-1">Select a cover photo from {chapter.title}'s media</p>
               </div>
-              <button onClick={() => setShowCoverModal(false)} className="p-2 text-zinc-400 hover:text-white bg-white/5 rounded-xl"><X className="w-5 h-5" /></button>
+              <button onClick={() => setShowCoverModal(false)} className="min-h-[44px] min-w-[44px] flex items-center justify-center text-zinc-400 hover:text-white bg-white/5 rounded-xl"><X className="w-5 h-5" /></button>
             </div>
             
             <div className="p-6 overflow-y-auto flex-1">

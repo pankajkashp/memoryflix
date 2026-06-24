@@ -22,6 +22,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, Plus, Trash2, Edit2, Check, X, Loader2, Music } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { ConfirmModal } from "../ui/ConfirmModal";
 import MusicSelector from "./MusicSelector";
 
 import ChapterMediaManager from "./ChapterMediaManager";
@@ -48,6 +49,7 @@ function SortableChapterItem({
   const [emoji, setEmoji] = useState(chapter.emoji || "");
   const [isPending, startTransition] = useTransition();
 
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [layout, setLayout] = useState(chapter.layout || "MASONRY");
   const [subtitle, setSubtitle] = useState(chapter.subtitle || "");
   const [location, setLocation] = useState(chapter.location || "");
@@ -134,11 +136,12 @@ function SortableChapterItem({
   };
 
   const handleDelete = () => {
-    if (confirm("Are you sure you want to delete this chapter? Media assigned to this chapter will be unassigned.")) {
-      startTransition(async () => {
-        await deleteChapter(storyId, chapter.id);
-      });
-    }
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    await deleteChapter(storyId, chapter.id);
+    setShowDeleteModal(false);
   };
 
   return (
@@ -244,7 +247,10 @@ function SortableChapterItem({
         </div>
       ) : (
         <>
-          <div className="flex-1 flex flex-col gap-1">
+          {/* ───────────────────────────────────────────────────────────── */}
+          {/* DESKTOP LAYOUT (md and above) */}
+          {/* ───────────────────────────────────────────────────────────── */}
+          <div className="hidden md:flex flex-1 flex-col gap-1">
             <div className="flex items-center gap-3">
               {chapter.emoji && (
                 <span className="text-3xl filter drop-shadow-md bg-black/50 w-12 h-12 flex items-center justify-center rounded-xl border border-white/5">
@@ -267,6 +273,8 @@ function SortableChapterItem({
                       </span>
                     </>
                   )}
+                  <span>•</span>
+                  <span className="text-zinc-400 font-bold">{mediaCount} {mediaCount === 1 ? 'Memory' : 'Memories'}</span>
                 </div>
               </div>
             </div>
@@ -275,7 +283,8 @@ function SortableChapterItem({
             )}
           </div>
           
-          <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity absolute right-4 top-1/2 -translate-y-1/2 bg-black/80 backdrop-blur-md p-2 rounded-xl border border-white/10">
+          {/* Desktop Hover Menu */}
+          <div className="hidden md:flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity absolute right-4 top-1/2 -translate-y-1/2 bg-black/80 backdrop-blur-md p-2 rounded-xl border border-white/10 shadow-2xl">
             <button onClick={() => setActiveChapterId(chapter.id)} className="p-2 text-zinc-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
               <Edit2 className="w-4 h-4" />
             </button>
@@ -284,11 +293,45 @@ function SortableChapterItem({
               <Trash2 className="w-4 h-4" />
             </button>
           </div>
-          {/* Mobile fallback */}
-          <div className="flex items-center gap-2 sm:hidden">
-            <button onClick={() => setActiveChapterId(chapter.id)} className="p-2 text-zinc-400 hover:text-white bg-white/5 rounded-lg">
-              <Edit2 className="w-4 h-4" />
-            </button>
+
+          {/* ───────────────────────────────────────────────────────────── */}
+          {/* MOBILE LAYOUT (below md) */}
+          {/* ───────────────────────────────────────────────────────────── */}
+          <div className="flex md:hidden flex-1 flex-col gap-2 w-full">
+            <div className="flex flex-row items-center gap-3">
+              {chapter.emoji && (
+                <span className="text-4xl filter drop-shadow-md bg-black/50 w-14 h-14 flex items-center justify-center rounded-xl border border-white/5 shrink-0">
+                  {chapter.emoji}
+                </span>
+              )}
+              <div className="flex flex-col min-w-0">
+                <h3 className="text-lg font-bold text-white tracking-tight truncate">{chapter.title}</h3>
+                {chapter.location && (
+                  <span className="text-sm text-zinc-400 mt-0.5 truncate">📍 {chapter.location}</span>
+                )}
+              </div>
+            </div>
+
+            {chapter.subtitle && (
+              <p className="text-zinc-400 text-sm italic break-words mt-1">&quot;{chapter.subtitle}&quot;</p>
+            )}
+
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs font-medium text-zinc-500 mt-2">
+              {chapter.layout && <span className="bg-white/5 px-2 py-1 rounded-md text-rose-400/90 whitespace-nowrap">🏷 {chapter.layout.replace('_', ' ')}</span>}
+              <span className="bg-white/5 px-2 py-1 rounded-md whitespace-nowrap text-zinc-300">
+                📸 {mediaCount} {mediaCount === 1 ? 'Memory' : 'Memories'}
+              </span>
+            </div>
+
+            {/* Mobile Action Buttons */}
+            <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-white/10 w-full">
+              <button onClick={() => setActiveChapterId(chapter.id)} className="w-full min-h-[44px] flex items-center justify-center gap-2 text-sm font-bold text-black bg-white hover:bg-zinc-200 transition-colors rounded-xl shadow-lg">
+                <Edit2 className="w-4 h-4" /> Edit Chapter
+              </button>
+              <button onClick={handleDelete} className="w-full min-h-[44px] flex items-center justify-center gap-2 text-sm font-bold text-red-400 bg-red-500/10 hover:bg-red-500/20 transition-colors rounded-xl">
+                <Trash2 className="w-4 h-4" /> Delete Chapter
+              </button>
+            </div>
           </div>
         </>
       )}

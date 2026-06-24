@@ -8,6 +8,7 @@ import { MediaAsset, Chapter } from "@prisma/client";
 import { GripVertical, MoreVertical, Trash2, MapPin, Image as ImageIcon, Type } from "lucide-react";
 import { deleteMedia, assignMediaToChapter, setCoverMedia } from "@/app/actions/media";
 import MediaDetailsDrawer from "./MediaDetailsDrawer";
+import { ConfirmModal } from "../ui/ConfirmModal";
 
 interface SortableMediaItemProps {
   asset: MediaAsset;
@@ -49,6 +50,7 @@ export default function SortableMediaItem({
   const [menuRect, setMenuRect] = useState<DOMRect | null>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   // Close menu on scroll or resize
   useEffect(() => {
@@ -85,11 +87,12 @@ export default function SortableMediaItem({
   const currentChapter = chapters?.find(c => c.id === asset.chapterId);
 
   const handleDelete = () => {
-    if (confirm("Are you sure you want to delete this media?")) {
-      startTransition(async () => {
-        if (storyId) await deleteMedia(storyId, asset.id);
-      });
-    }
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (storyId) await deleteMedia(storyId, asset.id);
+    setShowDeleteModal(false);
   };
 
   const handleSetCover = () => {
@@ -295,6 +298,15 @@ export default function SortableMediaItem({
           onClose={() => setShowDetailsModal(false)}
         />
       )}
+
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        title="Delete Media?"
+        description="Are you sure you want to delete this media?"
+        confirmText="Delete"
+        onConfirm={confirmDelete}
+        onCancel={() => setShowDeleteModal(false)}
+      />
     </div>
   );
 }

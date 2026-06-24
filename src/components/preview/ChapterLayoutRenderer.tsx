@@ -7,6 +7,7 @@ import { updateChapterLayout } from "@/app/actions/chapter";
 import { Play, MoreVertical, Trash2, MapPin, Image as ImageIcon, LayoutGrid, Heart, Film, Image as PolaroidIcon, List, Replace } from "lucide-react";
 import { CldUploadWidget } from "next-cloudinary";
 import HeartLayout from "./templates/layouts/HeartLayout";
+import { ConfirmModal } from "../ui/ConfirmModal";
 
 type EditableMediaItemProps = {
   item: MediaAsset;
@@ -20,13 +21,15 @@ type EditableMediaItemProps = {
 function EditableMediaCard({ item, storyId, chapters, isEditable, coverMediaId, onSelect }: EditableMediaItemProps) {
   const [isPending, startTransition] = useTransition();
   const [showMenu, setShowMenu] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const handleDelete = () => {
-    if (confirm("Are you sure you want to delete this media?")) {
-      startTransition(async () => {
-        await deleteMedia(storyId, item.id);
-      });
-    }
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    await deleteMedia(storyId, item.id);
+    setShowDeleteModal(false);
   };
 
   const handleSetCover = () => {
@@ -173,6 +176,15 @@ function EditableMediaCard({ item, storyId, chapters, isEditable, coverMediaId, 
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        title="Delete Media?"
+        description="Are you sure you want to delete this media?"
+        confirmText="Delete"
+        onConfirm={confirmDelete}
+        onCancel={() => setShowDeleteModal(false)}
+      />
     </div>
   );
 }

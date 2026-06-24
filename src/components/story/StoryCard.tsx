@@ -5,7 +5,9 @@ import { useState, useTransition } from "react";
 import { Story, StoryTemplate, MediaAsset } from "@prisma/client";
 import { deleteStory } from "@/app/actions/story";
 import { Play, Edit2, Share2, Trash2, BookOpen, Image as ImageIcon, Clock, ExternalLink } from "lucide-react";
+
 import toast from "react-hot-toast";
+import { ConfirmModal } from "../ui/ConfirmModal";
 
 type StoryWithRelations = Story & {
   template: StoryTemplate;
@@ -38,6 +40,7 @@ export default function StoryCard({ story }: { story: StoryWithRelations }) {
   const lastEdited = timeAgo(new Date(story.updatedAt));
   const [isPending, startTransition] = useTransition();
   const [isHovered, setIsHovered] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const coverImageUrl =
     story.coverMedia?.url ||
@@ -55,10 +58,12 @@ export default function StoryCard({ story }: { story: StoryWithRelations }) {
   };
 
   const handleDelete = () => {
-    if (!confirm("Delete this story? This cannot be undone.")) return;
-    startTransition(async () => {
-      await deleteStory(story.id);
-    });
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    await deleteStory(story.id);
+    setShowDeleteModal(false);
   };
 
   return (
@@ -193,6 +198,15 @@ export default function StoryCard({ story }: { story: StoryWithRelations }) {
           </Link>
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        title="Delete Story?"
+        description="This action cannot be undone."
+        confirmText="Delete Story"
+        onConfirm={confirmDelete}
+        onCancel={() => setShowDeleteModal(false)}
+      />
     </div>
   );
 }
