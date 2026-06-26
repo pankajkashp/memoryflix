@@ -65,7 +65,7 @@ export default function MediaDetailsDrawer({
           exit={{ opacity: 0 }}
           className="absolute inset-0 bg-black/60 backdrop-blur-sm cursor-pointer"
           onClick={onClose}
-        />
+        ></motion.div>
 
         {/* Drawer */}
         <motion.div
@@ -88,55 +88,55 @@ export default function MediaDetailsDrawer({
 
           {/* Body */}
           <div className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
-          {/* Title */}
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium text-zinc-400">Title</label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="E.g., The Eiffel Tower"
-              className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-rose-500/50 focus:border-rose-500/50 transition-all"
-            />
-          </div>
-
-          {/* Memory Note */}
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium text-zinc-400">Memory Note</label>
-            <textarea
-              value={memoryNote}
-              onChange={(e) => setMemoryNote(e.target.value)}
-              placeholder="What made this memory special?"
-              rows={5}
-              className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-rose-500/50 focus:border-rose-500/50 transition-all resize-none text-base"
-            />
-            <p className="text-xs text-zinc-500">This will appear in a handwritten style in your preview.</p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            {/* Location */}
+            {/* Title */}
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-zinc-400">Location</label>
+              <label className="text-sm font-medium text-zinc-400">Title</label>
               <input
                 type="text"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                placeholder="Paris, France"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="E.g., The Eiffel Tower"
                 className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-rose-500/50 focus:border-rose-500/50 transition-all"
               />
             </div>
 
-            {/* Date */}
+            {/* Memory Note */}
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-zinc-400">Date</label>
-              <input
-                type="date"
-                value={memoryDate}
-                onChange={(e) => setMemoryDate(e.target.value)}
-                className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-rose-500/50 focus:border-rose-500/50 transition-all [color-scheme:dark]"
+              <label className="text-sm font-medium text-zinc-400">Memory Note</label>
+              <textarea
+                value={memoryNote}
+                onChange={(e) => setMemoryNote(e.target.value)}
+                placeholder="What made this memory special?"
+                rows={5}
+                className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-rose-500/50 focus:border-rose-500/50 transition-all resize-none text-base"
               />
+              <p className="text-xs text-zinc-500">This will appear in a handwritten style in your preview.</p>
             </div>
-          </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              {/* Location */}
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-zinc-400">Location</label>
+                <input
+                  type="text"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder="Paris, France"
+                  className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-rose-500/50 focus:border-rose-500/50 transition-all"
+                />
+              </div>
+
+              {/* Date */}
+              <div className="space-y-1.5">
+                <label className="text-sm font-medium text-zinc-400">Date</label>
+                <input
+                  type="date"
+                  value={memoryDate}
+                  onChange={(e) => setMemoryDate(e.target.value)}
+                  className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-rose-500/50 focus:border-rose-500/50 transition-all [color-scheme:dark]"
+                />
+              </div>
+            </div>
           </div>
 
           {/* Footer */}

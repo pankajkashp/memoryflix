@@ -239,17 +239,17 @@ export default function SortableMediaItem({
         </div>
 
         {/* ── Badges ──────────────────────────────────────────────── */}
-        <div className="absolute bottom-2 left-2 z-10 flex flex-col gap-1 items-start pointer-events-none">
+        <div className="absolute bottom-2 left-2 right-2 z-10 flex flex-col gap-1 items-start pointer-events-none">
           {asset.id === coverMediaId && (
-            <div className="rounded-full bg-gradient-to-r from-rose-500 to-purple-600 px-3 py-1 text-[10px] font-bold text-white shadow-lg tracking-wider">
+            <div className="rounded-full bg-gradient-to-r from-rose-500 to-purple-600 px-3 py-1 text-[10px] font-bold text-white shadow-lg tracking-wider shrink-0 max-w-full truncate">
               COVER
             </div>
           )}
           
           {currentChapter && (
-            <div className="rounded-full bg-black/60 backdrop-blur-md px-2 py-1 text-[10px] font-bold text-white/90 border border-white/10 flex items-center gap-1 shadow-lg max-w-[120px]">
-              <MapPin className="w-3 h-3 text-rose-400 shrink-0" />
-              <span className="truncate">{currentChapter.title}</span>
+            <div className="rounded-full bg-black/60 backdrop-blur-md px-2 py-1 text-[8px] sm:text-[10px] font-bold text-white/90 border border-white/10 flex items-center gap-1 shadow-lg max-w-full min-w-0">
+              <MapPin className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-rose-400 shrink-0" />
+              <span className="truncate min-w-0">{currentChapter.title}</span>
             </div>
           )}
         </div>

@@ -24,7 +24,7 @@ import { GripVertical, Plus, Trash2, Edit2, Check, X, Loader2, Music } from "luc
 import { motion, AnimatePresence } from "framer-motion";
 import { ConfirmModal } from "../ui/ConfirmModal";
 import MusicSelector from "./MusicSelector";
-
+import EditChapterModal from "./EditChapterModal";
 import ChapterMediaManager from "./ChapterMediaManager";
 
 function SortableChapterItem({ 
@@ -44,67 +44,7 @@ function SortableChapterItem({
   setActiveChapterId: (id: string | null) => void;
   onDraftChange: (draft: Partial<Chapter> | null) => void;
 }) {
-  const isEditing = activeChapterId === chapter.id;
-  const [title, setTitle] = useState(chapter.title);
-  const [emoji, setEmoji] = useState(chapter.emoji || "");
-  const [isPending, startTransition] = useTransition();
-
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [layout, setLayout] = useState(chapter.layout || "MASONRY");
-  const [subtitle, setSubtitle] = useState(chapter.subtitle || "");
-  const [location, setLocation] = useState(chapter.location || "");
-  const [date, setDate] = useState(chapter.date ? new Date(chapter.date).toISOString().split('T')[0] : "");
-
-  useEffect(() => {
-    // Only sync from server if we are NOT currently editing this chapter.
-    // Otherwise, server revalidations can overwrite the user's active typing.
-    if (!isEditing) {
-      setTitle(chapter.title);
-      setEmoji(chapter.emoji || "");
-      setLayout(chapter.layout || "MASONRY");
-      setSubtitle(chapter.subtitle || "");
-      setLocation(chapter.location || "");
-      setDate(chapter.date ? new Date(chapter.date).toISOString().split('T')[0] : "");
-    }
-  }, [chapter, isEditing]);
-
-  useEffect(() => {
-    if (isEditing) {
-      // 1. Instantly update draft for UI live preview
-      onDraftChange({
-        id: chapter.id,
-        title,
-        emoji,
-        layout,
-        subtitle,
-        location,
-        date: date ? new Date(date) : null
-      } as any);
-
-      // 2. Debounced save to DB for persistence
-      if (title.trim() && (title !== chapter.title || emoji !== (chapter.emoji || "") || layout !== (chapter.layout || "MASONRY") || subtitle !== (chapter.subtitle || "") || location !== (chapter.location || "") || date !== (chapter.date ? new Date(chapter.date).toISOString().split('T')[0] : ""))) {
-        const timeoutId = setTimeout(() => {
-          startTransition(async () => {
-            const { updateChapter, updateChapterLayout } = await import("@/app/actions/chapter");
-            await updateChapter(
-              storyId, 
-              chapter.id, 
-              title, 
-              emoji || null,
-              subtitle || null,
-              date || null,
-              location || null
-            );
-            if (layout !== chapter.layout) {
-              await updateChapterLayout(storyId, chapter.id, layout);
-            }
-          });
-        }, 1000);
-
-        return () => clearTimeout(timeoutId);
-      }
-    }
-  }, [isEditing, title, emoji, layout, subtitle, location, date, chapter, storyId, onDraftChange]);
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: chapter.id });
 
@@ -114,28 +54,8 @@ function SortableChapterItem({
     zIndex: isDragging ? 50 : 1,
   };
 
-  const handleSave = () => {
-    if (!title.trim()) return;
-    startTransition(async () => {
-      const { updateChapter, updateChapterLayout } = await import("@/app/actions/chapter");
-      await updateChapter(
-        storyId, 
-        chapter.id, 
-        title, 
-        emoji || null,
-        subtitle || null,
-        date || null,
-        location || null
-      );
-      if (layout !== chapter.layout) {
-        await updateChapterLayout(storyId, chapter.id, layout);
-      }
-      setActiveChapterId(null);
-      onDraftChange(null);
-    });
-  };
-
-  const handleDelete = () => {
+  const handleDelete = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     setShowDeleteModal(true);
   };
 
@@ -148,193 +68,104 @@ function SortableChapterItem({
     <div
       ref={setNodeRef}
       style={style}
-      className={`group relative flex items-center gap-4 p-4 rounded-2xl border transition-all ${
+      className={`group relative flex items-start md:items-center gap-3 md:gap-4 p-4 rounded-2xl border transition-all ${
         isDragging 
           ? "bg-black/90 border-rose-500 shadow-[0_0_30px_rgba(244,63,94,0.3)] scale-[1.02]" 
           : "bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/10"
       } backdrop-blur-xl`}
     >
-      <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing p-2 text-zinc-500 hover:text-white transition-colors bg-black/50 rounded-lg">
+      <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing p-2 text-zinc-500 hover:text-white transition-colors bg-black/50 rounded-lg shrink-0 mt-1 md:mt-0">
         <GripVertical className="w-5 h-5" />
       </div>
 
-      {isEditing ? (
-        <div className="flex-1 flex flex-col gap-3">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <input
-                type="text"
-                value={emoji}
-                onChange={(e) => setEmoji(e.target.value)}
-                placeholder="😀"
-                maxLength={2}
-                className="w-12 text-center rounded-lg border border-white/10 bg-black/50 px-2 py-1.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-rose-500"
-              />
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Chapter Title"
-                className="flex-1 sm:w-48 rounded-lg border border-white/10 bg-black/50 px-3 py-1.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-rose-500"
-                autoFocus
-                onKeyDown={(e) => e.key === "Enter" && handleSave()}
-              />
-            </div>
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <select
-                value={layout}
-                onChange={(e) => setLayout(e.target.value)}
-                className="flex-1 sm:flex-none sm:w-40 rounded-lg border border-white/10 bg-black/50 px-2 py-1.5 text-sm text-white focus:outline-none focus:border-rose-500 appearance-none"
-              >
-                <option value="MASONRY">Masonry Grid</option>
-                <option value="FILM_STRIP">Film Strip</option>
-                <option value="POLAROID">Polaroid Memories</option>
-                <option value="TIMELINE">Timeline Story</option>
-                <option value="HEART" disabled={mediaCount < 12}>
-                  Heart Layout {mediaCount < 12 ? "(12+ Photos)" : "❤️"}
-                </option>
-              </select>
-              <button onClick={handleSave} disabled={isPending} className="p-1.5 text-green-400 hover:bg-green-400/10 rounded-lg shrink-0">
-                {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-              </button>
-              <button onClick={() => { setActiveChapterId(null); onDraftChange(null); }} disabled={isPending} className="p-1.5 text-zinc-400 hover:bg-white/10 rounded-lg shrink-0">
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-          
-          <div className="flex flex-col sm:flex-row items-center gap-2">
-            <input
-              type="text"
-              value={subtitle}
-              onChange={(e) => setSubtitle(e.target.value)}
-              placeholder="Subtitle (e.g. Our first adventure)"
-              className="w-full sm:flex-1 rounded-lg border border-white/10 bg-black/50 px-3 py-1.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-rose-500"
-            />
-            <input
-              type="text"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              placeholder="Location (e.g. Paris, France)"
-              className="w-full sm:w-48 rounded-lg border border-white/10 bg-black/50 px-3 py-1.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-rose-500"
-            />
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="w-full sm:w-40 rounded-lg border border-white/10 bg-black/50 px-3 py-1.5 text-sm text-white focus:outline-none focus:border-rose-500"
-            />
-          </div>
-          
-          <div className="mt-4 pt-4 border-t border-white/10">
-            <p className="text-sm font-bold text-rose-500 mb-4 flex items-center gap-2">
-              <Music className="w-4 h-4" /> Chapter Soundtrack
-            </p>
-            <MusicSelector 
-              storyId={storyId}
-              chapterId={chapter.id}
-              currentTrackId={chapter.musicTrack}
-              currentMusicType={chapter.musicType}
-              currentMusicUrl={chapter.musicUrl}
-            />
-          </div>
-
-          <ChapterMediaManager 
-            storyId={storyId} 
-            chapter={chapter as any} 
-            allMedia={allMedia} 
-          />
-        </div>
-      ) : (
-        <>
-          {/* ───────────────────────────────────────────────────────────── */}
-          {/* DESKTOP LAYOUT (md and above) */}
-          {/* ───────────────────────────────────────────────────────────── */}
-          <div className="hidden md:flex flex-1 flex-col gap-1">
-            <div className="flex items-center gap-3">
-              {chapter.emoji && (
-                <span className="text-3xl filter drop-shadow-md bg-black/50 w-12 h-12 flex items-center justify-center rounded-xl border border-white/5">
-                  {chapter.emoji}
-                </span>
-              )}
-              <div>
-                <h3 className="text-xl font-bold text-white tracking-tight">{chapter.title}</h3>
-                <div className="flex items-center gap-3 text-sm font-medium text-zinc-500 mt-1">
-                  {chapter.date && <span>{new Date(chapter.date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>}
-                  {chapter.date && chapter.location && <span>•</span>}
-                  {chapter.location && <span>📍 {chapter.location}</span>}
-                  {(chapter.date || chapter.location) && chapter.layout && <span>•</span>}
-                  {chapter.layout && <span className="text-rose-500/80">{chapter.layout.replace('_', ' ')}</span>}
-                  {chapter.musicType && chapter.musicType !== "NONE" && (
-                    <>
-                      <span>•</span>
-                      <span className="flex items-center gap-1 text-purple-400">
-                        <Music className="w-3 h-3" /> Soundtrack
-                      </span>
-                    </>
-                  )}
-                  <span>•</span>
-                  <span className="text-zinc-400 font-bold">{mediaCount} {mediaCount === 1 ? 'Memory' : 'Memories'}</span>
-                </div>
-              </div>
-            </div>
-            {chapter.subtitle && (
-              <p className="text-zinc-400 text-sm mt-2 ml-[3.75rem] italic">&quot;{chapter.subtitle}&quot;</p>
-            )}
-          </div>
-          
-          {/* Desktop Hover Menu */}
-          <div className="hidden md:flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity absolute right-4 top-1/2 -translate-y-1/2 bg-black/80 backdrop-blur-md p-2 rounded-xl border border-white/10 shadow-2xl">
-            <button onClick={() => setActiveChapterId(chapter.id)} className="p-2 text-zinc-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
-              <Edit2 className="w-4 h-4" />
-            </button>
-            <div className="w-[1px] h-4 bg-white/10" />
-            <button onClick={handleDelete} className="p-2 text-zinc-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors">
-              <Trash2 className="w-4 h-4" />
-            </button>
-          </div>
-
-          {/* ───────────────────────────────────────────────────────────── */}
-          {/* MOBILE LAYOUT (below md) */}
-          {/* ───────────────────────────────────────────────────────────── */}
-          <div className="flex md:hidden flex-1 flex-col gap-2 w-full">
-            <div className="flex flex-row items-center gap-3">
-              {chapter.emoji && (
-                <span className="text-4xl filter drop-shadow-md bg-black/50 w-14 h-14 flex items-center justify-center rounded-xl border border-white/5 shrink-0">
-                  {chapter.emoji}
-                </span>
-              )}
-              <div className="flex flex-col min-w-0">
-                <h3 className="text-lg font-bold text-white tracking-tight truncate">{chapter.title}</h3>
-                {chapter.location && (
-                  <span className="text-sm text-zinc-400 mt-0.5 truncate">📍 {chapter.location}</span>
-                )}
-              </div>
-            </div>
-
-            {chapter.subtitle && (
-              <p className="text-zinc-400 text-sm italic break-words mt-1">&quot;{chapter.subtitle}&quot;</p>
-            )}
-
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs font-medium text-zinc-500 mt-2">
-              {chapter.layout && <span className="bg-white/5 px-2 py-1 rounded-md text-rose-400/90 whitespace-nowrap">🏷 {chapter.layout.replace('_', ' ')}</span>}
-              <span className="bg-white/5 px-2 py-1 rounded-md whitespace-nowrap text-zinc-300">
-                📸 {mediaCount} {mediaCount === 1 ? 'Memory' : 'Memories'}
+      <div className="flex-1 min-w-0 w-full">
+        {/* ───────────────────────────────────────────────────────────── */}
+        {/* DESKTOP LAYOUT (md and above) */}
+        {/* ───────────────────────────────────────────────────────────── */}
+        <div className="hidden md:flex flex-col gap-1 w-full min-w-0">
+          <div className="flex items-center gap-3">
+            {chapter.emoji && (
+              <span className="text-3xl filter drop-shadow-md bg-black/50 w-12 h-12 flex items-center justify-center rounded-xl border border-white/5 shrink-0">
+                {chapter.emoji}
               </span>
-            </div>
-
-            {/* Mobile Action Buttons */}
-            <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-white/10 w-full">
-              <button onClick={() => setActiveChapterId(chapter.id)} className="w-full min-h-[44px] flex items-center justify-center gap-2 text-sm font-bold text-black bg-white hover:bg-zinc-200 transition-colors rounded-xl shadow-lg">
-                <Edit2 className="w-4 h-4" /> Edit Chapter
-              </button>
-              <button onClick={handleDelete} className="w-full min-h-[44px] flex items-center justify-center gap-2 text-sm font-bold text-red-400 bg-red-500/10 hover:bg-red-500/20 transition-colors rounded-xl">
-                <Trash2 className="w-4 h-4" /> Delete Chapter
-              </button>
+            )}
+            <div className="min-w-0 flex-1">
+              <h3 className="text-xl font-bold text-white tracking-tight truncate">{chapter.title}</h3>
+              <div className="flex items-center flex-wrap gap-3 text-sm font-medium text-zinc-500 mt-1">
+                {chapter.date && <span className="whitespace-nowrap">{new Date(chapter.date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>}
+                {chapter.date && chapter.location && <span>•</span>}
+                {chapter.location && <span className="whitespace-nowrap truncate max-w-[200px]">📍 {chapter.location}</span>}
+                {(chapter.date || chapter.location) && chapter.layout && <span>•</span>}
+                {chapter.layout && <span className="text-rose-500/80 whitespace-nowrap">{chapter.layout.replace('_', ' ')}</span>}
+                {chapter.musicType && chapter.musicType !== "NONE" && (
+                  <>
+                    <span>•</span>
+                    <span className="flex items-center gap-1 text-purple-400 whitespace-nowrap">
+                      <Music className="w-3 h-3" /> Soundtrack
+                    </span>
+                  </>
+                )}
+                <span>•</span>
+                <span className="text-zinc-400 font-bold whitespace-nowrap">{mediaCount} {mediaCount === 1 ? 'Memory' : 'Memories'}</span>
+              </div>
             </div>
           </div>
-        </>
-      )}
+          {chapter.subtitle && (
+            <p className="text-zinc-400 text-sm mt-2 ml-[3.75rem] italic truncate">&quot;{chapter.subtitle}&quot;</p>
+          )}
+        </div>
+        
+        {/* Desktop Hover Menu */}
+        <div className="hidden md:flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity absolute right-4 top-1/2 -translate-y-1/2 bg-black/80 backdrop-blur-md p-2 rounded-xl border border-white/10 shadow-2xl">
+          <button onClick={(e) => { e.stopPropagation(); setActiveChapterId(chapter.id); }} className="p-2 text-zinc-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors">
+            <Edit2 className="w-4 h-4" />
+          </button>
+          <div className="w-[1px] h-4 bg-white/10" />
+          <button onClick={handleDelete} className="p-2 text-zinc-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors">
+            <Trash2 className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* ───────────────────────────────────────────────────────────── */}
+        {/* MOBILE LAYOUT (below md) */}
+        {/* ───────────────────────────────────────────────────────────── */}
+        <div className="flex md:hidden flex-col gap-2 w-full min-w-0">
+          <div className="flex flex-row items-start gap-3 w-full min-w-0">
+            {chapter.emoji && (
+              <span className="text-3xl sm:text-4xl filter drop-shadow-md bg-black/50 w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center rounded-xl border border-white/5 shrink-0">
+                {chapter.emoji}
+              </span>
+            )}
+            <div className="flex flex-col min-w-0 flex-1">
+              <h3 className="text-base sm:text-lg font-bold text-white tracking-tight break-words leading-tight">{chapter.title}</h3>
+              {chapter.location && (
+                <span className="text-xs sm:text-sm text-zinc-400 mt-1 truncate">📍 {chapter.location}</span>
+              )}
+            </div>
+          </div>
+
+          {chapter.subtitle && (
+            <p className="text-zinc-400 text-xs sm:text-sm italic break-words mt-1">&quot;{chapter.subtitle}&quot;</p>
+          )}
+
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-[10px] sm:text-xs font-medium text-zinc-500 mt-2">
+            {chapter.layout && <span className="bg-white/5 px-2 py-1 rounded-md text-rose-400/90 whitespace-nowrap">🏷 {chapter.layout.replace('_', ' ')}</span>}
+            <span className="bg-white/5 px-2 py-1 rounded-md whitespace-nowrap text-zinc-300">
+              📸 {mediaCount} {mediaCount === 1 ? 'Memory' : 'Memories'}
+            </span>
+          </div>
+
+          {/* Mobile Action Buttons */}
+          <div className="flex flex-row gap-2 mt-3 pt-3 border-t border-white/10 w-full">
+            <button onClick={(e) => { e.stopPropagation(); setActiveChapterId(chapter.id); }} className="flex-1 py-2 px-2 sm:px-4 min-h-[40px] flex items-center justify-center gap-1.5 text-xs sm:text-sm font-bold text-black bg-white hover:bg-zinc-200 transition-colors rounded-lg shadow-lg whitespace-nowrap">
+              <Edit2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> Edit
+            </button>
+            <button onClick={handleDelete} className="flex-1 py-2 px-2 sm:px-4 min-h-[40px] flex items-center justify-center gap-1.5 text-xs sm:text-sm font-bold text-red-400 bg-red-500/10 hover:bg-red-500/20 transition-colors rounded-lg whitespace-nowrap">
+              <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> Delete
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -423,7 +254,7 @@ export default function ChapterEditor({
             <button 
               onClick={handleCreateEmpty}
               disabled={isPending}
-              className="mt-8 bg-rose-500 hover:bg-rose-600 text-white font-bold py-3 px-8 rounded-full transition-colors shadow-lg shadow-rose-500/20 flex items-center gap-2 disabled:opacity-50"
+              className="mt-6 md:mt-8 bg-rose-500 hover:bg-rose-600 text-white font-bold py-3 px-6 md:px-8 rounded-full transition-colors shadow-lg shadow-rose-500/20 flex items-center gap-2 disabled:opacity-50 text-sm md:text-base w-full md:w-auto justify-center"
             >
               {isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Plus className="w-5 h-5" />} Start First Chapter
             </button>
@@ -450,13 +281,25 @@ export default function ChapterEditor({
           whileTap={{ scale: 0.99 }}
           onClick={handleCreateEmpty}
           disabled={isPending}
-          className="w-full flex flex-col items-center justify-center gap-3 py-8 rounded-2xl border-2 border-dashed border-white/20 text-zinc-400 hover:text-white hover:border-white/40 hover:bg-white/5 transition-colors group disabled:opacity-50"
+          className="w-full flex flex-col items-center justify-center gap-3 py-6 md:py-8 rounded-2xl border-2 border-dashed border-white/20 text-zinc-400 hover:text-white hover:border-white/40 hover:bg-white/5 transition-colors group disabled:opacity-50"
         >
           <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-colors">
             <Plus className="w-6 h-6" />
           </div>
           <span className="font-bold tracking-wide">Create New Chapter</span>
         </motion.button>
+      )}
+
+      {activeChapterId && chapters.find(c => c.id === activeChapterId) && (
+        <EditChapterModal
+          isOpen={true}
+          onClose={() => setActiveChapterId(null)}
+          chapter={chapters.find(c => c.id === activeChapterId)!}
+          storyId={storyId}
+          allMedia={media}
+          mediaCount={media.filter(m => m.chapterId === activeChapterId).length}
+          onDraftChange={onDraftChange}
+        />
       )}
     </div>
   );

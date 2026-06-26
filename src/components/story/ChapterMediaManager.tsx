@@ -148,7 +148,7 @@ export default function ChapterMediaManager({
           <p className="text-sm text-zinc-400 mt-1">{chapterMedia.length} memories assigned</p>
         </div>
         
-        <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2 w-full sm:w-auto">
+        <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 w-full sm:w-auto">
           <MediaUploader storyId={storyId} chapterId={chapter.id} />
           
           <button
@@ -179,7 +179,7 @@ export default function ChapterMediaManager({
       ) : (
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={chapterMedia.map(m => m.id)} strategy={rectSortingStrategy}>
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
               {chapterMedia.map(asset => (
                 <SortableGridItem key={asset.id} asset={asset} onRemove={handleRemoveFromChapter} />
               ))}

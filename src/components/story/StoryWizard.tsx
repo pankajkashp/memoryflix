@@ -337,10 +337,10 @@ export default function StoryWizard({
                         <Link
                           href={`/stories/${story.id}/preview`}
                           target="_blank"
-                          className="inline-flex items-center justify-center gap-3 rounded-full bg-white text-black px-10 py-5 font-black text-lg hover:bg-zinc-200 transition-all shadow-xl shadow-white/10 hover:scale-105 active:scale-95 group"
+                          className="inline-flex items-center justify-center gap-2 sm:gap-3 rounded-full bg-white text-black px-6 py-3 sm:px-10 sm:py-5 font-black text-sm sm:text-lg hover:bg-zinc-200 transition-all shadow-xl shadow-white/10 hover:scale-105 active:scale-95 group whitespace-nowrap"
                         >
                           Watch Cinematic Preview
-                          <svg className="w-5 h-5 ml-1 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                          <svg className="w-4 h-4 sm:w-5 sm:h-5 ml-1 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
                         </Link>
                       </>
                     )}
@@ -458,11 +458,11 @@ export default function StoryWizard({
         </div>
 
         {/* ── Footer Navigation ────────────────────────────────────────────── */}
-        <div className="relative z-10 mt-12 pt-6 border-t border-white/10 flex items-center justify-between">
+        <div className="relative z-10 mt-12 pt-6 border-t border-white/10 flex items-center justify-between gap-3">
           <button
             onClick={prevStep}
             disabled={currentStep === 1}
-            className="rounded-full bg-white/5 border border-white/10 px-6 py-2.5 text-sm font-semibold text-white hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-white/5 transition-colors"
+            className="rounded-full bg-white/5 border border-white/10 px-4 py-2 sm:px-6 sm:py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-white/5 transition-colors whitespace-nowrap"
           >
             Previous
           </button>
@@ -470,7 +470,7 @@ export default function StoryWizard({
           <button
             onClick={nextStep}
             disabled={currentStep === STEPS.length}
-            className="rounded-full bg-gradient-to-r from-rose-500 to-purple-600 px-8 py-2.5 text-sm font-bold text-white shadow-lg shadow-rose-600/20 hover:from-rose-400 hover:to-purple-500 disabled:opacity-30 disabled:hover:from-rose-500 disabled:hover:to-purple-600 transition-all hover:scale-105 active:scale-95"
+            className="rounded-full bg-gradient-to-r from-rose-500 to-purple-600 px-4 py-2 sm:px-8 sm:py-2.5 text-xs sm:text-sm font-bold text-white shadow-lg shadow-rose-600/20 hover:from-rose-400 hover:to-purple-500 disabled:opacity-30 disabled:hover:from-rose-500 disabled:hover:to-purple-600 transition-all hover:scale-105 active:scale-95 whitespace-nowrap"
           >
             {currentStep === STEPS.length - 1 ? "Proceed to Publish" : "Next Step"}
           </button>

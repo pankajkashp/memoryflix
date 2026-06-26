@@ -326,28 +326,28 @@ export default function NetflixTemplate({
   return (
     <div className={`${fontClassName} bg-[#0f0f0f] min-h-screen text-white font-sans selection:bg-rose-500/30`}>
       {/* 1. Cover Hero */}
-      <div className="relative w-full h-[90vh] flex items-end pb-24 overflow-hidden">
+      <div className="relative w-full h-[100svh] sm:h-[90vh] flex items-end pb-4 sm:pb-24 overflow-hidden">
         {coverImage && (
           <div className="absolute inset-0 z-0">
             {coverImage.type === "VIDEO" ? (
-              <video src={coverImage.url} className="w-full h-full object-cover opacity-60 scale-105" autoPlay muted loop playsInline />
+              <video src={coverImage.url} className="w-full h-full object-cover opacity-80 sm:opacity-60 scale-105" autoPlay muted loop playsInline />
             ) : (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={coverImage.url} alt="Cover" className="w-full h-full object-cover opacity-60 scale-105" />
+              <img src={coverImage.url} alt="Cover" className="w-full h-full object-cover opacity-80 sm:opacity-60 scale-105" />
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f0f] via-[#0f0f0f]/50 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#0f0f0f]/80 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f0f] via-[#0f0f0f]/30 sm:via-[#0f0f0f]/50 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#0f0f0f]/50 sm:from-[#0f0f0f]/80 via-transparent to-transparent" />
           </div>
         )}
 
-        <div className="relative z-10 px-8 md:px-16 max-w-5xl">
+        <div className="relative z-10 px-5 md:px-16 max-w-5xl w-full">
           {story.occasion && (
-            <p className={`${accentConfig.text} font-bold tracking-widest uppercase mb-4 text-sm drop-shadow-md`}>
+            <p className={`${accentConfig.text} font-bold tracking-widest uppercase mb-2 sm:mb-4 text-[10px] sm:text-sm drop-shadow-md`}>
               {story.occasion}
             </p>
           )}
-          <h1 className={`${presetConfig.heroStyle} ${accentConfig.text} mb-6 leading-none`}>{story.title}</h1>
-          <div className="flex items-center gap-4 text-zinc-300 font-medium mb-8 text-lg drop-shadow-md">
+          <h1 className={`${presetConfig.heroStyle} ${accentConfig.text} mb-3 sm:mb-6 leading-tight break-words max-w-full !text-4xl sm:!text-6xl md:!text-7xl`}>{story.title}</h1>
+          <div className="flex items-center flex-wrap gap-2 sm:gap-4 text-zinc-300 font-medium mb-5 sm:mb-8 text-xs sm:text-lg drop-shadow-md">
             {story.eventDate && <span>{new Date(story.eventDate).getFullYear()}</span>}
             {story.eventDate && chaptersWithMedia.length > 0 && <span>•</span>}
             {chaptersWithMedia.length > 0 && <span>{chaptersWithMedia.length} Chapters</span>}
@@ -355,32 +355,32 @@ export default function NetflixTemplate({
             <span>{story.media.length} Memories</span>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex flex-row flex-wrap items-center gap-2 sm:gap-4 w-full">
             {hasMedia && (
               <button
                 onClick={() => setIsCinematicPlaying(true)}
-                className="flex items-center gap-2 bg-white text-black px-8 py-3.5 rounded-md font-bold text-lg hover:bg-zinc-200 transition-colors"
+                className="flex-1 min-w-[120px] flex items-center justify-center gap-1.5 sm:gap-2 bg-white text-black px-3 sm:px-8 py-2.5 sm:py-3.5 rounded-md font-bold text-sm sm:text-lg hover:bg-zinc-200 transition-colors whitespace-nowrap"
               >
-                <Play className="w-6 h-6 fill-current" /> Play Story
+                <Play className="w-4 h-4 sm:w-6 sm:h-6 fill-current shrink-0" /> Play Story
               </button>
             )}
             {chaptersWithMedia.length > 0 && (
               <button
                 onClick={() => openChapter(chaptersWithMedia[0].chapter.id)}
-                className="flex items-center gap-2 bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 px-8 py-3.5 rounded-md font-bold text-lg backdrop-blur-md transition-colors border border-rose-500/30"
+                className="flex-1 min-w-[120px] flex items-center justify-center gap-1.5 sm:gap-2 bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 px-3 sm:px-8 py-2.5 sm:py-3.5 rounded-md font-bold text-sm sm:text-lg backdrop-blur-md transition-colors border border-rose-500/30 whitespace-nowrap"
               >
-                Start Chapter 1 <ChevronRight className="w-6 h-6" />
+                Start Chapter 1 <ChevronRight className="w-4 h-4 sm:w-6 sm:h-6 shrink-0" />
               </button>
             )}
             <button
               onClick={handleShare}
-              className="flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white px-8 py-3.5 rounded-md font-bold text-lg backdrop-blur-md transition-colors"
+              className="flex-1 min-w-[100px] flex items-center justify-center gap-1.5 sm:gap-2 bg-white/20 hover:bg-white/30 text-white px-3 sm:px-8 py-2.5 sm:py-3.5 rounded-md font-bold text-sm sm:text-lg backdrop-blur-md transition-colors whitespace-nowrap"
             >
-              <Share2 className="w-6 h-6" /> Share
+              <Share2 className="w-4 h-4 sm:w-6 sm:h-6 shrink-0" /> Share
             </button>
           </div>
           {story.description && (
-            <p className="mt-8 text-zinc-300 max-w-2xl text-lg leading-relaxed drop-shadow-md">
+            <p className="mt-4 sm:mt-8 text-zinc-300 max-w-2xl text-xs sm:text-lg leading-relaxed drop-shadow-md break-words">
               {story.description}
             </p>
           )}
