@@ -19,6 +19,7 @@ export const metadata: Metadata = {
 };
 
 import { Toaster } from "react-hot-toast";
+import SiteLoader from "@/components/common/SiteLoader";
 
 export default function RootLayout({
   children,
@@ -31,6 +32,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${fontVariables} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col overflow-x-hidden">
+        <SiteLoader />
         {children}
         <Toaster position="bottom-right" />
       </body>

@@ -5,6 +5,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import StoryCard from "@/components/story/StoryCard";
 import RotatingQuote from "@/components/dashboard/RotatingQuote";
+import DashboardAnimations from "@/components/dashboard/DashboardAnimations";
 import { Clock, Play, Plus, Film, Image as ImageIcon, BookOpen, CheckCircle } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -44,7 +45,10 @@ export default async function DashboardPage() {
   const totalChapters = stories.reduce((sum, s) => sum + (s._count?.chapters || 0), 0);
 
   return (
-    <div className="relative min-h-screen bg-[#09090b] overflow-hidden pb-32">
+    <div className="relative min-h-screen bg-[#09090b] overflow-hidden pb-32" data-dash-root>
+      {/* GSAP animation controller */}
+      <DashboardAnimations />
+
       {/* ── Ambient Background (V2) ─────────────────────────────────────────── */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-rose-500/10 blur-[120px] mix-blend-screen animate-pulse-slow" />
@@ -57,47 +61,67 @@ export default async function DashboardPage() {
         
         {/* ── Compact Top Section ───────────────────────────────────────────── */}
         <div className="mb-12">
-          <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-8">
+          <h1
+            className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-8"
+            data-dash-heading
+            style={{ willChange: "transform, opacity" }}
+          >
             Welcome Back, {userName} ❤️
           </h1>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-4 backdrop-blur-md hover:bg-white/10 transition-colors">
+            <div
+              className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-4 backdrop-blur-md hover:bg-white/10 transition-colors"
+              data-dash-stat
+              style={{ willChange: "transform, opacity" }}
+            >
               <div className="w-10 h-10 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center">
                 <Film className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-white leading-none">{totalStories}</p>
+                <p className="text-2xl font-bold text-white leading-none" data-dash-stat-num>{totalStories}</p>
                 <p className="text-xs text-zinc-400 font-medium mt-1 uppercase tracking-wider">Stories</p>
               </div>
             </div>
             
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-4 backdrop-blur-md hover:bg-white/10 transition-colors">
+            <div
+              className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-4 backdrop-blur-md hover:bg-white/10 transition-colors"
+              data-dash-stat
+              style={{ willChange: "transform, opacity" }}
+            >
               <div className="w-10 h-10 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center">
                 <CheckCircle className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-white leading-none">{publishedStories}</p>
+                <p className="text-2xl font-bold text-white leading-none" data-dash-stat-num>{publishedStories}</p>
                 <p className="text-xs text-zinc-400 font-medium mt-1 uppercase tracking-wider">Published</p>
               </div>
             </div>
 
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-4 backdrop-blur-md hover:bg-white/10 transition-colors">
+            <div
+              className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-4 backdrop-blur-md hover:bg-white/10 transition-colors"
+              data-dash-stat
+              style={{ willChange: "transform, opacity" }}
+            >
               <div className="w-10 h-10 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center">
                 <ImageIcon className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-white leading-none">{totalPhotos}</p>
+                <p className="text-2xl font-bold text-white leading-none" data-dash-stat-num>{totalPhotos}</p>
                 <p className="text-xs text-zinc-400 font-medium mt-1 uppercase tracking-wider">Photos</p>
               </div>
             </div>
 
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-4 backdrop-blur-md hover:bg-white/10 transition-colors">
+            <div
+              className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center gap-4 backdrop-blur-md hover:bg-white/10 transition-colors"
+              data-dash-stat
+              style={{ willChange: "transform, opacity" }}
+            >
               <div className="w-10 h-10 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center">
                 <BookOpen className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-white leading-none">{totalChapters}</p>
+                <p className="text-2xl font-bold text-white leading-none" data-dash-stat-num>{totalChapters}</p>
                 <p className="text-xs text-zinc-400 font-medium mt-1 uppercase tracking-wider">Chapters</p>
               </div>
             </div>
@@ -106,7 +130,7 @@ export default async function DashboardPage() {
 
         {/* ── Continue Editing (Horizontal Card) ───────────────────────────── */}
         {lastEditedStory && (
-          <div className="mb-16">
+          <div className="mb-16" data-dash-continue style={{ willChange: "transform, opacity" }}>
             <h2 className="text-sm font-bold text-zinc-500 tracking-widest uppercase mb-4">Continue Creating</h2>
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white/5 border border-white/10 rounded-3xl backdrop-blur-xl shadow-2xl hover:bg-white/[0.07] transition-all group">
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 w-full">
@@ -139,9 +163,17 @@ export default async function DashboardPage() {
 
         {/* ── Main Section: Your Stories ───────────────────────────────────── */}
         <div>
-          <RotatingQuote />
+          <div data-dash-quote>
+            <RotatingQuote />
+          </div>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-white tracking-tight">Your Stories</h2>
+            <h2
+              className="text-2xl font-bold text-white tracking-tight"
+              data-dash-stories-heading
+              style={{ willChange: "transform, opacity" }}
+            >
+              Your Stories
+            </h2>
           </div>
 
           {stories.length === 0 ? (
@@ -150,9 +182,14 @@ export default async function DashboardPage() {
               <p className="text-lg text-zinc-400 font-medium">No stories created yet.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+              data-story-grid
+            >
               {stories.map((story) => (
-                <StoryCard key={story.id} story={story} />
+                <div key={story.id} data-gsap-card style={{ willChange: "transform, opacity" }}>
+                  <StoryCard story={story} />
+                </div>
               ))}
             </div>
           )}

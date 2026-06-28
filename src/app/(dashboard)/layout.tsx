@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import LogoutButton from "@/components/auth/LogoutButton";
 import Link from "next/link";
+import PageTransition from "@/components/common/PageTransition";
 
 // ─── Dashboard Layout ───────────────────────────────────────────────────────
 // Dark theme, matching the landing page aesthetics.
@@ -59,7 +60,9 @@ export default async function DashboardLayout({
 
       {/* ── Main Content ─────────────────────────────────────────────────── */}
       <main className="mx-auto max-w-7xl p-6 lg:p-8">
-        {children}
+        <PageTransition>
+          {children}
+        </PageTransition>
       </main>
     </div>
   );

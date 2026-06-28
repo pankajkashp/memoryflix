@@ -10,6 +10,7 @@ import { Play, Share2, ArrowLeft, ArrowRight, ChevronLeft, MapPin, Calendar, Ima
 import { getPresetConfig, getAccentConfig } from "@/lib/typography-presets";
 import { getFontClassName } from "@/lib/fonts";
 import { motion } from "framer-motion";
+import { gsap, animateChapterReveal } from "@/lib/gsap-utils";
 
 type ChapterWithMedia = {
   chapter: import("@prisma/client").Chapter;
@@ -88,6 +89,17 @@ export default function NetflixTemplate({
       navigator.clipboard.writeText(window.location.href);
     }
   };
+
+  // ─── Chapter grid scroll animation ──────────────────────────────────────────
+  useEffect(() => {
+    if (selectedChapterId || showChapterIntro) return;
+    const grid = document.querySelector<HTMLElement>("[data-chapter-grid]");
+    if (!grid) return;
+    const ctx = gsap.context(() => {
+      animateChapterReveal(grid);
+    }, grid);
+    return () => ctx.revert();
+  }, [selectedChapterId, showChapterIntro]);
 
   // ─── CHAPTER INTRO SCREEN ───────────────────────────────────────────────────
   if (showChapterIntro && currentChapterData) {
@@ -398,22 +410,26 @@ export default function NetflixTemplate({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+            data-chapter-grid
+          >
             {allChapters.map(({ chapter, mediaItems }, idx) => {
               const coverMedia = chapter.coverMediaId 
                 ? mediaItems.find(m => m.item.id === chapter.coverMediaId)?.item || mediaItems[0]?.item
                 : mediaItems[0]?.item;
               const hasChapterMedia = mediaItems.length > 0;
               return (
-                <ChapterPosterCard
-                  key={chapter.id}
-                  chapter={chapter}
-                  mediaItems={mediaItems}
-                  coverMedia={coverMedia}
-                  chapterIndex={idx}
-                  accentColor={accentConfig.color}
-                  onClick={hasChapterMedia ? () => openChapter(chapter.id) : undefined}
-                />
+                <div key={chapter.id} data-chapter-card style={{ willChange: "transform, opacity" }}>
+                  <ChapterPosterCard
+                    chapter={chapter}
+                    mediaItems={mediaItems}
+                    coverMedia={coverMedia}
+                    chapterIndex={idx}
+                    accentColor={accentConfig.color}
+                    onClick={hasChapterMedia ? () => openChapter(chapter.id) : undefined}
+                  />
+                </div>
               );
             })}
           </div>
