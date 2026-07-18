@@ -115,7 +115,7 @@ export default function MediaViewer({
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.97 }}
           transition={{ duration: 0.25, ease: "easeInOut" }}
-          className="flex flex-col items-center w-full h-full max-w-7xl px-4 md:px-16 lg:px-24"
+          className="flex flex-col items-center w-full h-full max-w-7xl px-0 sm:px-4 md:px-16 lg:px-24 py-12 md:py-16"
         >
           {/* Media */}
           <div className="flex-1 flex items-center justify-center w-full min-h-0">
@@ -125,8 +125,8 @@ export default function MediaViewer({
                 src={currentMedia.url}
                 controls
                 autoPlay
-                className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
-                style={{ maxHeight: hasMetadata ? "calc(100vh - 200px)" : "90vh" }}
+                className="max-w-full max-h-full w-auto h-auto object-contain sm:rounded-lg shadow-2xl bg-black/50"
+                style={{ maxHeight: hasMetadata ? "calc(100dvh - 220px)" : "calc(100dvh - 100px)" }}
               />
             ) : (
               // eslint-disable-next-line @next/next/no-img-element
@@ -134,8 +134,8 @@ export default function MediaViewer({
                 key={currentMedia.url}
                 src={currentMedia.url}
                 alt={currentMedia.caption || "Fullscreen media"}
-                className="max-w-full object-contain rounded-lg shadow-2xl select-none"
-                style={{ maxHeight: hasMetadata ? "calc(100vh - 200px)" : "90vh" }}
+                className="max-w-full w-auto h-auto object-contain sm:rounded-lg shadow-2xl select-none"
+                style={{ maxHeight: hasMetadata ? "calc(100dvh - 220px)" : "calc(100dvh - 100px)" }}
                 draggable={false}
               />
             )}

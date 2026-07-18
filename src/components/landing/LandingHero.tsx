@@ -148,13 +148,13 @@ export default function LandingHero({
       <FloatingParticles />
 
       {/* ── Layer 4: Hero Content ─────────────────────────────────────────── */}
-      <div className="relative z-20 mx-auto max-w-5xl px-6 text-center lg:px-8">
+      <div className="relative z-20 mx-auto max-w-5xl px-6 mt-32 sm:mt-0 text-center lg:px-8">
         {/* Eyebrow label */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          className="mb-8 flex items-center justify-center gap-3"
+          className="mb-4 sm:mb-8 flex items-center justify-center gap-3"
         >
           <div className="h-px w-12 bg-gradient-to-r from-transparent to-rose-400/70" />
           <span className="text-xs uppercase tracking-[0.35em] text-rose-300/90 font-semibold">
@@ -170,10 +170,15 @@ export default function LandingHero({
           className="mx-auto"
         >
           {/* Main headline — two lines, large serif-weight impact */}
-          <h1 className="text-6xl font-bold tracking-tight text-white sm:text-7xl lg:text-8xl xl:text-9xl drop-shadow-2xl leading-[0.95]">
-            {HEADLINE_TOP}
+          <h1 className="text-5xl font-extrabold tracking-tighter sm:text-7xl lg:text-8xl xl:text-9xl drop-shadow-2xl leading-[1.05] pb-4">
+            <span className="text-transparent bg-clip-text bg-gradient-to-br from-white via-rose-50 to-white/60">
+              {HEADLINE_TOP}
+            </span>
             <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-200 via-white to-zinc-300">
+            <span 
+              className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-pink-400 to-purple-500 relative inline-block"
+              style={{ filter: "drop-shadow(0 0 20px rgba(244,63,94,0.3))" }}
+            >
               {HEADLINE_BOTTOM}
             </span>
           </h1>
@@ -183,7 +188,7 @@ export default function LandingHero({
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.2, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-8 text-base sm:text-lg text-zinc-300/90 max-w-xl mx-auto leading-relaxed drop-shadow-md whitespace-pre-line"
+            className="mt-4 sm:mt-8 text-base sm:text-lg text-zinc-300/90 max-w-xl mx-auto leading-relaxed drop-shadow-md whitespace-pre-line"
           >
             {SUB_COPY}
           </motion.p>
@@ -193,7 +198,7 @@ export default function LandingHero({
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-12 flex flex-col sm:flex-row gap-4 justify-center items-center"
+            className="mt-8 sm:mt-12 flex flex-col sm:flex-row gap-4 justify-center items-center"
           >
             {/* Primary — rose glow CTA */}
             <Link
@@ -233,7 +238,7 @@ export default function LandingHero({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1, duration: 1.2 }}
-            className="mt-8 text-xs text-zinc-500 tracking-wide"
+            className="mt-6 sm:mt-8 text-[10px] sm:text-xs text-zinc-500 tracking-wide"
           >
             No credit card · Free forever · Your memories, your privacy
           </motion.p>

@@ -24,10 +24,12 @@ export default async function DashboardLayout({
       <header className="border-b border-white/10 bg-black/50 backdrop-blur-xl sticky top-0 z-50 pt-[env(safe-area-inset-top)]" role="banner">
         <nav className="mx-auto max-w-7xl px-4 sm:px-6 py-4 flex items-center justify-between" aria-label="Dashboard navigation">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 group">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/icon.png" alt="MemoryFlix Logo" className="w-10 h-10 object-cover rounded transition-transform duration-300 group-hover:scale-110" />
-            <span className="text-lg font-bold tracking-tight text-white group-hover:text-rose-50 transition-colors">
+          <Link href="/" className="flex items-center gap-1 group">
+            <div className="relative w-10 h-10 flex items-center justify-center -ml-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/icon.png" alt="MemoryFlix Logo" className="w-full h-full object-cover scale-[1.7] transition-transform duration-300 group-hover:scale-[1.85]" />
+            </div>
+            <span className="text-xl font-bold tracking-tight text-white group-hover:text-rose-50 transition-colors">
               Memory<span className="text-rose-400">Flix</span>
             </span>
           </Link>

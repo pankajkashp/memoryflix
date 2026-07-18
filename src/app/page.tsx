@@ -24,27 +24,29 @@ export default async function LandingPage() {
       {/* ── Navigation ─────────────────────────────────────────────────────── */}
       <header className="absolute inset-x-0 top-0 z-50">
         <nav
-          className="flex items-center justify-between p-6 lg:px-8"
+          className="flex items-center justify-between p-4 sm:p-6 lg:px-8"
           aria-label="Global"
         >
           {/* Logo */}
-          <div className="flex lg:flex-1">
+          <div className="flex shrink-0">
             <a
               href="/"
-              className="flex items-center gap-2.5 group"
+              className="flex items-center gap-1 group"
               aria-label="MemoryFlix — home"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/icon.png" alt="MemoryFlix Logo" className="w-12 h-12 object-cover rounded transition-transform duration-300 group-hover:scale-110" />
+              <div className="relative w-12 h-12 flex items-center justify-center -ml-2">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/icon.png" alt="MemoryFlix Logo" className="w-full h-full object-cover scale-[1.65] transition-transform duration-300 group-hover:scale-[1.75]" />
+              </div>
               {/* Wordmark */}
-              <span className="text-xl font-bold tracking-tight text-white group-hover:text-rose-50 transition-colors duration-200">
+              <span className="text-xl sm:text-2xl font-bold tracking-tight text-white group-hover:text-rose-50 transition-colors duration-200">
                 Memory<span className="text-rose-400">Flix</span>
               </span>
             </a>
           </div>
 
           {/* Auth links */}
-          <div className="flex flex-1 justify-end items-center gap-6">
+          <div className="flex shrink-0 justify-end items-center gap-3 sm:gap-6">
             {!isAuthenticated ? (
               <>
                 <a
@@ -61,7 +63,7 @@ export default async function LandingPage() {
                 </a>
               </>
             ) : (
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 sm:gap-4">
                 <LogoutButton />
                 <a
                   href="/dashboard"
@@ -91,10 +93,12 @@ export default async function LandingPage() {
       <footer className="bg-black border-t border-white/[0.04] py-12">
         <div className="mx-auto max-w-7xl px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           {/* Logo */}
-          <a href="/" className="flex items-center gap-2 opacity-60 hover:opacity-100 transition-opacity">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/icon.png" alt="MemoryFlix Logo" className="w-8 h-8 object-cover rounded grayscale hover:grayscale-0 transition-all duration-300" />
-            <span className="text-sm font-semibold text-zinc-400">
+          <a href="/" className="flex items-center gap-0.5 opacity-60 hover:opacity-100 transition-opacity group">
+            <div className="relative w-8 h-8 flex items-center justify-center -ml-1.5">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/icon.png" alt="MemoryFlix Logo" className="w-full h-full object-cover scale-[1.7] grayscale group-hover:grayscale-0 transition-all duration-300" />
+            </div>
+            <span className="text-base font-semibold text-zinc-400">
               Memory<span className="text-rose-400">Flix</span>
             </span>
           </a>
