@@ -2,12 +2,14 @@
 
 import { motion } from "framer-motion";
 
+import { LayoutItem } from "../../../ChapterLayoutRenderer";
+
 export default function HeartLayout({
   items,
   renderItem,
 }: {
-  items: any[];
-  renderItem: (i: any) => React.ReactNode;
+  items: LayoutItem[];
+  renderItem: (i: LayoutItem) => React.ReactNode;
 }) {
   const images = items.filter((m) => m.item.type === "IMAGE");
   

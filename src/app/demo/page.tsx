@@ -5,9 +5,11 @@ export const metadata: Metadata = {
   title: "Summer in Italy — MemoryFlix Demo",
 };
 
+import type { StoryWithFullPayload } from "@/components/preview/PreviewClientWrapper";
+
 export default function DemoPage() {
   // Hardcoded demo story data using high-quality Unsplash images
-  const demoStory: any = {
+  const demoStory = {
     id: "demo-story",
     userId: "demo-user",
     templateId: "demo-template",
@@ -75,7 +77,7 @@ export default function DemoPage() {
 
   return (
     <main>
-      <PreviewClientWrapper story={demoStory} />
+      <PreviewClientWrapper story={demoStory as unknown as StoryWithFullPayload} />
     </main>
   );
 }

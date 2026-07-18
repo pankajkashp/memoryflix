@@ -8,7 +8,7 @@ export async function POST(request: Request) {
     
     const signature = await generateCloudinarySignature(paramsToSign);
     return NextResponse.json({ signature });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 401 });
+  } catch (error: unknown) {
+    return NextResponse.json({ error: error instanceof Error ? error.message : "Unauthorized" }, { status: 401 });
   }
 }

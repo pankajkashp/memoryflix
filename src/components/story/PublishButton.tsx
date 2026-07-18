@@ -14,8 +14,8 @@ export default function PublishButton({ storyId }: { storyId: string }) {
     setError(null);
     try {
       await publishStory(storyId);
-    } catch (err: any) {
-      setError(err.message || "Failed to publish story.");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to publish story.");
     } finally {
       setIsPublishing(false);
     }

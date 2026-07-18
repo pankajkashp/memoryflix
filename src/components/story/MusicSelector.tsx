@@ -5,7 +5,8 @@ import { MUSIC_TRACKS } from "@/lib/music";
 import { updateChapterMusicConfig } from "@/app/actions/chapter";
 import { Play, Pause, Check, Loader2, Upload } from "lucide-react";
 import { motion } from "framer-motion";
-import { CldUploadWidget } from "next-cloudinary";
+import dynamic from "next/dynamic";
+const CldUploadWidget = dynamic(() => import("next-cloudinary").then(mod => mod.CldUploadWidget), { ssr: false });
 
 export default function MusicSelector({ 
   storyId,
@@ -63,8 +64,9 @@ export default function MusicSelector({
     }
   };
 
-  const handleUploadSuccess = (result: any) => {
-    const info = result.info;
+  const handleUploadSuccess = (result: unknown) => {
+    const uploadResult = result as { info: { secure_url: string; public_id: string } };
+    const info = uploadResult.info;
     const url = info.secure_url;
     setCustomUrl(url);
     setSelectedType("CUSTOM");

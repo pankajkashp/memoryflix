@@ -8,12 +8,10 @@ import { Play, MoreVertical, Trash2, MapPin, Image as ImageIcon, LayoutGrid, Hea
 import { CldUploadWidget } from "next-cloudinary";
 import HeartLayout from "./templates/layouts/HeartLayout";
 import { ConfirmModal } from "../ui/ConfirmModal";
-import {
-  useMasonryAnimation,
-  useTimelineAnimation,
-  usePolaroidAnimation,
-  useFilmStripAnimation,
-} from "./LayoutAnimations";
+import MasonryLayout from "./templates/layouts/MasonryLayout";
+import FilmStripLayout from "./templates/layouts/FilmStripLayout";
+import PolaroidLayout from "./templates/layouts/PolaroidLayout";
+import TimelineLayout from "./templates/layouts/TimelineLayout";
 
 type EditableMediaItemProps = {
   item: MediaAsset;
@@ -23,6 +21,18 @@ type EditableMediaItemProps = {
   coverMediaId?: string | null;
   onSelect: () => void;
 };
+
+type CloudinaryUploadResult = {
+  info: {
+    resource_type: string;
+    secure_url: string;
+    public_id: string;
+    bytes: number;
+    duration?: number;
+  };
+};
+
+export type LayoutItem = { item: MediaAsset; type: "IMAGE" | "VIDEO" };
 
 function EditableMediaCard({ item, storyId, chapters, isEditable, coverMediaId, onSelect }: EditableMediaItemProps) {
   const [isPending, startTransition] = useTransition();
@@ -51,9 +61,10 @@ function EditableMediaCard({ item, storyId, chapters, isEditable, coverMediaId, 
     });
   };
 
-  const handleReplace = async (result: any) => {
+  const handleReplace = async (result: unknown) => {
+    const uploadResult = result as CloudinaryUploadResult;
     startTransition(async () => {
-      const info = result.info;
+      const info = uploadResult.info;
       const type = info.resource_type === "video" ? "VIDEO" : "IMAGE";
       await replaceMedia(storyId, item.id, {
         url: info.secure_url,
@@ -202,154 +213,6 @@ function EditableMediaCard({ item, storyId, chapters, isEditable, coverMediaId, 
     </div>
   );
 }
-
-// ── Layout Components ────────────────────────────────────────────────────────
-
-const MasonryLayout = ({ items, renderItem }: { items: any[], renderItem: (i: any) => React.ReactNode }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  useMasonryAnimation(containerRef);
-  const count = items.length;
-
-  if (count === 4) {
-    // 2x2 Collage
-    return (
-      <div ref={containerRef} className="grid grid-cols-2 gap-4">
-        {items.map(item => (
-          <div key={item.item.id} className="aspect-square w-full h-full" data-masonry-item style={{ willChange: "transform, opacity" }}>
-            {renderItem(item)}
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  if (count === 6) {
-    // Masonry Collage
-    return (
-      <div ref={containerRef} className="columns-2 md:columns-3 gap-4 space-y-4">
-        {items.map(item => (
-          <div key={item.item.id} className="break-inside-avoid" data-masonry-item style={{ willChange: "transform, opacity" }}>
-            {renderItem(item)}
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  if (count === 9) {
-    // Premium memory collage (1 hero, 8 smaller)
-    return (
-      <div ref={containerRef} className="grid grid-cols-3 md:grid-cols-4 gap-4">
-        <div className="col-span-3 md:col-span-2 row-span-2 md:row-span-2 aspect-square md:aspect-auto" data-masonry-item style={{ willChange: "transform, opacity" }}>
-          {renderItem(items[0])}
-        </div>
-        {items.slice(1).map(item => (
-          <div key={item.item.id} className="aspect-square w-full h-full" data-masonry-item style={{ willChange: "transform, opacity" }}>
-            {renderItem(item)}
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  if (count >= 15) {
-    // Large cinematic collage
-    return (
-      <div ref={containerRef} className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
-        {items.map((item, idx) => {
-          // Make every 5th item large
-          const isLarge = idx % 5 === 0;
-          return (
-            <div key={item.item.id} className={`${isLarge ? "col-span-2 row-span-2" : "col-span-1 row-span-1"} aspect-square w-full h-full`} data-masonry-item style={{ willChange: "transform, opacity" }}>
-              {renderItem(item)}
-            </div>
-          );
-        })}
-      </div>
-    );
-  }
-
-  // Fallback simple staggered masonry
-  return (
-    <div ref={containerRef} className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
-      {items.map(item => (
-        <div key={item.item.id} className="break-inside-avoid" data-masonry-item style={{ willChange: "transform, opacity" }}>
-          {renderItem(item)}
-        </div>
-      ))}
-    </div>
-  );
-};
-
-
-
-const FilmStripLayout = ({ items, renderItem }: { items: any[], renderItem: (i: any) => React.ReactNode }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  useFilmStripAnimation(containerRef);
-  return (
-    <div ref={containerRef} className="flex overflow-x-auto gap-4 pb-8 snap-x snap-mandatory hide-scrollbar">
-      {items.map(item => (
-        <div key={item.item.id} className="snap-center shrink-0 w-72 md:w-96 aspect-video" data-filmstrip-item style={{ willChange: "transform, opacity" }}>
-          {renderItem(item)}
-        </div>
-      ))}
-    </div>
-  );
-};
-
-const PolaroidLayout = ({ items, renderItem }: { items: any[], renderItem: (i: any) => React.ReactNode }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  usePolaroidAnimation(containerRef);
-  return (
-    <div ref={containerRef} className="flex flex-wrap justify-center gap-6 md:gap-12 py-12">
-      {items.map((item, idx) => (
-        <div 
-          key={item.item.id}
-          data-polaroid-item
-          style={{ willChange: "transform, opacity" }}
-          className={`w-48 md:w-64 aspect-square bg-white p-3 pb-12 shadow-2xl transition-transform hover:z-20 hover:scale-110 
-            ${idx % 3 === 0 ? '-rotate-6' : idx % 3 === 1 ? 'rotate-3' : '-rotate-2'}
-          `}
-        >
-          <div className="w-full h-full bg-zinc-100 overflow-hidden">
-            {renderItem(item)}
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-};
-
-const TimelineLayout = ({ items, renderItem }: { items: any[], renderItem: (i: any) => React.ReactNode }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  useTimelineAnimation(containerRef);
-  return (
-    <div
-      ref={containerRef}
-      className="relative max-w-3xl mx-auto space-y-12 before:absolute before:inset-0 before:ml-5 md:before:mx-auto md:before:w-0.5 before:w-0.5 before:bg-white/10"
-      data-timeline-line
-    >
-      {items.map((item, idx) => {
-        const isEven = idx % 2 === 0;
-        return (
-          <div
-            key={item.item.id}
-            className="relative flex items-center justify-between md:justify-normal w-full group"
-            data-timeline-item
-            style={{ willChange: "transform, opacity" }}
-          >
-            <div className="absolute left-5 md:left-1/2 w-4 h-4 rounded-full bg-rose-500 border-4 border-black -translate-x-[7px] md:-translate-x-1/2 z-10 shadow-[0_0_15px_rgba(244,63,94,0.5)]" />
-            <div className={`ml-12 md:ml-0 md:w-[45%] ${isEven ? 'md:pr-8' : 'md:pl-8 md:ml-auto'}`}>
-              <div className="aspect-[4/3] w-full">
-                {renderItem(item)}
-              </div>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-};
 
 // ── ChapterLayoutRenderer ──────────────────────────────────────────────────
 

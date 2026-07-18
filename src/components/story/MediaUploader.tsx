@@ -1,6 +1,7 @@
 "use client";
 
-import { CldUploadWidget } from "next-cloudinary";
+import dynamic from "next/dynamic";
+const CldUploadWidget = dynamic(() => import("next-cloudinary").then(mod => mod.CldUploadWidget), { ssr: false });
 import { useState } from "react";
 import { saveMediaAsset } from "@/app/actions/media";
 import { motion } from "framer-motion";
@@ -18,11 +19,12 @@ export default function MediaUploader({
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSuccess = async (result: any) => {
+  const handleSuccess = async (result: unknown) => {
+    const uploadResult = result as { info: { resource_type: string, secure_url: string, public_id: string, bytes: number, duration?: number } };
     setIsUploading(true);
     setError(null);
     try {
-      const info = result.info;
+      const info = uploadResult.info;
       const type = info.resource_type === "video" ? "VIDEO" : "IMAGE";
 
       await saveMediaAsset({
@@ -34,8 +36,8 @@ export default function MediaUploader({
         duration: info.duration,
         chapterId,
       });
-    } catch (err: any) {
-      setError(err.message || "Failed to save media asset");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to save media asset");
     } finally {
       setIsUploading(false);
     }

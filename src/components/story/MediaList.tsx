@@ -23,108 +23,12 @@ import {
   rectSortingStrategy,
 } from "@dnd-kit/sortable";
 import SortableMediaItem from "./SortableMediaItem";
+import DragPreviewCard from "./DragPreviewCard";
+import DroppableSection from "./DroppableSection";
 import { reorderMedia, assignMediaToChapter, assignMultipleMediaToChapter } from "@/app/actions/media";
 import { Loader2, CheckSquare, X, ChevronRight, MapPin, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
-
-function DragPreviewCard({ asset, selectedCount }: { asset: MediaAsset, selectedCount: number }) {
-  return (
-    <div className="relative aspect-square rounded-2xl overflow-hidden border-2 border-rose-500 shadow-2xl shadow-rose-500/50 ring-2 ring-rose-400 ring-offset-2 ring-offset-black scale-105 rotate-2 opacity-95">
-      {asset.type === "IMAGE" ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={asset.url}
-          alt="Dragging"
-          className="object-cover w-full h-full"
-        />
-      ) : (
-        <video src={asset.url} className="object-cover w-full h-full" />
-      )}
-      <div className="absolute inset-0 bg-rose-500/20" />
-      
-      {selectedCount > 1 && (
-        <div className="absolute -top-3 -right-3 z-50 bg-rose-500 text-white font-black text-sm px-3 py-1.5 rounded-full shadow-lg border-2 border-[#111]">
-          {selectedCount} Photos
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ── Droppable Section ─────────────────────────────────────────────────────────
-function DroppableSection({ 
-  id, 
-  title, 
-  emoji, 
-  items, 
-  storyId, 
-  coverMediaId, 
-  chapters,
-  activeAssetId,
-  selectedMediaIds,
-  onSelectToggle
-}: { 
-  id: string; 
-  title: string; 
-  emoji?: string | null; 
-  items: MediaAsset[]; 
-  storyId?: string;
-  coverMediaId?: string | null;
-  chapters?: Chapter[];
-  activeAssetId: string | null;
-  selectedMediaIds: string[];
-  onSelectToggle: (id: string) => void;
-}) {
-  const { setNodeRef, isOver } = useDroppable({ id });
-
-  return (
-    <div className="mb-12">
-      <div className="flex items-center gap-3 mb-4 px-2">
-        {emoji && <span className="text-2xl">{emoji}</span>}
-        <h3 className="text-xl font-bold text-white">{title}</h3>
-        <span className="bg-white/10 text-zinc-400 text-xs font-bold px-2 py-0.5 rounded-full">
-          {items.length} {items.length === 1 ? 'item' : 'items'}
-        </span>
-      </div>
-
-      <div 
-        ref={setNodeRef}
-        className={`min-h-[160px] p-4 sm:p-6 rounded-3xl border-2 transition-all duration-300 ${
-          isOver ? "bg-rose-500/10 border-rose-500 border-dashed" : "bg-black/20 border-white/5 border-solid"
-        }`}
-      >
-        {items.length === 0 ? (
-          <div className="w-full h-32 flex items-center justify-center">
-            <p className="text-zinc-500 font-medium">Drop photos here</p>
-          </div>
-        ) : (
-          <SortableContext
-            id={id}
-            items={items.map((item) => item.id)}
-            strategy={rectSortingStrategy}
-          >
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-              {items.map((asset, index) => (
-                <SortableMediaItem
-                  key={asset.id}
-                  asset={asset}
-                  storyId={storyId}
-                  coverMediaId={coverMediaId}
-                  chapters={chapters}
-                  position={index + 1}
-                  isBeingDragged={activeAssetId === asset.id}
-                  isSelected={selectedMediaIds.includes(asset.id)}
-                  onSelectToggle={onSelectToggle}
-                />
-              ))}
-            </div>
-          </SortableContext>
-        )}
-      </div>
-    </div>
-  );
-}
 
 // ── MediaList ─────────────────────────────────────────────────────────────────
 
@@ -402,9 +306,6 @@ export default function MediaList({
           <button 
             type="button"
             onClick={() => {
-              console.log("Assign button clicked");
-              console.log("selectedMediaIds:", selectedMediaIds);
-              console.log("isAssignModalOpen (before):", isModalOpen);
               setIsModalOpen(true);
             }}
             className="px-6 py-2 bg-white text-black font-bold rounded-xl hover:bg-zinc-200 transition-colors flex items-center gap-2"

@@ -81,8 +81,8 @@ export default function AudioPlayer({
         fadeOut(currentAudioRef.current);
         fadingAudioRef.current = currentAudioRef.current;
         currentAudioRef.current = newAudio;
-      }).catch(err => {
-        console.log("Play failed", err);
+      }).catch(() => {
+        // Autoplay often fails if user hasn't interacted, safe to ignore
       });
     } else {
       fadeOut(currentAudioRef.current);
@@ -106,7 +106,7 @@ export default function AudioPlayer({
           setIsPlaying(true);
           currentAudioRef.current.play().then(() => {
             fadeIn(currentAudioRef.current!);
-          }).catch(err => console.log(err));
+          }).catch(() => {});
         }
       }
     };
@@ -129,7 +129,7 @@ export default function AudioPlayer({
       if (currentAudioRef.current) {
         currentAudioRef.current.play().then(() => {
           fadeIn(currentAudioRef.current!);
-        }).catch(err => console.log(err));
+        }).catch(() => {});
       }
     }
   };

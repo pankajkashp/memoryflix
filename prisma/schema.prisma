@@ -68,6 +68,9 @@ model Story {
   media      MediaAsset[]  @relation("StoryMedia")
   coverMedia MediaAsset?   @relation("StoryCover", fields: [coverMediaId], references: [id], onDelete: SetNull)
   chapters   Chapter[]
+
+  @@index([userId])
+  @@index([templateId])
 }
 
 model MediaAsset {
@@ -94,6 +97,10 @@ model MediaAsset {
 
   storyCover Story[] @relation("StoryCover")
   chapterCover Chapter[] @relation("ChapterCover")
+
+  @@index([storyId])
+  @@index([userId])
+  @@index([chapterId])
 }
 
 model Chapter {
@@ -116,4 +123,6 @@ model Chapter {
   story     Story        @relation(fields: [storyId], references: [id], onDelete: Cascade)
   media     MediaAsset[]
   coverMedia MediaAsset? @relation("ChapterCover", fields: [coverMediaId], references: [id], onDelete: SetNull)
+
+  @@index([storyId])
 }
