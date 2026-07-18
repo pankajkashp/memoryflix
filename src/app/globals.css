@@ -126,5 +126,108 @@
   }
   html {
     @apply font-sans;
+    scroll-behavior: smooth;
   }
+}
+
+/* ── Cinematic Scrollbar (dark theme pages) ─────────────────────────────────── */
+.dark-scrollbar,
+.dark-scrollbar * {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(244, 63, 94, 0.3) transparent;
+}
+.dark-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.dark-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.dark-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(244, 63, 94, 0.3);
+  border-radius: 3px;
+}
+.dark-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(244, 63, 94, 0.5);
+}
+
+/* ── Hide Scrollbar (used in FilmStrip, StepIndicator) ──────────────────────── */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Slow Pulse Animation (ambient background glows) ───────────────────────── */
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+.animate-pulse-slow {
+  animation: pulse-slow 6s ease-in-out infinite;
+}
+
+/* ── Shimmer (skeleton loaders & empty states) ──────────────────────────────── */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.03) 0%,
+    rgba(255,255,255,0.08) 50%,
+    rgba(255,255,255,0.03) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+/* ── Gradient border animation ──────────────────────────────────────────────── */
+@keyframes gradient-border-rotate {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ── Reduced Motion ─────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse-slow,
+  .animate-shimmer {
+    animation: none !important;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Focus Ring (accessible, cinematic rose) ────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid rgba(244, 63, 94, 0.7);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ── Selection ──────────────────────────────────────────────────────────────── */
+::selection {
+  background: rgba(244, 63, 94, 0.3);
+  color: inherit;
+}
+
+/* ── Prevent horizontal overflow globally ───────────────────────────────────── */
+body {
+  overflow-x: hidden;
 }

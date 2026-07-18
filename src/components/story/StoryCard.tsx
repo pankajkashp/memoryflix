@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useTransition } from "react";
+import { useState, useTransition, useRef, useEffect, memo } from "react";
 import { Story, StoryTemplate, MediaAsset } from "@prisma/client";
 import { deleteStory } from "@/app/actions/story";
 import { Play, Edit2, Share2, Trash2, BookOpen, Image as ImageIcon, Clock, ExternalLink } from "lucide-react";
 
 import toast from "react-hot-toast";
 import { ConfirmModal } from "../ui/ConfirmModal";
+import { gsap, prefersReducedMotion } from "@/lib/gsap-utils";
 
 type StoryWithRelations = Story & {
   template: StoryTemplate;
@@ -33,7 +34,7 @@ function timeAgo(date: Date) {
   return "just now";
 }
 
-export default function StoryCard({ story }: { story: StoryWithRelations }) {
+export default memo(function StoryCard({ story }: { story: StoryWithRelations }) {
   const isPublished = story.status === "PUBLISHED";
   const mediaCount = story._count?.media || 0;
   const chapterCount = story._count?.chapters || 0;
@@ -41,6 +42,37 @@ export default function StoryCard({ story }: { story: StoryWithRelations }) {
   const [isPending, startTransition] = useTransition();
   const [isHovered, setIsHovered] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  // GSAP hover glow effect
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el || prefersReducedMotion()) return;
+    const mm = gsap.matchMedia();
+    mm.add("(min-width: 1024px)", () => {
+      const onEnter = () => gsap.to(el, {
+        y: -6,
+        scale: 1.01,
+        boxShadow: "0 24px 64px rgba(244,63,94,0.18), 0 0 0 1px rgba(244,63,94,0.12)",
+        duration: 0.35,
+        ease: "power2.out",
+      });
+      const onLeave = () => gsap.to(el, {
+        y: 0,
+        scale: 1,
+        boxShadow: "0 0 0 0px rgba(244,63,94,0)",
+        duration: 0.4,
+        ease: "power2.out",
+      });
+      el.addEventListener("mouseenter", onEnter);
+      el.addEventListener("mouseleave", onLeave);
+      return () => {
+        el.removeEventListener("mouseenter", onEnter);
+        el.removeEventListener("mouseleave", onLeave);
+      };
+    });
+    return () => mm.revert();
+  }, []);
 
   const coverImageUrl =
     story.coverMedia?.url ||
@@ -68,9 +100,11 @@ export default function StoryCard({ story }: { story: StoryWithRelations }) {
 
   return (
     <div
-      className="group relative flex flex-col rounded-2xl bg-zinc-900 overflow-hidden shadow-xl border border-white/5 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_60px_rgba(244,63,94,0.15)] hover:border-rose-500/20"
+      ref={cardRef}
+      className="group relative flex flex-col rounded-2xl bg-zinc-900 overflow-hidden shadow-xl border border-white/5 transition-colors duration-500 hover:border-rose-500/20"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      style={{ willChange: "transform, box-shadow" }}
     >
       {/* ── Cover Image ── */}
       <div className="relative aspect-[16/10] overflow-hidden">
@@ -202,11 +236,11 @@ export default function StoryCard({ story }: { story: StoryWithRelations }) {
       <ConfirmModal
         isOpen={showDeleteModal}
         title="Delete Story?"
-        description="This action cannot be undone."
+        description="This action cannot be undone. All media and chapters will be permanently deleted."
         confirmText="Delete Story"
         onConfirm={confirmDelete}
         onCancel={() => setShowDeleteModal(false)}
       />
     </div>
   );
-}
+});

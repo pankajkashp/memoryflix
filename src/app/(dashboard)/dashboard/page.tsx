@@ -57,7 +57,7 @@ export default async function DashboardPage() {
         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }}></div>
       </div>
 
-      <div className="relative z-10 px-6 sm:px-12 max-w-[1400px] mx-auto pt-16">
+      <div className="relative z-10 px-4 sm:px-8 lg:px-12 max-w-[1400px] mx-auto pt-16">
         
         {/* ── Compact Top Section ───────────────────────────────────────────── */}
         <div className="mb-12">
@@ -79,7 +79,7 @@ export default async function DashboardPage() {
                 <Film className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-white leading-none" data-dash-stat-num>{totalStories}</p>
+                <p className="text-2xl font-bold text-white leading-none" data-dash-stat-num data-count={totalStories}>{totalStories}</p>
                 <p className="text-xs text-zinc-400 font-medium mt-1 uppercase tracking-wider">Stories</p>
               </div>
             </div>
@@ -93,7 +93,7 @@ export default async function DashboardPage() {
                 <CheckCircle className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-white leading-none" data-dash-stat-num>{publishedStories}</p>
+                <p className="text-2xl font-bold text-white leading-none" data-dash-stat-num data-count={publishedStories}>{publishedStories}</p>
                 <p className="text-xs text-zinc-400 font-medium mt-1 uppercase tracking-wider">Published</p>
               </div>
             </div>
@@ -107,7 +107,7 @@ export default async function DashboardPage() {
                 <ImageIcon className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-white leading-none" data-dash-stat-num>{totalPhotos}</p>
+                <p className="text-2xl font-bold text-white leading-none" data-dash-stat-num data-count={totalPhotos}>{totalPhotos}</p>
                 <p className="text-xs text-zinc-400 font-medium mt-1 uppercase tracking-wider">Photos</p>
               </div>
             </div>
@@ -121,7 +121,7 @@ export default async function DashboardPage() {
                 <BookOpen className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-white leading-none" data-dash-stat-num>{totalChapters}</p>
+                <p className="text-2xl font-bold text-white leading-none" data-dash-stat-num data-count={totalChapters}>{totalChapters}</p>
                 <p className="text-xs text-zinc-400 font-medium mt-1 uppercase tracking-wider">Chapters</p>
               </div>
             </div>
@@ -177,9 +177,28 @@ export default async function DashboardPage() {
           </div>
 
           {stories.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 bg-white/5 border border-white/10 rounded-3xl backdrop-blur-md">
-              <Film className="w-16 h-16 text-zinc-600 mb-4" />
-              <p className="text-lg text-zinc-400 font-medium">No stories created yet.</p>
+            <div className="relative flex flex-col items-center justify-center py-24 rounded-3xl overflow-hidden border border-white/[0.06] bg-black/30 backdrop-blur-md">
+              {/* Shimmer gradient */}
+              <div className="absolute inset-0 animate-shimmer pointer-events-none" />
+              {/* Ambient glow */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-rose-500/8 blur-[80px] pointer-events-none" />
+
+              <div className="relative z-10 flex flex-col items-center text-center px-6">
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-rose-500/20 to-purple-600/20 border border-rose-500/20 flex items-center justify-center mb-6 shadow-[0_0_40px_rgba(244,63,94,0.15)]">
+                  <Film className="w-9 h-9 text-rose-400/70" />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-2 tracking-tight">Your first story starts here</h3>
+                <p className="text-zinc-500 text-sm max-w-xs mb-8 leading-relaxed">
+                  Transform your memories into a cinematic experience — beautiful, private, and entirely yours.
+                </p>
+                <Link
+                  href="/stories/new"
+                  className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-gradient-to-r from-rose-500 to-purple-600 text-white font-bold text-sm hover:from-rose-400 hover:to-purple-500 transition-all shadow-[0_0_30px_rgba(244,63,94,0.3)] hover:shadow-[0_0_50px_rgba(244,63,94,0.4)] hover:-translate-y-0.5 active:translate-y-0"
+                >
+                  <Plus className="w-4 h-4" />
+                  Create Your First Story
+                </Link>
+              </div>
             </div>
           ) : (
             <div

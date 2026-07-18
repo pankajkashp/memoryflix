@@ -52,7 +52,7 @@ export default function StoryWizard({
   // e.g. Step 3 requires media to proceed to Step 4? Not strictly enforcing to keep it flexible, but we could.
 
   return (
-    <div className={`mx-auto pt-4 pb-24 transition-all duration-500 px-4 ${currentStep === 3 ? "max-w-[90rem]" : "max-w-4xl"}`}>
+    <div className="mx-auto pt-4 pb-24 transition-all duration-500 px-3 sm:px-4 max-w-4xl">
       {/* ── Header & Navigation ────────────────────────────────────────────── */}
       <div className="mb-8 flex items-center justify-between">
         <Link
@@ -78,18 +78,18 @@ export default function StoryWizard({
           animate={{ width: `${((currentStep - 1) / (STEPS.length - 1)) * 100}%` }}
           transition={{ duration: 0.5, ease: "easeInOut" }}
         />
-        <div className="flex justify-between relative z-10 overflow-x-auto sm:overflow-visible pb-4 sm:pb-0 hide-scrollbar gap-4 sm:gap-0">
+        <div className="flex justify-between relative z-10 overflow-x-auto sm:overflow-visible pb-4 sm:pb-0 hide-scrollbar gap-2 sm:gap-0">
           {STEPS.map((step) => {
             const isActive = step.id === currentStep;
             const isPast = step.id < currentStep;
             return (
               <div 
                 key={step.id} 
-                className="flex flex-col items-center gap-2 min-w-[60px] cursor-pointer group"
+                className="flex flex-col items-center gap-1.5 min-w-[48px] sm:min-w-[60px] cursor-pointer group"
                 onClick={() => setCurrentStep(step.id)}
               >
                 <motion.div 
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all shadow-lg border-2 relative ${
+                  className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-[10px] sm:text-xs font-bold transition-all shadow-lg border-2 relative ${
                     isActive 
                       ? "bg-rose-500 text-white border-rose-400 shadow-[0_0_20px_rgba(244,63,94,0.5)] scale-110" 
                       : isPast 
@@ -180,55 +180,20 @@ export default function StoryWizard({
 
               {/* STEP 3: CHAPTERS */}
               {currentStep === 3 && (
-                <div className="h-full flex flex-col lg:flex-row gap-8">
-                  <div className="w-full lg:flex-1 lg:max-w-xl flex flex-col">
-                    <h2 className="text-3xl font-black tracking-tight text-white mb-2">Memory Chapters</h2>
-                    <p className="text-zinc-400 mb-8 max-w-xl text-lg">
-                      Organize your story into chapters. You'll assign media to these chapters in the next step.
-                    </p>
-                    
-                    <ChapterEditor 
-                      storyId={story.id} 
-                      chapters={story.chapters} 
-                      media={story.media} 
-                      activeChapterId={activeChapterId}
-                      setActiveChapterId={setActiveChapterId}
-                      onDraftChange={setChapterDraft}
-                    />
-                  </div>
-
-                  <div className="flex w-full lg:flex-1 bg-black/50 border border-white/10 rounded-2xl overflow-hidden shadow-2xl relative flex-col h-[500px] lg:h-[700px] mt-8 lg:mt-0">
-                    <div className="h-10 bg-[#1a1a1a] border-b border-white/10 flex items-center px-4 shrink-0">
-                      <div className="flex gap-1.5">
-                        <div className="w-3 h-3 rounded-full bg-red-500/50" />
-                        <div className="w-3 h-3 rounded-full bg-yellow-500/50" />
-                        <div className="w-3 h-3 rounded-full bg-green-500/50" />
-                      </div>
-                      <div className="mx-auto bg-black/50 px-4 py-1 rounded-md text-[10px] font-mono text-zinc-500 border border-white/5">
-                        Live Chapter Preview
-                      </div>
-                    </div>
-                    <div className="flex-1 relative bg-[#0f0f0f] overflow-hidden">
-                      <div className="absolute inset-0 overflow-y-auto overflow-x-hidden custom-scrollbar">
-                        {/* Desktop scaled view */}
-                        <div className="hidden lg:block origin-top scale-[0.65] w-[153%] h-[153%]">
-                          <ChapterLivePreview 
-                            story={story as any} 
-                            activeChapterId={activeChapterId}
-                            chapterDraft={chapterDraft}
-                          />
-                        </div>
-                        {/* Mobile native responsive view */}
-                        <div className="block lg:hidden w-full h-full">
-                          <ChapterLivePreview 
-                            story={story as any} 
-                            activeChapterId={activeChapterId}
-                            chapterDraft={chapterDraft}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <div>
+                  <h2 className="text-3xl font-black tracking-tight text-white mb-2">Memory Chapters</h2>
+                  <p className="text-zinc-400 mb-8 max-w-xl text-lg">
+                    Organize your story into chapters. You'll assign media to these chapters in the next step.
+                  </p>
+                  
+                  <ChapterEditor 
+                    storyId={story.id} 
+                    chapters={story.chapters} 
+                    media={story.media} 
+                    activeChapterId={activeChapterId}
+                    setActiveChapterId={setActiveChapterId}
+                    onDraftChange={setChapterDraft}
+                  />
                 </div>
               )}
 
@@ -240,7 +205,7 @@ export default function StoryWizard({
                     Add photos and videos to your story. Assign them to chapters using the dropdown menu on each media card.
                   </p>
                   
-                  <MediaUploader storyId={story.id} />
+                  <MediaUploader storyId={story.id} onUploadComplete={() => nextStep()} />
                   
                   <div className="mt-8 border-t border-white/10 pt-8">
                     <MediaList media={story.media} storyId={story.id} coverMediaId={story.coverMediaId} chapters={story.chapters} />

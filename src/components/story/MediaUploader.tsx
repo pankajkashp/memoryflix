@@ -4,9 +4,17 @@ import { CldUploadWidget } from "next-cloudinary";
 import { useState } from "react";
 import { saveMediaAsset } from "@/app/actions/media";
 import { motion } from "framer-motion";
-import { UploadCloud } from "lucide-react";
+import { UploadCloud, Loader2 } from "lucide-react";
 
-export default function MediaUploader({ storyId, chapterId }: { storyId: string, chapterId?: string }) {
+export default function MediaUploader({ 
+  storyId, 
+  chapterId,
+  onUploadComplete
+}: { 
+  storyId: string, 
+  chapterId?: string,
+  onUploadComplete?: () => void
+}) {
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -38,6 +46,15 @@ export default function MediaUploader({ storyId, chapterId }: { storyId: string,
       <CldUploadWidget
         signatureEndpoint="/api/cloudinary/sign"
         onSuccess={handleSuccess}
+        onQueuesEnd={(result, { widget }) => {
+          widget.close();
+          // Give server action time to finish and DOM to update before auto-advancing
+          if (onUploadComplete) {
+            setTimeout(() => {
+              onUploadComplete();
+            }, 1000);
+          }
+        }}
         options={{
           folder: "memoryflix",
           resourceType: "auto",
@@ -54,7 +71,7 @@ export default function MediaUploader({ storyId, chapterId }: { storyId: string,
                 disabled={isUploading}
                 className="w-full sm:w-auto min-h-[44px] flex items-center justify-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl text-sm font-bold text-white transition-all disabled:opacity-50"
               >
-                <UploadCloud className="w-4 h-4" />
+                {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <UploadCloud className="w-4 h-4" />}
                 {isUploading ? "Uploading..." : "Upload Photos"}
               </button>
             );
@@ -73,9 +90,13 @@ export default function MediaUploader({ storyId, chapterId }: { storyId: string,
               <div className="absolute inset-0 bg-gradient-to-br from-rose-500/10 via-transparent to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
               <div className="relative z-10 rounded-full bg-white/5 border border-white/10 p-6 mb-6 group-hover:scale-110 group-hover:bg-white/10 transition-all duration-300">
-                <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                </svg>
+                {isUploading ? (
+                  <Loader2 className="w-10 h-10 text-rose-500 animate-spin" />
+                ) : (
+                  <svg className="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                  </svg>
+                )}
               </div>
               <h3 className="relative z-10 text-2xl font-black text-white mb-2 tracking-tight">
                 {isUploading ? "Processing Upload..." : "Select Media"}

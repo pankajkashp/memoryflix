@@ -79,7 +79,7 @@ function EditableMediaCard({ item, storyId, chapters, isEditable, coverMediaId, 
           <video src={item.url} className="w-full h-full object-cover rounded-xl" autoPlay muted loop playsInline />
         ) : (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={item.url} alt="Media" className="w-full h-full object-cover rounded-xl" />
+          <img src={item.url} alt={item.title || "Memory"} className="w-full h-full object-cover rounded-xl" loading="lazy" decoding="async" />
         )}
         
         {item.type === "VIDEO" && (
@@ -434,7 +434,7 @@ export default function ChapterLayoutRenderer({
     <div className="relative">
       {/* Chapter Layout Controls */}
       {isEditable && chapter && (
-        <div className="absolute -top-16 right-0 flex items-center gap-1 bg-black/40 backdrop-blur-md rounded-lg p-1 border border-white/10 opacity-0 group-hover/chapter:opacity-100 transition-opacity">
+        <div className="absolute -top-16 right-0 flex items-center gap-1 bg-black/40 backdrop-blur-md rounded-lg p-1 border border-white/10 opacity-100 md:opacity-0 md:group-hover/chapter:opacity-100 transition-opacity duration-200">
           <button {...getButtonProps(4, "MASONRY", <LayoutGrid className="w-4 h-4" />, "Masonry Grid")} />
           <button {...getButtonProps(12, "HEART", <Heart className="w-4 h-4" />, "Heart Layout ❤️")} />
           <button {...getButtonProps(5, "FILM_STRIP", <Film className="w-4 h-4" />, "Film Strip")} />

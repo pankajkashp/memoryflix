@@ -122,7 +122,7 @@ export default function NetflixTemplate({
                 transition={{ duration: 20, ease: "linear" }}
                 src={chapterCover.url}
                 alt=""
-                className="w-full h-full object-cover opacity-60"
+                className="w-full h-full object-cover opacity-80"
               />
             ) : (
               <video
@@ -131,10 +131,10 @@ export default function NetflixTemplate({
                 loop
                 muted
                 playsInline
-                className="w-full h-full object-cover opacity-60"
+                className="w-full h-full object-cover opacity-80"
               />
             )}
-            <div className="absolute inset-0 bg-black/80" />
+            <div className="absolute inset-0 bg-black/40 bg-gradient-to-t from-black via-black/30 to-black/70" />
           </div>
         )}
 
