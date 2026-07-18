@@ -28,9 +28,6 @@ export default function SiteLoader() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // Only show once per session
-    if (sessionStorage.getItem(SESSION_KEY)) return;
-    sessionStorage.setItem(SESSION_KEY, "1");
     setIsVisible(true);
   }, []);
 

@@ -45,17 +45,9 @@ export default async function DashboardPage() {
   const totalChapters = stories.reduce((sum, s) => sum + (s._count?.chapters || 0), 0);
 
   return (
-    <div className="relative min-h-screen bg-[#09090b] overflow-hidden pb-32" data-dash-root>
+    <div className="relative min-h-screen bg-transparent overflow-hidden pb-32" data-dash-root>
       {/* GSAP animation controller */}
       <DashboardAnimations />
-
-      {/* ── Ambient Background (V2) ─────────────────────────────────────────── */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-rose-500/10 blur-[120px] mix-blend-screen animate-pulse-slow" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-purple-500/10 blur-[120px] mix-blend-screen animate-pulse-slow" style={{ animationDelay: '2s' }} />
-        {/* Film grain overlay */}
-        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }}></div>
-      </div>
 
       <div className="relative z-10 px-4 sm:px-8 lg:px-12 max-w-[1400px] mx-auto pt-16">
         

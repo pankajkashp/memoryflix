@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import LogoutButton from "@/components/auth/LogoutButton";
 import Link from "next/link";
 import PageTransition from "@/components/common/PageTransition";
+import DashboardAmbientBackground from "@/components/dashboard/DashboardAmbientBackground";
 
 // ─── Dashboard Layout ───────────────────────────────────────────────────────
 // Dark theme, matching the landing page aesthetics.
@@ -19,7 +20,8 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-[#080808] text-white selection:bg-rose-500/30">
+    <div className="min-h-screen bg-[#080808] text-white selection:bg-rose-500/30 relative">
+      <DashboardAmbientBackground />
       {/* ── Navbar ───────────────────────────────────────────────────────── */}
       <header className="border-b border-white/10 bg-black/50 backdrop-blur-xl sticky top-0 z-50 pt-[env(safe-area-inset-top)]" role="banner">
         <nav className="mx-auto max-w-7xl px-4 sm:px-6 py-4 flex items-center justify-between" aria-label="Dashboard navigation">
