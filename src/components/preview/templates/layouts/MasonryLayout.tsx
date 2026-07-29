@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { LayoutItem } from "../../../ChapterLayoutRenderer";
+import { LayoutItem } from "../../ChapterLayoutRenderer";
 import { useMasonryAnimation } from "../../LayoutAnimations";
 
 export default function MasonryLayout({ items, renderItem }: { items: LayoutItem[], renderItem: (i: LayoutItem) => React.ReactNode }) {

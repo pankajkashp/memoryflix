@@ -308,11 +308,26 @@ export default function ChapterLayoutRenderer({
 
       {/* Render selected layout */}
       <div className={isPending ? "opacity-50 pointer-events-none transition-opacity" : ""}>
-        {layout === "MASONRY" && <MasonryLayout items={mediaItems} renderItem={renderItem} />}
-        {layout === "HEART" && <HeartLayout items={mediaItems} renderItem={renderItem} />}
-        {layout === "FILM_STRIP" && <FilmStripLayout items={mediaItems} renderItem={renderItem} />}
-        {layout === "POLAROID" && <PolaroidLayout items={mediaItems} renderItem={renderItem} />}
-        {layout === "TIMELINE" && <TimelineLayout items={mediaItems} renderItem={renderItem} />}
+        {(() => {
+          const layoutItems: LayoutItem[] = mediaItems.map(({ item }) => ({
+            item,
+            type: item.type,
+          }));
+          const renderLayoutItem = (i: LayoutItem) => {
+            const index = mediaItems.findIndex(m => m.item.id === i.item.id);
+            return renderItem({ item: i.item, index });
+          };
+
+          return (
+            <>
+              {layout === "MASONRY" && <MasonryLayout items={layoutItems} renderItem={renderLayoutItem} />}
+              {layout === "HEART" && <HeartLayout items={layoutItems} renderItem={renderLayoutItem} />}
+              {layout === "FILM_STRIP" && <FilmStripLayout items={layoutItems} renderItem={renderLayoutItem} />}
+              {layout === "POLAROID" && <PolaroidLayout items={layoutItems} renderItem={renderLayoutItem} />}
+              {layout === "TIMELINE" && <TimelineLayout items={layoutItems} renderItem={renderLayoutItem} />}
+            </>
+          );
+        })()}
       </div>
 
       {/* ── End of Chapter Card ── */}

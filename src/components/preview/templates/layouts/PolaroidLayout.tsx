@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { LayoutItem } from "../../../ChapterLayoutRenderer";
+import { LayoutItem } from "../../ChapterLayoutRenderer";
 import { usePolaroidAnimation } from "../../LayoutAnimations";
 
 export default function PolaroidLayout({ items, renderItem }: { items: LayoutItem[], renderItem: (i: LayoutItem) => React.ReactNode }) {

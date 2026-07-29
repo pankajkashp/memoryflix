@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { LayoutItem } from "../../../ChapterLayoutRenderer";
+import { LayoutItem } from "../../ChapterLayoutRenderer";
 import { useTimelineAnimation } from "../../LayoutAnimations";
 
 export default function TimelineLayout({ items, renderItem }: { items: LayoutItem[], renderItem: (i: LayoutItem) => React.ReactNode }) {

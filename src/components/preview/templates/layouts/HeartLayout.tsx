@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 
-import { LayoutItem } from "../../../ChapterLayoutRenderer";
+import { LayoutItem } from "../../ChapterLayoutRenderer";
 
 export default function HeartLayout({
   items,
