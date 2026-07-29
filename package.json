@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "start": "next start"
   },
   "prisma": {
@@ -36,13 +37,19 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@next/eslint-plugin-next": "^16.2.12",
     "@tailwindcss/postcss": "^4",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "dotenv": "^17.4.2",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.2.12",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "typescript-eslint": "^8.65.0"
   }
 }
