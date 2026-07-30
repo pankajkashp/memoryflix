@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     include: { media: { orderBy: { position: "asc" } } },
   });
 
-  if (!story || story.status !== "PUBLISHED") {
+  if (!story || story.status !== "PUBLISHED" || story.paymentStatus !== "PAID") {
     return { title: "Story Not Found" };
   }
 
@@ -45,8 +45,8 @@ export default async function PublicStoryPage({ params }: PageProps) {
     },
   });
 
-  // Security check: Only allow access if the story is published
-  if (!story || story.status !== "PUBLISHED") {
+  // Security check: Only allow access if the story is published and paid
+  if (!story || story.status !== "PUBLISHED" || story.paymentStatus !== "PAID") {
     notFound();
   }
 

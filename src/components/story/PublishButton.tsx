@@ -2,10 +2,18 @@
 
 import { useState } from "react";
 import { publishStory } from "@/app/actions/story";
+import { createRazorpayOrder, verifyRazorpayPayment } from "@/app/actions/payment";
 import { motion } from "framer-motion";
-import { Loader2 } from "lucide-react";
+import { Loader2, Lock } from "lucide-react";
+import Script from "next/script";
 
-export default function PublishButton({ storyId }: { storyId: string }) {
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
+
+export default function PublishButton({ storyId, paymentStatus }: { storyId: string, paymentStatus: string }) {
   const [isPublishing, setIsPublishing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -13,16 +21,70 @@ export default function PublishButton({ storyId }: { storyId: string }) {
     setIsPublishing(true);
     setError(null);
     try {
-      await publishStory(storyId);
+      if (paymentStatus === "UNPAID") {
+        // 1. Create Order
+        const orderRes = await createRazorpayOrder(storyId);
+        if (!orderRes.success) throw new Error(orderRes.error || "Failed to initialize payment.");
+
+        // 2. Open Razorpay Checkout
+        const options = {
+          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_dummy",
+          amount: orderRes.amount,
+          currency: orderRes.currency,
+          name: "MemoryFlix",
+          description: "Unlock Story Sharing",
+          order_id: orderRes.orderId,
+          handler: async function (response: any) {
+            try {
+              // 3. Verify Payment
+              const verifyRes = await verifyRazorpayPayment({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                storyId,
+              });
+
+              if (!verifyRes.success) throw new Error(verifyRes.error);
+              
+              // 4. Publish Story
+              await publishStory(storyId);
+            } catch (err: any) {
+              setError(err.message || "Payment verification failed.");
+              setIsPublishing(false);
+            }
+          },
+          prefill: {
+            name: "MemoryFlix User",
+          },
+          theme: {
+            color: "#f43f5e"
+          },
+          modal: {
+            ondismiss: function() {
+              setIsPublishing(false);
+            }
+          }
+        };
+
+        const rzp1 = new window.Razorpay(options);
+        rzp1.on("payment.failed", function (response: any){
+          setError(response.error.description);
+          setIsPublishing(false);
+        });
+        rzp1.open();
+      } else {
+        // Already paid, just publish
+        await publishStory(storyId);
+      }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Failed to publish story.");
-    } finally {
       setIsPublishing(false);
     }
   };
 
   return (
     <div className="flex flex-col items-center">
+      <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
@@ -39,7 +101,13 @@ export default function PublishButton({ storyId }: { storyId: string }) {
             </>
           ) : (
             <>
-              Publish to the World
+              {paymentStatus === "UNPAID" ? (
+                <>
+                  <Lock className="w-5 h-5 mr-1" /> Pay & Publish (₹99)
+                </>
+              ) : (
+                <>Publish to the World</>
+              )}
               <svg className="w-6 h-6 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>

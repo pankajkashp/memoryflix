@@ -19,6 +19,11 @@ enum MediaType {
   VIDEO
 }
 
+enum PaymentStatus {
+  UNPAID
+  PAID
+}
+
 // ── Models ────────────────────────────────────────────────────────────────────
 
 model User {
@@ -32,6 +37,7 @@ model User {
 
   stories Story[]
   media   MediaAsset[]
+  payments Payment[]
 }
 
 model StoryTemplate {
@@ -60,6 +66,7 @@ model Story {
   coverMediaId     String?
   typographyPreset String?
   accentColor      String?
+  paymentStatus    PaymentStatus @default(UNPAID)
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 
@@ -68,6 +75,7 @@ model Story {
   media      MediaAsset[]  @relation("StoryMedia")
   coverMedia MediaAsset?   @relation("StoryCover", fields: [coverMediaId], references: [id], onDelete: SetNull)
   chapters   Chapter[]
+  payments   Payment[]
 
   @@index([userId])
   @@index([templateId])
@@ -124,5 +132,24 @@ model Chapter {
   media     MediaAsset[]
   coverMedia MediaAsset? @relation("ChapterCover", fields: [coverMediaId], references: [id], onDelete: SetNull)
 
+  @@index([storyId])
+}
+
+model Payment {
+  id                String   @id @default(cuid())
+  userId            String
+  storyId           String
+  razorpayOrderId   String   @unique
+  razorpayPaymentId String?  @unique
+  amount            Int      // in paise (e.g., 9900 = ₹99)
+  currency          String   @default("INR")
+  status            String   @default("PENDING") // PENDING, SUCCESS, FAILED
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  story Story @relation(fields: [storyId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
   @@index([storyId])
 }

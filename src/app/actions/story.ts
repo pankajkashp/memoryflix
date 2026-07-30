@@ -200,6 +200,10 @@ export async function publishStory(storyId: string) {
 
   if (!story) throw new Error("Story not found or unauthorized");
 
+  if (story.paymentStatus !== "PAID") {
+    throw new Error("Payment is required before publishing.");
+  }
+
   if (story.status === "PUBLISHED" && story.slug) {
     return { success: true, slug: story.slug };
   }

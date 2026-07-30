@@ -327,7 +327,7 @@ export default function StoryWizard({
                           transition={{ delay: 0.2 }}
                           className="scale-125 origin-center"
                         >
-                          <PublishButton storyId={story.id} />
+                          <PublishButton storyId={story.id} paymentStatus={story.paymentStatus} />
                         </motion.div>
                       )
                     ) : (

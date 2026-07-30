@@ -125,28 +125,37 @@ export default function DashboardAnimations() {
           window.removeEventListener("mousemove", handleMouseMove);
       }
 
-      // ── Magnetic FAB ──────────────────────────────────────────────────────
+      // ── Magnetic Elements ──────────────────────────────────────────────────────
       if (!reduced) {
-        const fab = document.querySelector<HTMLElement>(".fixed.bottom-8.right-8 a");
-        if (fab) {
+        const magneticElements = document.querySelectorAll<HTMLElement>("[data-gsap-magnetic]");
+        if (magneticElements.length > 0) {
           const mm = gsap.matchMedia();
           mm.add("(min-width: 768px)", () => {
-            const onEnter = (e: MouseEvent) => {
-              const rect = fab.getBoundingClientRect();
-              const cx = rect.left + rect.width / 2;
-              const cy = rect.top + rect.height / 2;
-              const dx = (e.clientX - cx) * 0.35;
-              const dy = (e.clientY - cy) * 0.35;
-              gsap.to(fab, { x: dx, y: dy, duration: 0.3, ease: "power2.out" });
-            };
-            const onLeave = () => {
-              gsap.to(fab, { x: 0, y: 0, duration: 0.5, ease: "elastic.out(1, 0.5)" });
-            };
-            fab.addEventListener("mousemove", onEnter as EventListener);
-            fab.addEventListener("mouseleave", onLeave);
+            const cleanups: (() => void)[] = [];
+            
+            magneticElements.forEach((el) => {
+              const onEnter = (e: MouseEvent) => {
+                const rect = el.getBoundingClientRect();
+                const cx = rect.left + rect.width / 2;
+                const cy = rect.top + rect.height / 2;
+                const dx = (e.clientX - cx) * 0.35;
+                const dy = (e.clientY - cy) * 0.35;
+                gsap.to(el, { x: dx, y: dy, duration: 0.3, ease: "power2.out" });
+              };
+              const onLeave = () => {
+                gsap.to(el, { x: 0, y: 0, duration: 0.5, ease: "elastic.out(1, 0.5)" });
+              };
+              el.addEventListener("mousemove", onEnter as EventListener);
+              el.addEventListener("mouseleave", onLeave);
+              
+              cleanups.push(() => {
+                el.removeEventListener("mousemove", onEnter as EventListener);
+                el.removeEventListener("mouseleave", onLeave);
+              });
+            });
+
             return () => {
-              fab.removeEventListener("mousemove", onEnter as EventListener);
-              fab.removeEventListener("mouseleave", onLeave);
+              cleanups.forEach((cleanup) => cleanup());
             };
           });
         }

@@ -136,17 +136,19 @@ export default memo(function StoryCard({ story }: { story: StoryWithRelations })
           {/* Preview */}
           <Link
             href={`/stories/${story.id}/preview`}
-            className="flex items-center gap-2 bg-white text-black px-5 py-2.5 rounded-full font-bold text-sm hover:bg-zinc-100 transition-colors shadow-2xl"
+            aria-label={`Preview ${story.title}`}
+            className="flex items-center gap-2 bg-white text-black px-5 py-2.5 rounded-full font-bold text-sm hover:bg-zinc-100 transition-colors shadow-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-900"
           >
-            <Play className="w-4 h-4" /> Preview
+            <Play className="w-4 h-4" aria-hidden="true" /> Preview
           </Link>
 
           {/* Edit */}
           <Link
             href={`/stories/${story.id}`}
-            className="flex items-center gap-2 bg-white/20 text-white backdrop-blur-md border border-white/30 px-5 py-2.5 rounded-full font-bold text-sm hover:bg-white/30 transition-colors"
+            aria-label={`Edit ${story.title}`}
+            className="flex items-center gap-2 bg-white/20 text-white backdrop-blur-md border border-white/30 px-5 py-2.5 rounded-full font-bold text-sm hover:bg-white/30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-900"
           >
-            <Edit2 className="w-4 h-4" /> Edit
+            <Edit2 className="w-4 h-4" aria-hidden="true" /> Edit
           </Link>
         </div>
       </div>
@@ -203,9 +205,10 @@ export default memo(function StoryCard({ story }: { story: StoryWithRelations })
             <button
               onClick={handleCopyLink}
               title="Copy Share Link"
-              className="p-2.5 rounded-xl text-zinc-400 border border-white/10 bg-white/5 hover:bg-white/15 hover:text-white transition-colors"
+              aria-label="Copy Share Link"
+              className="p-2.5 rounded-xl text-zinc-400 border border-white/10 bg-white/5 hover:bg-white/15 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
             >
-              <Share2 className="w-3.5 h-3.5" />
+              <Share2 className="w-3.5 h-3.5" aria-hidden="true" />
             </button>
           )}
 
@@ -215,9 +218,10 @@ export default memo(function StoryCard({ story }: { story: StoryWithRelations })
               onClick={handleDelete}
               disabled={isPending}
               title="Delete Story"
-              className="p-2.5 rounded-xl text-zinc-500 border border-white/10 bg-white/5 hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/30 transition-colors"
+              aria-label="Delete Story"
+              className="p-2.5 rounded-xl text-zinc-500 border border-white/10 bg-white/5 hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
             >
-              <Trash2 className="w-3.5 h-3.5" />
+              <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
             </button>
           )}
         </div>

@@ -48,23 +48,24 @@ export default function RootLayout({
         <Toaster
           position="bottom-right"
           toastOptions={{
-            duration: 3500,
+            duration: 4000,
             style: {
-              background: "#18181b",
+              background: "rgba(24, 24, 27, 0.65)",
               color: "#fafafa",
               border: "1px solid rgba(255,255,255,0.08)",
-              borderRadius: "12px",
-              padding: "12px 16px",
+              borderRadius: "16px",
+              padding: "16px 20px",
               fontSize: "14px",
-              fontWeight: "500",
-              boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
-              backdropFilter: "blur(12px)",
+              fontWeight: "600",
+              boxShadow: "0 20px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
             },
             success: {
-              iconTheme: { primary: "#f43f5e", secondary: "#fafafa" },
+              iconTheme: { primary: "#f43f5e", secondary: "#fff" },
             },
             error: {
-              iconTheme: { primary: "#ef4444", secondary: "#fafafa" },
+              iconTheme: { primary: "#ef4444", secondary: "#fff" },
             },
           }}
         />

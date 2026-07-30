@@ -145,6 +145,7 @@ export default async function DashboardPage() {
               </div>
               <Link
                 href={`/stories/${lastEditedStory.id}`}
+                data-gsap-magnetic
                 className="mt-4 sm:mt-0 w-full sm:w-auto shrink-0 px-8 py-3.5 bg-rose-500 text-white font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-rose-400 transition-colors shadow-[0_0_20px_rgba(244,63,94,0.3)] active:scale-95"
               >
                 Continue Editing <Play className="w-4 h-4 ml-1" />
@@ -185,6 +186,7 @@ export default async function DashboardPage() {
                 </p>
                 <Link
                   href="/stories/new"
+                  data-gsap-magnetic
                   className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-gradient-to-r from-rose-500 to-purple-600 text-white font-bold text-sm hover:from-rose-400 hover:to-purple-500 transition-all shadow-[0_0_30px_rgba(244,63,94,0.3)] hover:shadow-[0_0_50px_rgba(244,63,94,0.4)] hover:-translate-y-0.5 active:translate-y-0"
                 >
                   <Plus className="w-4 h-4" />
@@ -211,6 +213,7 @@ export default async function DashboardPage() {
       <div className="fixed bottom-8 right-8 z-50">
         <Link
           href="/stories/new"
+          data-gsap-magnetic
           className="group relative flex items-center justify-center w-14 h-14 sm:w-auto sm:px-6 sm:py-4 rounded-full bg-gradient-to-r from-rose-500 to-purple-600 font-bold text-white shadow-[0_0_30px_rgba(225,29,72,0.4)] hover:shadow-[0_0_50px_rgba(225,29,72,0.6)] transition-all hover:-translate-y-1 active:translate-y-0"
         >
           <div className="absolute inset-0 rounded-full border border-white/20" />
