@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import MediaViewer from "@/components/preview/MediaViewer";
-import CinematicPlayer from "@/components/preview/CinematicPlayer";
+import dynamic from "next/dynamic";
 import EmptyState from "@/components/preview/EmptyState";
+
+const MediaViewer = dynamic(() => import("@/components/preview/MediaViewer"), { ssr: false });
+const CinematicPlayer = dynamic(() => import("@/components/preview/CinematicPlayer"), { ssr: false });
 import { StoryWithFullPayload } from "../PreviewClientWrapper";
 import ChapterLayoutRenderer from "./../ChapterLayoutRenderer";
 import ChapterPosterCard from "./netflix/ChapterPosterCard";
@@ -13,6 +15,7 @@ import { getFontClassName } from "@/lib/fonts";
 import { motion } from "framer-motion";
 import { gsap, animateChapterReveal } from "@/lib/gsap-utils";
 import { useStoryTemplateData } from "@/hooks/useStoryTemplateData";
+import Image from "next/image";
 
 export default function NetflixTemplate({ 
   story, 
@@ -103,14 +106,21 @@ export default function NetflixTemplate({
         {chapterCover && (
           <div className="absolute inset-0 z-0 overflow-hidden bg-black">
             {chapterCover.type === "IMAGE" ? (
-              <motion.img
+              <motion.div
                 initial={{ scale: 1 }}
                 animate={{ scale: 1.1 }}
                 transition={{ duration: 20, ease: "linear" }}
-                src={chapterCover.url}
-                alt=""
-                className="w-full h-full object-cover opacity-80"
-              />
+                className="w-full h-full relative"
+              >
+                <Image
+                  src={chapterCover.url}
+                  alt=""
+                  fill
+                  sizes="100vw"
+                  className="object-cover opacity-80"
+                  priority
+                />
+              </motion.div>
             ) : (
               <video
                 src={chapterCover.url}
@@ -331,8 +341,7 @@ export default function NetflixTemplate({
             {coverImage.type === "VIDEO" ? (
               <video src={coverImage.url} className="w-full h-full object-cover opacity-80 sm:opacity-60 scale-105" autoPlay muted loop playsInline />
             ) : (
-               
-              <img src={coverImage.url} alt="Cover" className="w-full h-full object-cover opacity-80 sm:opacity-60 scale-105" />
+              <Image src={coverImage.url} alt="Cover" fill sizes="100vw" className="object-cover opacity-80 sm:opacity-60 scale-105" priority />
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f0f] via-[#0f0f0f]/30 sm:via-[#0f0f0f]/50 to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-r from-[#0f0f0f]/50 sm:from-[#0f0f0f]/80 via-transparent to-transparent" />

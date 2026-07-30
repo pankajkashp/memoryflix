@@ -1,12 +1,15 @@
 "use client";
 
 
-import MediaViewer from "@/components/preview/MediaViewer";
-import CinematicPlayer from "@/components/preview/CinematicPlayer";
+import dynamic from "next/dynamic";
 import EmptyState from "@/components/preview/EmptyState";
+
+const MediaViewer = dynamic(() => import("@/components/preview/MediaViewer"), { ssr: false });
+const CinematicPlayer = dynamic(() => import("@/components/preview/CinematicPlayer"), { ssr: false });
 import { useStoryTemplateData } from "@/hooks/useStoryTemplateData";
 import { StoryWithFullPayload } from "../PreviewClientWrapper";
 import { Play } from "lucide-react";
+import Image from "next/image";
 
 export default function WeddingTemplate({ 
   story, 
@@ -39,8 +42,7 @@ export default function WeddingTemplate({
             {coverImage.type === "VIDEO" ? (
               <video src={coverImage.url} className="w-full h-full object-cover scale-105" autoPlay muted loop playsInline />
             ) : (
-               
-              <img src={coverImage.url} alt="Cover" className="w-full h-full object-cover scale-105" />
+              <Image src={coverImage.url} alt="Cover" fill sizes="100vw" className="object-cover scale-105" priority />
             )}
             <div className="absolute inset-0 bg-gradient-to-b from-[#0f0f0f]/30 via-transparent to-[#0f0f0f]" />
           </div>
@@ -139,8 +141,7 @@ export default function WeddingTemplate({
                     {item.type === "VIDEO" ? (
                       <video src={item.url} className="w-full h-full object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-700" autoPlay muted loop playsInline />
                     ) : (
-                       
-                      <img src={item.url} alt="Media" className="w-full h-full object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-700 scale-100 group-hover:scale-105" />
+                      <Image src={item.url} alt="Media" fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-700 scale-100 group-hover:scale-105" />
                     )}
                   </div>
                 ))}

@@ -3,11 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Story, MediaAsset, Chapter, StoryTemplate } from "@prisma/client";
-import NetflixTemplate from "./templates/NetflixTemplate";
-import AppleTemplate from "./templates/AppleTemplate";
-import TravelTemplate from "./templates/TravelTemplate";
-import WeddingTemplate from "./templates/WeddingTemplate";
-import TimelineTemplate from "./templates/TimelineTemplate";
+import dynamic from "next/dynamic";
+
+const NetflixTemplate = dynamic(() => import("./templates/NetflixTemplate"));
+const AppleTemplate = dynamic(() => import("./templates/AppleTemplate"));
+const TravelTemplate = dynamic(() => import("./templates/TravelTemplate"));
+const WeddingTemplate = dynamic(() => import("./templates/WeddingTemplate"));
+const TimelineTemplate = dynamic(() => import("./templates/TimelineTemplate"));
 import AudioPlayer from "./AudioPlayer";
 import { getFontClassName } from "@/lib/fonts";
 import { getPresetConfig, getAccentConfig } from "@/lib/typography-presets";

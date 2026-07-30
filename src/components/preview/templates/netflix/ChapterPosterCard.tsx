@@ -1,5 +1,6 @@
 import { Play, MapPin } from "lucide-react";
 import { Chapter, MediaAsset } from "@prisma/client";
+import Image from "next/image";
 
 export default function ChapterPosterCard({
   chapter,
@@ -34,8 +35,7 @@ export default function ChapterPosterCard({
           coverMedia.type === "VIDEO" ? (
             <video src={coverMedia.url} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100" />
           ) : (
-             
-            <img src={coverMedia.url} alt={chapter.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100" />
+            <Image src={coverMedia.url} alt={chapter.title} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100" />
           )
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-zinc-800 to-zinc-900 flex flex-col items-center justify-center gap-3">

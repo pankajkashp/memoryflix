@@ -1,12 +1,15 @@
 "use client";
 
 
-import MediaViewer from "@/components/preview/MediaViewer";
-import CinematicPlayer from "@/components/preview/CinematicPlayer";
+import dynamic from "next/dynamic";
 import EmptyState from "@/components/preview/EmptyState";
+
+const MediaViewer = dynamic(() => import("@/components/preview/MediaViewer"), { ssr: false });
+const CinematicPlayer = dynamic(() => import("@/components/preview/CinematicPlayer"), { ssr: false });
 import { useStoryTemplateData } from "@/hooks/useStoryTemplateData";
 import { StoryWithFullPayload } from "../PreviewClientWrapper";
 import { Play, BookOpen } from "lucide-react";
+import Image from "next/image";
 
 export default function TimelineTemplate({ 
   story, 
@@ -115,8 +118,7 @@ export default function TimelineTemplate({
                               {item.type === "VIDEO" ? (
                                 <video src={item.url} className="w-full h-full object-cover" autoPlay muted loop playsInline />
                               ) : (
-                                 
-                                <img src={item.url} alt="Media" className="w-full h-full object-cover" />
+                                <Image src={item.url} alt="Media" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
                               )}
                               
                               {item.type === "VIDEO" && (
@@ -161,8 +163,7 @@ export default function TimelineTemplate({
                       {item.type === "VIDEO" ? (
                         <video src={item.url} className="w-full h-full object-cover" autoPlay muted loop playsInline />
                       ) : (
-                         
-                        <img src={item.url} alt="Media" className="w-full h-full object-cover" />
+                        <Image src={item.url} alt="Media" fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover" />
                       )}
                     </div>
                   ))}

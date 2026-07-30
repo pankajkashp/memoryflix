@@ -1,12 +1,15 @@
 "use client";
 
 
-import MediaViewer from "@/components/preview/MediaViewer";
-import CinematicPlayer from "@/components/preview/CinematicPlayer";
+import dynamic from "next/dynamic";
 import EmptyState from "@/components/preview/EmptyState";
+
+const MediaViewer = dynamic(() => import("@/components/preview/MediaViewer"), { ssr: false });
+const CinematicPlayer = dynamic(() => import("@/components/preview/CinematicPlayer"), { ssr: false });
 import { useStoryTemplateData } from "@/hooks/useStoryTemplateData";
 import { StoryWithFullPayload } from "../PreviewClientWrapper";
 import { MapPin, Play, Compass } from "lucide-react";
+import Image from "next/image";
 
 export default function TravelTemplate({ 
   story, 
@@ -55,8 +58,7 @@ export default function TravelTemplate({
               {coverImage.type === "VIDEO" ? (
                 <video src={coverImage.url} className="w-full h-full object-cover grayscale-[20%] sepia-[20%]" autoPlay muted loop playsInline />
               ) : (
-                 
-                <img src={coverImage.url} alt="Cover" className="w-full h-full object-cover grayscale-[20%] sepia-[20%]" />
+                <Image src={coverImage.url} alt="Cover" fill sizes="100vw" className="object-cover grayscale-[20%] sepia-[20%]" priority />
               )}
             </div>
             {/* Vintage tape effect corners */}
@@ -115,8 +117,7 @@ export default function TravelTemplate({
                           {item.type === "VIDEO" ? (
                             <video src={item.url} className="w-full h-full object-cover filter contrast-110 sepia-[15%]" autoPlay muted loop playsInline />
                           ) : (
-                             
-                            <img src={item.url} alt="Media" className="w-full h-full object-cover filter contrast-110 sepia-[15%]" />
+                            <Image src={item.url} alt="Media" fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover filter contrast-110 sepia-[15%]" />
                           )}
                           
                           {item.type === "VIDEO" && (
@@ -161,8 +162,7 @@ export default function TravelTemplate({
                         {item.type === "VIDEO" ? (
                           <video src={item.url} className="w-full h-full object-cover sepia-[10%]" autoPlay muted loop playsInline />
                         ) : (
-                           
-                          <img src={item.url} alt="Media" className="w-full h-full object-cover sepia-[10%]" />
+                          <Image src={item.url} alt="Media" fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover sepia-[10%]" />
                         )}
                       </div>
                     </div>
