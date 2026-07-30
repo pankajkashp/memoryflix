@@ -14,20 +14,15 @@ import {
   DragEndEvent,
   DragStartEvent,
   DragOverlay,
-  useDroppable,
 } from "@dnd-kit/core";
 import {
   arrayMove,
-  SortableContext,
   sortableKeyboardCoordinates,
-  rectSortingStrategy,
 } from "@dnd-kit/sortable";
-import SortableMediaItem from "./SortableMediaItem";
 import DragPreviewCard from "./DragPreviewCard";
 import DroppableSection from "./DroppableSection";
-import { reorderMedia, assignMediaToChapter, assignMultipleMediaToChapter } from "@/app/actions/media";
+import { reorderMedia, assignMultipleMediaToChapter } from "@/app/actions/media";
 import { Loader2, CheckSquare, X, ChevronRight, MapPin, Check } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
 
 // ── MediaList ─────────────────────────────────────────────────────────────────

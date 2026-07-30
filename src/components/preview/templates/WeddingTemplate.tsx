@@ -9,8 +9,8 @@ import { Play } from "lucide-react";
 
 export default function WeddingTemplate({ 
   story, 
-  isEditable = false,
-  onChapterChange
+  isEditable: _isEditable = false,
+  onChapterChange: _onChapterChange
 }: { 
   story: StoryWithFullPayload, 
   isEditable?: boolean,
@@ -45,7 +45,7 @@ export default function WeddingTemplate({
             {coverImage.type === "VIDEO" ? (
               <video src={coverImage.url} className="w-full h-full object-cover scale-105" autoPlay muted loop playsInline />
             ) : (
-              // eslint-disable-next-line @next/next/no-img-element
+               
               <img src={coverImage.url} alt="Cover" className="w-full h-full object-cover scale-105" />
             )}
             <div className="absolute inset-0 bg-gradient-to-b from-[#0f0f0f]/30 via-transparent to-[#0f0f0f]" />
@@ -109,7 +109,7 @@ export default function WeddingTemplate({
                     {item.type === "VIDEO" ? (
                       <video src={item.url} className="w-full h-auto object-cover opacity-90 group-hover:opacity-100 transition-all duration-700" autoPlay muted loop playsInline />
                     ) : (
-                      // eslint-disable-next-line @next/next/no-img-element
+                       
                       <img src={item.url} alt="Media" className="w-full h-auto object-cover opacity-90 group-hover:opacity-100 transition-all duration-700 scale-100 group-hover:scale-105" />
                     )}
                     
@@ -145,7 +145,7 @@ export default function WeddingTemplate({
                     {item.type === "VIDEO" ? (
                       <video src={item.url} className="w-full h-full object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-700" autoPlay muted loop playsInline />
                     ) : (
-                      // eslint-disable-next-line @next/next/no-img-element
+                       
                       <img src={item.url} alt="Media" className="w-full h-full object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-700 scale-100 group-hover:scale-105" />
                     )}
                   </div>

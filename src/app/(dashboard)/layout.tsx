@@ -28,7 +28,7 @@ export default async function DashboardLayout({
           {/* Logo */}
           <Link href="/" className="flex items-center gap-1 group">
             <div className="relative w-10 h-10 flex items-center justify-center -ml-2">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
+              { }
               <img src="/icon.png" alt="MemoryFlix Logo" className="w-full h-full object-cover scale-[1.7] transition-transform duration-300 group-hover:scale-[1.85]" />
             </div>
             <span className="text-xl font-bold tracking-tight text-white group-hover:text-rose-50 transition-colors">

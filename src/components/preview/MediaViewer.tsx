@@ -129,7 +129,7 @@ export default function MediaViewer({
                 style={{ maxHeight: hasMetadata ? "calc(100dvh - 220px)" : "calc(100dvh - 100px)" }}
               />
             ) : (
-              // eslint-disable-next-line @next/next/no-img-element
+               
               <img
                 key={currentMedia.url}
                 src={currentMedia.url}

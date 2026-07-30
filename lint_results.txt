@@ -1,0 +1,148 @@
+
+> memoryflix@0.1.0 lint
+> eslint "src/**/*.{ts,tsx}"
+
+
+/Users/pankaj/Desktop/Project/memoryflix/src/app/(auth)/layout.tsx
+  31:14  warning  Unused eslint-disable directive (no problems were reported from '@next/next/no-img-element')
+
+/Users/pankaj/Desktop/Project/memoryflix/src/app/(dashboard)/layout.tsx
+  31:16  warning  Unused eslint-disable directive (no problems were reported from '@next/next/no-img-element')
+
+/Users/pankaj/Desktop/Project/memoryflix/src/app/(preview)/layout.tsx
+  2:8  warning  'Link' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/pankaj/Desktop/Project/memoryflix/src/app/not-found.tsx
+  62:12  warning  Unused eslint-disable directive (no problems were reported from '@next/next/no-img-element')
+
+/Users/pankaj/Desktop/Project/memoryflix/src/app/page.tsx
+  38:18  warning  Unused eslint-disable directive (no problems were reported from '@next/next/no-img-element')
+  98:16  warning  Unused eslint-disable directive (no problems were reported from '@next/next/no-img-element')
+
+/Users/pankaj/Desktop/Project/memoryflix/src/components/common/SiteLoader.tsx
+   16:7   warning  'SESSION_KEY' is assigned a value but never used                                              @typescript-eslint/no-unused-vars
+  207:12  warning  Unused eslint-disable directive (no problems were reported from '@next/next/no-img-element')
+
+/Users/pankaj/Desktop/Project/memoryflix/src/components/dashboard/DashboardAnimations.tsx
+  124:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  159:22  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  160:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  161:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/pankaj/Desktop/Project/memoryflix/src/components/landing/LivePreviewShowcase.tsx
+  5:32  warning  'ChevronDown' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/pankaj/Desktop/Project/memoryflix/src/components/preview/ChapterLayoutRenderer.tsx
+   4:35  warning  'useRef' is defined but never used                                                            @typescript-eslint/no-unused-vars
+  92:11  warning  Unused eslint-disable directive (no problems were reported from '@next/next/no-img-element')
+
+/Users/pankaj/Desktop/Project/memoryflix/src/components/preview/CinematicPlayer.tsx
+  126:5   warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
+  146:5   warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
+  208:5   warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps')
+  362:17  warning  Unused eslint-disable directive (no problems were reported from '@next/next/no-img-element')
+
+/Users/pankaj/Desktop/Project/memoryflix/src/components/preview/MediaViewer.tsx
+  132:15  warning  Unused eslint-disable directive (no problems were reported from '@next/next/no-img-element')
+
+/Users/pankaj/Desktop/Project/memoryflix/src/components/preview/templates/AppleTemplate.tsx
+   12:3   warning  'isEditable' is assigned a value but never used. Allowed unused args must match /^_/u         @typescript-eslint/no-unused-vars
+   70:15  warning  Unused eslint-disable directive (no problems were reported from '@next/next/no-img-element')
+  133:23  warning  Unused eslint-disable directive (no problems were reported from '@next/next/no-img-element')
+  167:23  warning  Unused eslint-disable directive (no problems were reported from '@next/next/no-img-element')
+
+/Users/pankaj/Desktop/Project/memoryflix/src/components/preview/templates/NetflixTemplate.tsx
+    3:31  warning  'useRef' is defined but never used                                                            @typescript-eslint/no-unused-vars
+  348:15  warning  Unused eslint-disable directive (no problems were reported from '@next/next/no-img-element')
+
+/Users/pankaj/Desktop/Project/memoryflix/src/components/preview/templates/TimelineTemplate.tsx
+   12:3   warning  'isEditable' is assigned a value but never used. Allowed unused args must match /^_/u         @typescript-eslint/no-unused-vars
+   13:3   warning  'onChapterChange' is defined but never used. Allowed unused args must match /^_/u             @typescript-eslint/no-unused-vars
+   24:9   warning  'coverImage' is assigned a value but never used                                               @typescript-eslint/no-unused-vars
+  127:33  warning  Unused eslint-disable directive (no problems were reported from '@next/next/no-img-element')
+  173:25  warning  Unused eslint-disable directive (no problems were reported from '@next/next/no-img-element')
+
+/Users/pankaj/Desktop/Project/memoryflix/src/components/preview/templates/TravelTemplate.tsx
+   12:3   warning  'isEditable' is assigned a value but never used. Allowed unused args must match /^_/u         @typescript-eslint/no-unused-vars
+   13:3   warning  'onChapterChange' is defined but never used. Allowed unused args must match /^_/u             @typescript-eslint/no-unused-vars
+   64:17  warning  Unused eslint-disable directive (no problems were reported from '@next/next/no-img-element')
+  124:29  warning  Unused eslint-disable directive (no problems were reported from '@next/next/no-img-element')
+  170:27  warning  Unused eslint-disable directive (no problems were reported from '@next/next/no-img-element')
+
+/Users/pankaj/Desktop/Project/memoryflix/src/components/preview/templates/WeddingTemplate.tsx
+   12:3   warning  'isEditable' is assigned a value but never used. Allowed unused args must match /^_/u         @typescript-eslint/no-unused-vars
+   13:3   warning  'onChapterChange' is defined but never used. Allowed unused args must match /^_/u             @typescript-eslint/no-unused-vars
+   48:15  warning  Unused eslint-disable directive (no problems were reported from '@next/next/no-img-element')
+  112:23  warning  Unused eslint-disable directive (no problems were reported from '@next/next/no-img-element')
+  148:23  warning  Unused eslint-disable directive (no problems were reported from '@next/next/no-img-element')
+
+/Users/pankaj/Desktop/Project/memoryflix/src/components/preview/templates/layouts/TimelineLayout.tsx
+  15:15  warning  'isLeft' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/pankaj/Desktop/Project/memoryflix/src/components/preview/templates/netflix/ChapterPosterCard.tsx
+  37:13  warning  Unused eslint-disable directive (no problems were reported from '@next/next/no-img-element')
+
+/Users/pankaj/Desktop/Project/memoryflix/src/components/story/ChapterEditor.tsx
+   5:25  warning  'updateChapter' is defined but never used                                          @typescript-eslint/no-unused-vars
+  23:45  warning  'Check' is defined but never used                                                  @typescript-eslint/no-unused-vars
+  23:52  warning  'X' is defined but never used                                                      @typescript-eslint/no-unused-vars
+  24:18  warning  'AnimatePresence' is defined but never used                                        @typescript-eslint/no-unused-vars
+  25:10  warning  'ConfirmModal' is defined but never used                                           @typescript-eslint/no-unused-vars
+  26:8   warning  'MusicSelector' is defined but never used                                          @typescript-eslint/no-unused-vars
+  28:8   warning  'ChapterMediaManager' is defined but never used                                    @typescript-eslint/no-unused-vars
+  34:3   warning  'allMedia' is defined but never used. Allowed unused args must match /^_/u         @typescript-eslint/no-unused-vars
+  35:3   warning  'activeChapterId' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  37:3   warning  'onDraftChange' is defined but never used. Allowed unused args must match /^_/u    @typescript-eslint/no-unused-vars
+  47:10  warning  'showDeleteModal' is assigned a value but never used                               @typescript-eslint/no-unused-vars
+  62:9   warning  'confirmDelete' is assigned a value but never used                                 @typescript-eslint/no-unused-vars
+
+/Users/pankaj/Desktop/Project/memoryflix/src/components/story/ChapterMediaManager.tsx
+   6:10  warning  'motion' is defined but never used                                                            @typescript-eslint/no-unused-vars
+  46:9   warning  Unused eslint-disable directive (no problems were reported from '@next/next/no-img-element')
+
+/Users/pankaj/Desktop/Project/memoryflix/src/components/story/DragPreviewCard.tsx
+  7:9  warning  Unused eslint-disable directive (no problems were reported from '@next/next/no-img-element')
+
+/Users/pankaj/Desktop/Project/memoryflix/src/components/story/EditChapterModal.tsx
+    6:17  warning  'X' is defined but never used             @typescript-eslint/no-unused-vars
+   54:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  206:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/pankaj/Desktop/Project/memoryflix/src/components/story/MediaList.tsx
+  17:3   warning  'useDroppable' is defined but never used          @typescript-eslint/no-unused-vars
+  21:3   warning  'SortableContext' is defined but never used       @typescript-eslint/no-unused-vars
+  23:3   warning  'rectSortingStrategy' is defined but never used   @typescript-eslint/no-unused-vars
+  25:8   warning  'SortableMediaItem' is defined but never used     @typescript-eslint/no-unused-vars
+  28:24  warning  'assignMediaToChapter' is defined but never used  @typescript-eslint/no-unused-vars
+  30:10  warning  'motion' is defined but never used                @typescript-eslint/no-unused-vars
+  30:18  warning  'AnimatePresence' is defined but never used       @typescript-eslint/no-unused-vars
+
+/Users/pankaj/Desktop/Project/memoryflix/src/components/story/MusicSelector.tsx
+   6:16  warning  'Pause' is defined but never used                    @typescript-eslint/no-unused-vars
+  25:26  warning  Unexpected any. Specify a different type             @typescript-eslint/no-explicit-any
+  31:10  warning  'isUploading' is assigned a value but never used     @typescript-eslint/no-unused-vars
+  31:23  warning  'setIsUploading' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/pankaj/Desktop/Project/memoryflix/src/components/story/SortableMediaItem.tsx
+   33:3   warning  'position' is defined but never used. Allowed unused args must match /^_/u                    @typescript-eslint/no-unused-vars
+   76:10  warning  'isEditingCaption' is assigned a value but never used                                         @typescript-eslint/no-unused-vars
+   77:19  warning  'setCaption' is assigned a value but never used                                               @typescript-eslint/no-unused-vars
+  105:9   warning  'handleMove' is assigned a value but never used                                               @typescript-eslint/no-unused-vars
+  112:9   warning  'handleSaveCaption' is assigned a value but never used                                        @typescript-eslint/no-unused-vars
+  269:11  warning  Unused eslint-disable directive (no problems were reported from '@next/next/no-img-element')
+
+/Users/pankaj/Desktop/Project/memoryflix/src/components/story/StoryCard.tsx
+  42:21  warning  'startTransition' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/pankaj/Desktop/Project/memoryflix/src/components/story/StoryWizard.tsx
+  12:8   warning  'MusicSelector' is defined but never used          @typescript-eslint/no-unused-vars
+  15:8   warning  'NetflixTemplate' is defined but never used        @typescript-eslint/no-unused-vars
+  16:8   warning  'ChapterLivePreview' is defined but never used     @typescript-eslint/no-unused-vars
+  37:10  warning  'chapterDraft' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Users/pankaj/Desktop/Project/memoryflix/src/lib/typography-presets.ts
+  1:10  warning  'getFontClassName' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 84 problems (0 errors, 84 warnings)
+  0 errors and 28 warnings potentially fixable with the `--fix` option.
+

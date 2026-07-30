@@ -12,7 +12,7 @@ export default function TimelineLayout({ items, renderItem }: { items: LayoutIte
       data-timeline-line
     >
       {items.map((item, idx) => {
-        const isLeft = idx % 2 === 0;
+
         return (
           <div key={item.item.id} className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group" data-timeline-item style={{ willChange: "transform, opacity" }}>
             <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-[#0f0f0f] bg-rose-500 absolute left-0 md:left-1/2 -translate-x-1/2 shadow flex-shrink-0 z-10" />

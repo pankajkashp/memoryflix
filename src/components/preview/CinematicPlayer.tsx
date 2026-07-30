@@ -123,7 +123,7 @@ export default function CinematicPlayer({
     return () => {
       if (captionTimer.current) clearTimeout(captionTimer.current);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [currentIndex, isPaused, isFinished]);
 
   // Hide caption when approaching slide end (images only)
@@ -143,7 +143,7 @@ export default function CinematicPlayer({
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [currentIndex, isFinished, isPaused]);
 
   // ── Chapter Transition Timer ────────────────────────────────────────────────
@@ -205,7 +205,7 @@ export default function CinematicPlayer({
     return () => {
       if (progressInterval.current) clearInterval(progressInterval.current);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [currentIndex, isPaused, isVideo]);
 
   // ── Swipe (mobile) ────────────────────────────────────────────────────────────
@@ -359,7 +359,7 @@ export default function CinematicPlayer({
                   muted={false}
                 />
               ) : (
-                // eslint-disable-next-line @next/next/no-img-element
+                 
                 <img
                   src={currentMedia.url}
                   alt={currentMedia.caption || "Story media"}

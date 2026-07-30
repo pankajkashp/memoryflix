@@ -9,11 +9,8 @@ import PublishButton from "./PublishButton";
 import ChapterEditor from "./ChapterEditor";
 import TemplateSelector from "./TemplateSelector";
 import Link from "next/link";
-import MusicSelector from "./MusicSelector";
 import TypographySelector from "./TypographySelector";
 import { motion, AnimatePresence } from "framer-motion";
-import NetflixTemplate from "../preview/templates/NetflixTemplate";
-import ChapterLivePreview from "../preview/ChapterLivePreview";
 import WizardTimeline, { STEPS } from "./WizardTimeline";
 
 type StoryWithRelations = Story & {
@@ -34,7 +31,6 @@ export default function StoryWizard({
   
   // Chapter live preview state
   const [activeChapterId, setActiveChapterId] = useState<string | null>(null);
-  const [chapterDraft, setChapterDraft] = useState<Partial<Chapter> | null>(null);
 
   const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, STEPS.length));
   const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
@@ -130,7 +126,7 @@ export default function StoryWizard({
                     media={story.media} 
                     activeChapterId={activeChapterId}
                     setActiveChapterId={setActiveChapterId}
-                    onDraftChange={setChapterDraft}
+                    onDraftChange={() => {}}
                   />
                 </div>
               )}

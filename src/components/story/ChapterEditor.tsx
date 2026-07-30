@@ -2,7 +2,7 @@
 
 import { useState, useTransition, useEffect } from "react";
 import { Chapter, MediaAsset } from "@prisma/client";
-import { createChapter, updateChapter, deleteChapter, reorderChapters } from "@/app/actions/chapter";
+import { createChapter, deleteChapter, reorderChapters } from "@/app/actions/chapter";
 import {
   DndContext,
   closestCenter,
@@ -20,31 +20,21 @@ import {
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, Plus, Trash2, Edit2, Check, X, Loader2, Music } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ConfirmModal } from "../ui/ConfirmModal";
-import MusicSelector from "./MusicSelector";
+import { GripVertical, Plus, Trash2, Edit2, Loader2, Music } from "lucide-react";
+import { motion } from "framer-motion";
 import EditChapterModal from "./EditChapterModal";
-import ChapterMediaManager from "./ChapterMediaManager";
 
 function SortableChapterItem({ 
   chapter, 
   storyId, 
-  mediaCount, 
-  allMedia,
-  activeChapterId,
+  mediaCount,
   setActiveChapterId,
-  onDraftChange
 }: { 
   chapter: Chapter; 
   storyId: string; 
   mediaCount: number; 
-  allMedia: MediaAsset[];
-  activeChapterId: string | null;
   setActiveChapterId: (id: string | null) => void;
-  onDraftChange: (draft: Partial<Chapter> | null) => void;
 }) {
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: chapter.id });
 
@@ -54,14 +44,9 @@ function SortableChapterItem({
     zIndex: isDragging ? 50 : 1,
   };
 
-  const handleDelete = (e?: React.MouseEvent) => {
+  const handleDelete = async (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    setShowDeleteModal(true);
-  };
-
-  const confirmDelete = async () => {
     await deleteChapter(storyId, chapter.id);
-    setShowDeleteModal(false);
   };
 
   return (
@@ -268,7 +253,7 @@ export default function ChapterEditor({
             <div className="space-y-3">
               {items.map((chapter) => {
                 const count = media.filter(m => m.chapterId === chapter.id && m.type === "IMAGE").length;
-                return <SortableChapterItem key={chapter.id} chapter={chapter} storyId={storyId} mediaCount={count} allMedia={media} activeChapterId={activeChapterId} setActiveChapterId={setActiveChapterId} onDraftChange={onDraftChange} />;
+                return <SortableChapterItem key={chapter.id} chapter={chapter} storyId={storyId} mediaCount={count} setActiveChapterId={setActiveChapterId} />;
               })}
             </div>
           </SortableContext>

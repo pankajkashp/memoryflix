@@ -9,8 +9,8 @@ import { MapPin, Play, Compass } from "lucide-react";
 
 export default function TravelTemplate({ 
   story, 
-  isEditable = false,
-  onChapterChange
+  isEditable: _isEditable = false,
+  onChapterChange: _onChapterChange
 }: { 
   story: StoryWithFullPayload, 
   isEditable?: boolean,
@@ -61,7 +61,7 @@ export default function TravelTemplate({
               {coverImage.type === "VIDEO" ? (
                 <video src={coverImage.url} className="w-full h-full object-cover grayscale-[20%] sepia-[20%]" autoPlay muted loop playsInline />
               ) : (
-                // eslint-disable-next-line @next/next/no-img-element
+                 
                 <img src={coverImage.url} alt="Cover" className="w-full h-full object-cover grayscale-[20%] sepia-[20%]" />
               )}
             </div>
@@ -121,7 +121,7 @@ export default function TravelTemplate({
                           {item.type === "VIDEO" ? (
                             <video src={item.url} className="w-full h-full object-cover filter contrast-110 sepia-[15%]" autoPlay muted loop playsInline />
                           ) : (
-                            // eslint-disable-next-line @next/next/no-img-element
+                             
                             <img src={item.url} alt="Media" className="w-full h-full object-cover filter contrast-110 sepia-[15%]" />
                           )}
                           
@@ -167,7 +167,7 @@ export default function TravelTemplate({
                         {item.type === "VIDEO" ? (
                           <video src={item.url} className="w-full h-full object-cover sepia-[10%]" autoPlay muted loop playsInline />
                         ) : (
-                          // eslint-disable-next-line @next/next/no-img-element
+                           
                           <img src={item.url} alt="Media" className="w-full h-full object-cover sepia-[10%]" />
                         )}
                       </div>

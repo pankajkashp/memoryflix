@@ -35,7 +35,7 @@ export default async function LandingPage() {
               aria-label="MemoryFlix — home"
             >
               <div className="relative w-12 h-12 flex items-center justify-center -ml-2">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+                { }
                 <img src="/icon.png" alt="MemoryFlix Logo" className="w-full h-full object-cover scale-[1.65] transition-transform duration-300 group-hover:scale-[1.75]" />
               </div>
               {/* Wordmark */}
@@ -95,7 +95,7 @@ export default async function LandingPage() {
           {/* Logo */}
           <a href="/" className="flex items-center gap-0.5 opacity-60 hover:opacity-100 transition-opacity group">
             <div className="relative w-8 h-8 flex items-center justify-center -ml-1.5">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
+              { }
               <img src="/icon.png" alt="MemoryFlix Logo" className="w-full h-full object-cover scale-[1.7] grayscale group-hover:grayscale-0 transition-all duration-300" />
             </div>
             <span className="text-base font-semibold text-zinc-400">

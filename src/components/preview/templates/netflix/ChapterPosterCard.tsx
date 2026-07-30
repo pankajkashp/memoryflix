@@ -34,7 +34,7 @@ export default function ChapterPosterCard({
           coverMedia.type === "VIDEO" ? (
             <video src={coverMedia.url} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100" />
           ) : (
-            // eslint-disable-next-line @next/next/no-img-element
+             
             <img src={coverMedia.url} alt={chapter.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100" />
           )
         ) : (

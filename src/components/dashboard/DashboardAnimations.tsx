@@ -121,7 +121,7 @@ export default function DashboardAnimations() {
 
         window.addEventListener("mousemove", handleMouseMove, { passive: true });
         // Store cleanup reference
-        (window as any).__mfParallaxCleanup = () =>
+        (window as Window & { __mfParallaxCleanup?: () => void }).__mfParallaxCleanup = () =>
           window.removeEventListener("mousemove", handleMouseMove);
       }
 
@@ -156,9 +156,10 @@ export default function DashboardAnimations() {
     return () => {
       ctx.revert();
       ScrollTrigger.getAll().forEach((t) => t.kill());
-      if ((window as any).__mfParallaxCleanup) {
-        (window as any).__mfParallaxCleanup();
-        delete (window as any).__mfParallaxCleanup;
+      const win = window as Window & { __mfParallaxCleanup?: () => void };
+      if (win.__mfParallaxCleanup) {
+        win.__mfParallaxCleanup();
+        delete win.__mfParallaxCleanup;
       }
     };
   }, []);

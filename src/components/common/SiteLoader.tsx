@@ -13,7 +13,6 @@ import { useEffect, useRef, useState } from "react";
 import { gsap } from "@/lib/gsap-utils";
 import { prefersReducedMotion } from "@/lib/gsap-utils";
 
-const SESSION_KEY = "mf_loader_shown_v3";
 
 export default function SiteLoader() {
   const loaderRef = useRef<HTMLDivElement>(null);
@@ -204,7 +203,7 @@ export default function SiteLoader() {
           className="relative mb-8"
           style={{ willChange: "transform, opacity, filter" }}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
+          { }
           <img 
             src="/icon.png" 
             alt="MemoryFlix Logo" 

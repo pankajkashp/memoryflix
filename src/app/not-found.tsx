@@ -59,7 +59,7 @@ export default function NotFound() {
 
         {/* Film reel icon */}
         <div className="mb-8">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
+          { }
           <img src="/icon.png" alt="MemoryFlix Logo" className="w-24 h-24 object-cover mx-auto rounded-lg shadow-xl shadow-rose-500/20" />
         </div>
 

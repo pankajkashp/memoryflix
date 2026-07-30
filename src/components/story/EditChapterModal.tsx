@@ -3,7 +3,7 @@
 import { useState, useTransition, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Chapter, MediaAsset } from "@prisma/client";
-import { Check, X, Loader2, Music, Edit2 } from "lucide-react";
+import { Check, Loader2, Music, Edit2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import MusicSelector from "./MusicSelector";
 import ChapterMediaManager from "./ChapterMediaManager";
@@ -51,7 +51,7 @@ export default function EditChapterModal({
         subtitle,
         location,
         date: date ? new Date(date) : null,
-      } as any);
+      } as Partial<Chapter>);
 
       // Debounced save
       if (title.trim() && (title !== chapter.title || emoji !== (chapter.emoji || "") || layout !== (chapter.layout || "MASONRY") || subtitle !== (chapter.subtitle || "") || location !== (chapter.location || "") || date !== (chapter.date ? new Date(chapter.date).toISOString().split('T')[0] : ""))) {
@@ -203,7 +203,7 @@ export default function EditChapterModal({
 
                 <ChapterMediaManager 
                   storyId={storyId} 
-                  chapter={chapter as any} 
+                  chapter={chapter as Chapter & { coverMediaId?: string | null }} 
                   allMedia={allMedia} 
                 />
               </div>

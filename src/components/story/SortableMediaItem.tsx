@@ -6,7 +6,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { MediaAsset, Chapter } from "@prisma/client";
 import { GripVertical, MoreVertical, Trash2, MapPin, Image as ImageIcon, Type } from "lucide-react";
-import { deleteMedia, assignMediaToChapter, setCoverMedia } from "@/app/actions/media";
+import { deleteMedia, setCoverMedia } from "@/app/actions/media";
 import MediaDetailsDrawer from "./MediaDetailsDrawer";
 import { ConfirmModal } from "../ui/ConfirmModal";
 
@@ -30,7 +30,7 @@ export default function SortableMediaItem({
   storyId,
   coverMediaId,
   chapters,
-  position,
+  position: _position,
   isBeingDragged = false,
   isSelected = false,
   onSelectToggle,
@@ -73,8 +73,6 @@ export default function SortableMediaItem({
   }, [showMenu]);
   
   // For caption editing within the hover menu
-  const [isEditingCaption, setIsEditingCaption] = useState(false);
-  const [caption, setCaption] = useState(asset.caption || "");
 
   const baseTransform = CSS.Transform.toString(transform);
   const style: React.CSSProperties = {
@@ -102,24 +100,6 @@ export default function SortableMediaItem({
     });
   };
 
-  const handleMove = (chapterId: string | null) => {
-    startTransition(async () => {
-      if (storyId) await assignMediaToChapter(storyId, asset.id, chapterId);
-      setShowMenu(false);
-    });
-  };
-
-  const handleSaveCaption = async () => {
-    if (caption === asset.caption) {
-      setIsEditingCaption(false);
-      return;
-    }
-    // Note: To save caption, we need a server action. 
-    // We can assume there is a `updateMediaCaption(storyId, asset.id, caption)`
-    // But since the prompt doesn't ask us to build caption editing, I'll omit it or just provide a placeholder.
-    // Actually, CaptionEditor.tsx is imported right now. Let's just use it instead of custom logic.
-    setIsEditingCaption(false);
-  };
 
   return (
     <div ref={setNodeRef} style={style} className="flex flex-col relative w-full h-full" onMouseLeave={() => setShowMenu(false)}>
@@ -266,7 +246,7 @@ export default function SortableMediaItem({
 
         {/* ── Media ───────────────────────────────────────────────────────── */}
         {asset.type === "IMAGE" ? (
-          // eslint-disable-next-line @next/next/no-img-element
+           
           <img
             src={asset.url}
             alt={asset.caption || "Uploaded media"}

@@ -1,7 +1,7 @@
 "use client";
 
 import { Chapter, MediaAsset } from "@prisma/client";
-import { useState, useTransition, useRef } from "react";
+import { useState, useTransition } from "react";
 import { deleteMedia, assignMediaToChapter, setCoverMedia, replaceMedia } from "@/app/actions/media";
 import { updateChapterLayout } from "@/app/actions/chapter";
 import { Play, MoreVertical, Trash2, MapPin, Image as ImageIcon, LayoutGrid, Heart, Film, Image as PolaroidIcon, List, Replace } from "lucide-react";
@@ -89,7 +89,7 @@ function EditableMediaCard({ item, storyId, chapters, isEditable, coverMediaId, 
         {item.type === "VIDEO" ? (
           <video src={item.url} className="w-full h-full object-cover rounded-xl" autoPlay muted loop playsInline />
         ) : (
-          // eslint-disable-next-line @next/next/no-img-element
+           
           <img src={item.url} alt={item.title || "Memory"} className="w-full h-full object-cover rounded-xl" loading="lazy" decoding="async" />
         )}
         

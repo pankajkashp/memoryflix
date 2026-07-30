@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { MediaAsset, Chapter } from "@prisma/client";
 import { createPortal } from "react-dom";
-import { motion } from "framer-motion";
+
 import { Plus, Image as ImageIcon, Check, X, Loader2, GripVertical, Trash2 } from "lucide-react";
 import MediaUploader from "./MediaUploader";
 import { assignMultipleMediaToChapter, reorderMedia } from "@/app/actions/media";
@@ -43,7 +43,7 @@ function SortableGridItem({ asset, onRemove }: { asset: MediaAsset, onRemove: (i
       className={`group relative aspect-square rounded-xl overflow-hidden border border-white/10 ${isDragging ? "opacity-50 ring-2 ring-rose-500" : ""}`}
     >
       {asset.type === "IMAGE" ? (
-        // eslint-disable-next-line @next/next/no-img-element
+         
         <img src={asset.url} alt="Media" className="w-full h-full object-cover" />
       ) : (
         <video src={asset.url} className="w-full h-full object-cover" />

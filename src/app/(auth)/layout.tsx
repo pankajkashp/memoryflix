@@ -28,7 +28,7 @@ export default function AuthLayout({
       <div className="absolute top-0 inset-x-0 p-6 lg:px-8 z-50">
         <Link href="/" className="flex items-center gap-1 group w-fit">
           <div className="relative w-12 h-12 flex items-center justify-center -ml-2">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
+            { }
             <img src="/icon.png" alt="MemoryFlix Logo" className="w-full h-full object-cover scale-[1.65] transition-transform duration-300 group-hover:scale-[1.75]" />
           </div>
           <span className="text-2xl font-bold tracking-tight text-white group-hover:text-rose-50 transition-colors duration-200">

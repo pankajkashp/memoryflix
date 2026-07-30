@@ -9,7 +9,7 @@ import { Play } from "lucide-react";
 
 export default function AppleTemplate({ 
   story, 
-  isEditable = false,
+  isEditable: _isEditable = false,
   onChapterChange
 }: { 
   story: StoryWithFullPayload, 
@@ -67,7 +67,7 @@ export default function AppleTemplate({
             {coverImage.type === "VIDEO" ? (
               <video src={coverImage.url} className="w-full h-full object-cover opacity-80" autoPlay muted loop playsInline />
             ) : (
-              // eslint-disable-next-line @next/next/no-img-element
+               
               <img src={coverImage.url} alt="Cover" className="w-full h-full object-cover opacity-80 scale-105" />
             )}
             <div className="absolute inset-0 bg-white/30 backdrop-blur-[2px]" />
@@ -130,7 +130,7 @@ export default function AppleTemplate({
                     {item.type === "VIDEO" ? (
                       <video src={item.url} className="w-full h-full object-cover" autoPlay muted loop playsInline />
                     ) : (
-                      // eslint-disable-next-line @next/next/no-img-element
+                       
                       <img src={item.url} alt="Media" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                     )}
                     
@@ -164,7 +164,7 @@ export default function AppleTemplate({
                     {item.type === "VIDEO" ? (
                       <video src={item.url} className="w-full h-full object-cover" autoPlay muted loop playsInline />
                     ) : (
-                      // eslint-disable-next-line @next/next/no-img-element
+                       
                       <img src={item.url} alt="Media" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                     )}
                     

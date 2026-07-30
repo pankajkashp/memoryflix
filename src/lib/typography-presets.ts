@@ -1,4 +1,3 @@
-import { getFontClassName } from "./fonts";
 
 export type TypographyPresetId = 
   | "honeymoon"

@@ -4,7 +4,7 @@ export default function DragPreviewCard({ asset, selectedCount }: { asset: Media
   return (
     <div className="relative aspect-square rounded-2xl overflow-hidden border-2 border-rose-500 shadow-2xl shadow-rose-500/50 ring-2 ring-rose-400 ring-offset-2 ring-offset-black scale-105 rotate-2 opacity-95">
       {asset.type === "IMAGE" ? (
-        // eslint-disable-next-line @next/next/no-img-element
+         
         <img
           src={asset.url}
           alt="Dragging"

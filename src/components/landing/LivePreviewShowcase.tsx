@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Play, Plus, ThumbsUp, ChevronDown, Volume2 } from "lucide-react";
+import { Play, Plus, ThumbsUp, Volume2 } from "lucide-react";
 
 export default function LivePreviewShowcase() {
   return (

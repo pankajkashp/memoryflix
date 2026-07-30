@@ -9,8 +9,8 @@ import { Play, BookOpen } from "lucide-react";
 
 export default function TimelineTemplate({ 
   story, 
-  isEditable = false,
-  onChapterChange
+  isEditable: _isEditable = false,
+  onChapterChange: _onChapterChange
 }: { 
   story: StoryWithFullPayload, 
   isEditable?: boolean,
@@ -20,8 +20,7 @@ export default function TimelineTemplate({
   const [isCinematicPlaying, setIsCinematicPlaying] = useState<boolean>(false);
 
   const hasMedia = story.media && story.media.length > 0;
-  const firstImage = story.media?.find((m) => m.type === "IMAGE");
-  const coverImage = story.media?.find((m) => m.id === story.coverMediaId) || firstImage;
+
 
   const chaptersWithMedia = story.chapters
     ?.map((chapter) => ({
@@ -124,7 +123,7 @@ export default function TimelineTemplate({
                               {item.type === "VIDEO" ? (
                                 <video src={item.url} className="w-full h-full object-cover" autoPlay muted loop playsInline />
                               ) : (
-                                // eslint-disable-next-line @next/next/no-img-element
+                                 
                                 <img src={item.url} alt="Media" className="w-full h-full object-cover" />
                               )}
                               
@@ -170,7 +169,7 @@ export default function TimelineTemplate({
                       {item.type === "VIDEO" ? (
                         <video src={item.url} className="w-full h-full object-cover" autoPlay muted loop playsInline />
                       ) : (
-                        // eslint-disable-next-line @next/next/no-img-element
+                         
                         <img src={item.url} alt="Media" className="w-full h-full object-cover" />
                       )}
                     </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import MediaViewer from "@/components/preview/MediaViewer";
 import CinematicPlayer from "@/components/preview/CinematicPlayer";
 import EmptyState from "@/components/preview/EmptyState";
@@ -345,7 +345,7 @@ export default function NetflixTemplate({
             {coverImage.type === "VIDEO" ? (
               <video src={coverImage.url} className="w-full h-full object-cover opacity-80 sm:opacity-60 scale-105" autoPlay muted loop playsInline />
             ) : (
-              // eslint-disable-next-line @next/next/no-img-element
+               
               <img src={coverImage.url} alt="Cover" className="w-full h-full object-cover opacity-80 sm:opacity-60 scale-105" />
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f0f] via-[#0f0f0f]/30 sm:via-[#0f0f0f]/50 to-transparent" />

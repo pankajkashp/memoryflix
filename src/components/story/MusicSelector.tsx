@@ -3,7 +3,7 @@
 import { useState, useTransition, useEffect, useRef } from "react";
 import { MUSIC_TRACKS } from "@/lib/music";
 import { updateChapterMusicConfig } from "@/app/actions/chapter";
-import { Play, Pause, Check, Loader2, Upload } from "lucide-react";
+import { Play, Check, Loader2, Upload } from "lucide-react";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 const CldUploadWidget = dynamic(() => import("next-cloudinary").then(mod => mod.CldUploadWidget), { ssr: false });
@@ -22,13 +22,12 @@ export default function MusicSelector({
   currentMusicUrl?: string | null;
 }) {
   const [selectedType, setSelectedType] = useState<"BUILT_IN" | "CUSTOM" | "NONE">(
-    (currentMusicType as any) || (currentTrackId ? "BUILT_IN" : "NONE")
+    (currentMusicType as "BUILT_IN" | "CUSTOM" | "NONE") || (currentTrackId ? "BUILT_IN" : "NONE")
   );
   const [selectedId, setSelectedId] = useState<string | null>(currentTrackId);
   const [customUrl, setCustomUrl] = useState<string | null>(currentMusicUrl || null);
   const [playingId, setPlayingId] = useState<string | null>(null); // "custom" or track.id
   const [isPending, startTransition] = useTransition();
-  const [isUploading, setIsUploading] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {

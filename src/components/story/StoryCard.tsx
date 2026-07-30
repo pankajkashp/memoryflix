@@ -93,9 +93,11 @@ export default memo(function StoryCard({ story }: { story: StoryWithRelations })
     setShowDeleteModal(true);
   };
 
-  const confirmDelete = async () => {
-    await deleteStory(story.id);
-    setShowDeleteModal(false);
+  const confirmDelete = () => {
+    startTransition(async () => {
+      await deleteStory(story.id);
+      setShowDeleteModal(false);
+    });
   };
 
   return (
