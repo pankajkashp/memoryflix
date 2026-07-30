@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 
 
 export const authOptions: NextAuthOptions = {
+  secret: process.env.NEXTAUTH_SECRET,
   // Use stateless JWT sessions — no Session table needed in the DB
   session: {
     strategy: "jwt",

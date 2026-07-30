@@ -4,6 +4,15 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
+
+const ChapterSchema = z.object({
+  title: z.string().min(1, "Title is required").max(100, "Title too long"),
+  emoji: z.string().max(10, "Emoji too long").nullable(),
+  subtitle: z.string().max(200, "Subtitle too long").nullable(),
+  date: z.string().nullable(),
+  location: z.string().max(100, "Location too long").nullable(),
+});
 
 async function verifyOwnership(storyId: string) {
   const session = await getServerSession(authOptions);
@@ -22,6 +31,7 @@ async function verifyOwnership(storyId: string) {
 
 export async function createChapter(storyId: string, title: string, emoji: string | null = null, subtitle: string | null = null, date: string | null = null, location: string | null = null) {
   await verifyOwnership(storyId);
+  const parsed = ChapterSchema.parse({ title, emoji, subtitle, date, location });
 
   // Get current max position
   const lastChapter = await prisma.chapter.findFirst({
@@ -33,11 +43,11 @@ export async function createChapter(storyId: string, title: string, emoji: strin
   const newChapter = await prisma.chapter.create({
     data: {
       storyId,
-      title,
-      emoji,
-      subtitle,
-      date: date ? new Date(date) : null,
-      location,
+      title: parsed.title,
+      emoji: parsed.emoji,
+      subtitle: parsed.subtitle,
+      date: parsed.date ? new Date(parsed.date) : null,
+      location: parsed.location,
       position,
     },
   });
@@ -49,15 +59,19 @@ export async function createChapter(storyId: string, title: string, emoji: strin
 
 export async function updateChapter(storyId: string, chapterId: string, title: string, emoji: string | null = null, subtitle: string | null = null, date: string | null = null, location: string | null = null) {
   await verifyOwnership(storyId);
+  const parsed = ChapterSchema.parse({ title, emoji, subtitle, date, location });
+
+  const chapter = await prisma.chapter.findUnique({ where: { id: chapterId } });
+  if (!chapter || chapter.storyId !== storyId) throw new Error("Unauthorized");
 
   await prisma.chapter.update({
     where: { id: chapterId },
     data: { 
-      title, 
-      emoji,
-      subtitle,
-      date: date ? new Date(date) : null,
-      location 
+      title: parsed.title, 
+      emoji: parsed.emoji,
+      subtitle: parsed.subtitle,
+      date: parsed.date ? new Date(parsed.date) : null,
+      location: parsed.location 
     },
   });
 
@@ -66,6 +80,9 @@ export async function updateChapter(storyId: string, chapterId: string, title: s
 
 export async function deleteChapter(storyId: string, chapterId: string) {
   await verifyOwnership(storyId);
+
+  const chapter = await prisma.chapter.findUnique({ where: { id: chapterId } });
+  if (!chapter || chapter.storyId !== storyId) throw new Error("Unauthorized");
 
   await prisma.chapter.delete({
     where: { id: chapterId },
@@ -90,6 +107,9 @@ export async function deleteChapter(storyId: string, chapterId: string) {
 export async function reorderChapters(storyId: string, chapterIds: string[]) {
   await verifyOwnership(storyId);
 
+  const chapters = await prisma.chapter.findMany({ where: { id: { in: chapterIds } } });
+  if (chapters.some(c => c.storyId !== storyId)) throw new Error("Unauthorized");
+
   await prisma.$transaction(
     chapterIds.map((id, index) =>
       prisma.chapter.update({
@@ -104,10 +124,14 @@ export async function reorderChapters(storyId: string, chapterIds: string[]) {
 
 export async function updateChapterLayout(storyId: string, chapterId: string, layout: string) {
   await verifyOwnership(storyId);
+  const parsedLayout = z.string().parse(layout);
+
+  const chapter = await prisma.chapter.findUnique({ where: { id: chapterId } });
+  if (!chapter || chapter.storyId !== storyId) throw new Error("Unauthorized");
 
   await prisma.chapter.update({
     where: { id: chapterId },
-    data: { layout },
+    data: { layout: parsedLayout },
   });
 
   revalidatePath(`/stories/${storyId}/preview`);
@@ -128,6 +152,9 @@ export async function updateChapterMusicConfig(
   }
 ) {
   await verifyOwnership(storyId);
+
+  const chapter = await prisma.chapter.findUnique({ where: { id: chapterId } });
+  if (!chapter || chapter.storyId !== storyId) throw new Error("Unauthorized");
 
   await prisma.chapter.update({
     where: { id: chapterId },
@@ -151,6 +178,12 @@ export async function updateChapterMusicConfig(
 
 export async function setChapterCover(storyId: string, chapterId: string, mediaId: string) {
   await verifyOwnership(storyId);
+
+  const chapter = await prisma.chapter.findUnique({ where: { id: chapterId } });
+  if (!chapter || chapter.storyId !== storyId) throw new Error("Unauthorized");
+
+  const media = await prisma.mediaAsset.findFirst({ where: { id: mediaId, storyId } });
+  if (!media) throw new Error("Unauthorized media");
 
   await prisma.chapter.update({
     where: { id: chapterId },

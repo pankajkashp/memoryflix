@@ -5,6 +5,16 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { v2 as cloudinary } from "cloudinary";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
+
+const MediaAssetSchema = z.object({
+  url: z.string().url(),
+  publicId: z.string().min(1),
+  type: z.enum(["IMAGE", "VIDEO"]),
+  bytes: z.number().positive().optional(),
+  duration: z.number().nonnegative().optional(),
+  chapterId: z.string().optional(),
+});
 
 cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
@@ -37,6 +47,8 @@ export async function saveMediaAsset(data: {
 }) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) throw new Error("Unauthorized");
+  
+  const parsed = MediaAssetSchema.parse(data);
 
   // Verify ownership of the story
   const story = await prisma.story.findFirst({
@@ -53,13 +65,13 @@ export async function saveMediaAsset(data: {
     data: {
       storyId: data.storyId,
       userId: session.user.id,
-      url: data.url,
-      storageKey: data.publicId,
-      type: data.type,
+      url: parsed.url,
+      storageKey: parsed.publicId,
+      type: parsed.type,
       position,
-      sizeBytes: data.bytes,
-      durationSeconds: data.duration ? Math.round(data.duration) : null,
-      chapterId: data.chapterId || null,
+      sizeBytes: parsed.bytes,
+      durationSeconds: parsed.duration ? Math.round(parsed.duration) : null,
+      chapterId: parsed.chapterId || null,
     },
   });
 
@@ -301,6 +313,8 @@ export async function replaceMedia(
 ) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) throw new Error("Unauthorized");
+  
+  const parsed = MediaAssetSchema.parse(data);
 
   const story = await prisma.story.findFirst({
     where: { id: storyId, userId: session.user.id },
@@ -315,11 +329,11 @@ export async function replaceMedia(
   const updated = await prisma.mediaAsset.update({
     where: { id: mediaId },
     data: {
-      url: data.url,
-      storageKey: data.publicId,
-      type: data.type,
-      sizeBytes: data.bytes,
-      durationSeconds: data.duration ? Math.round(data.duration) : null,
+      url: parsed.url,
+      storageKey: parsed.publicId,
+      type: parsed.type,
+      sizeBytes: parsed.bytes,
+      durationSeconds: parsed.duration ? Math.round(parsed.duration) : null,
     },
   });
 
