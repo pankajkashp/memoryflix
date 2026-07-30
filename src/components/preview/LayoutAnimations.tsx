@@ -19,7 +19,6 @@ import {
   animateTimelineGrid,
   animatePolaroidGrid,
   animateFilmStrip,
-  animateMemoryNote,
 } from "@/lib/gsap-utils";
 
 /** Hook for Masonry layout */
@@ -70,14 +69,4 @@ export function useFilmStripAnimation(containerRef: RefObject<HTMLElement | null
   }, [containerRef]);
 }
 
-/** Hook for Memory Notes */
-export function useMemoryNoteAnimation(containerRef: RefObject<HTMLElement | null>) {
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const ctx = gsap.context(() => {
-      animateMemoryNote(el);
-    }, el);
-    return () => ctx.revert();
-  }, [containerRef]);
-}
+

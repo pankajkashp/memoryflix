@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+
 import MediaViewer from "@/components/preview/MediaViewer";
 import CinematicPlayer from "@/components/preview/CinematicPlayer";
 import EmptyState from "@/components/preview/EmptyState";
+import { useStoryTemplateData } from "@/hooks/useStoryTemplateData";
 import { StoryWithFullPayload } from "../PreviewClientWrapper";
 import { Play, BookOpen } from "lucide-react";
 
@@ -16,24 +17,15 @@ export default function TimelineTemplate({
   isEditable?: boolean,
   onChapterChange?: (chapterId: string | null) => void
 }) {
-  const [galleryActiveIndex, setGalleryActiveIndex] = useState<number | null>(null);
-  const [isCinematicPlaying, setIsCinematicPlaying] = useState<boolean>(false);
-
-  const hasMedia = story.media && story.media.length > 0;
-
-
-  const chaptersWithMedia = story.chapters
-    ?.map((chapter) => ({
-      chapter,
-      mediaItems: story.media
-        .map((item, index) => ({ item, index }))
-        .filter((m) => m.item.chapterId === chapter.id),
-    }))
-    .filter((c) => c.mediaItems.length > 0) || [];
-
-  const unassignedMedia = story.media
-    .map((item, index) => ({ item, index }))
-    .filter((m) => !m.item.chapterId);
+  const {
+    galleryActiveIndex,
+    setGalleryActiveIndex,
+    isCinematicPlaying,
+    setIsCinematicPlaying,
+    hasMedia,
+    chaptersWithMedia,
+    unassignedMedia
+  } = useStoryTemplateData(story);
 
   return (
     <div className="bg-[#f8f9fa] min-h-screen text-[#343a40] font-sans">

@@ -12,11 +12,7 @@ import { getPresetConfig, getAccentConfig } from "@/lib/typography-presets";
 import { getFontClassName } from "@/lib/fonts";
 import { motion } from "framer-motion";
 import { gsap, animateChapterReveal } from "@/lib/gsap-utils";
-
-type ChapterWithMedia = {
-  chapter: import("@prisma/client").Chapter;
-  mediaItems: { item: import("@prisma/client").MediaAsset; index: number }[];
-};
+import { useStoryTemplateData } from "@/hooks/useStoryTemplateData";
 
 export default function NetflixTemplate({ 
   story, 
@@ -30,30 +26,20 @@ export default function NetflixTemplate({
   const presetConfig = getPresetConfig(story.typographyPreset);
   const accentConfig = getAccentConfig(story.accentColor);
   const fontClassName = getFontClassName(presetConfig.fontId);
-  const [galleryActiveIndex, setGalleryActiveIndex] = useState<number | null>(null);
-  const [isCinematicPlaying, setIsCinematicPlaying] = useState<boolean>(false);
+  
   const [selectedChapterId, setSelectedChapterId] = useState<string | null>(null);
   const [showChapterIntro, setShowChapterIntro] = useState<boolean>(false);
-
-  const hasMedia = story.media && story.media.length > 0;
-  const firstImage = story.media?.find((m) => m.type === "IMAGE");
-  const coverImage = story.media?.find((m) => m.id === story.coverMediaId) || firstImage;
-
-  // Show ALL chapters (even those without media assigned yet)
-  const allChapters: ChapterWithMedia[] = (story.chapters ?? [])
-    .map((chapter) => ({
-      chapter,
-      mediaItems: story.media
-        .map((item, index) => ({ item, index }))
-        .filter((m) => m.item.chapterId === chapter.id),
-    }));
-
-  // Only use chapters with media for the chapter experience
-  const chaptersWithMedia: ChapterWithMedia[] = allChapters.filter((c) => c.mediaItems.length > 0);
-
-  const unassignedMedia = story.media
-    .map((item, index) => ({ item, index }))
-    .filter((m) => !m.item.chapterId);
+  const {
+    galleryActiveIndex,
+    setGalleryActiveIndex,
+    isCinematicPlaying,
+    setIsCinematicPlaying,
+    hasMedia,
+    coverImage,
+    allChapters,
+    chaptersWithMedia,
+    unassignedMedia
+  } = useStoryTemplateData(story);
 
   const currentChapterIndex = chaptersWithMedia.findIndex(c => c.chapter.id === selectedChapterId);
   const currentChapterData = currentChapterIndex >= 0 ? chaptersWithMedia[currentChapterIndex] : null;

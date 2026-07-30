@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+
 import MediaViewer from "@/components/preview/MediaViewer";
 import CinematicPlayer from "@/components/preview/CinematicPlayer";
 import EmptyState from "@/components/preview/EmptyState";
+import { useStoryTemplateData } from "@/hooks/useStoryTemplateData";
 import { StoryWithFullPayload } from "../PreviewClientWrapper";
 import { Play } from "lucide-react";
 
@@ -16,25 +17,18 @@ export default function WeddingTemplate({
   isEditable?: boolean,
   onChapterChange?: (chapterId: string | null) => void
 }) {
-  const [galleryActiveIndex, setGalleryActiveIndex] = useState<number | null>(null);
-  const [isCinematicPlaying, setIsCinematicPlaying] = useState<boolean>(false);
+  const {
+    galleryActiveIndex,
+    setGalleryActiveIndex,
+    isCinematicPlaying,
+    setIsCinematicPlaying,
+    hasMedia,
+    coverImage,
+    chaptersWithMedia,
+    unassignedMedia
+  } = useStoryTemplateData(story);
 
-  const hasMedia = story.media && story.media.length > 0;
-  const firstImage = story.media?.find((m) => m.type === "IMAGE");
-  const coverImage = story.media?.find((m) => m.id === story.coverMediaId) || firstImage;
 
-  const chaptersWithMedia = story.chapters
-    ?.map((chapter) => ({
-      chapter,
-      mediaItems: story.media
-        .map((item, index) => ({ item, index }))
-        .filter((m) => m.item.chapterId === chapter.id),
-    }))
-    .filter((c) => c.mediaItems.length > 0) || [];
-
-  const unassignedMedia = story.media
-    .map((item, index) => ({ item, index }))
-    .filter((m) => !m.item.chapterId);
 
   return (
     <div className="bg-[#0f0f0f] min-h-screen text-[#FDFBF7] font-serif selection:bg-[#D4AF37]/30">

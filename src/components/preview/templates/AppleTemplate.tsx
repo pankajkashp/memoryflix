@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef } from "react";
 import MediaViewer from "@/components/preview/MediaViewer";
 import CinematicPlayer from "@/components/preview/CinematicPlayer";
 import EmptyState from "@/components/preview/EmptyState";
+import { useStoryTemplateData } from "@/hooks/useStoryTemplateData";
 import { StoryWithFullPayload } from "../PreviewClientWrapper";
 import { Play } from "lucide-react";
 
@@ -16,22 +17,18 @@ export default function AppleTemplate({
   isEditable?: boolean,
   onChapterChange?: (chapterId: string | null) => void
 }) {
-  const [galleryActiveIndex, setGalleryActiveIndex] = useState<number | null>(null);
-  const [isCinematicPlaying, setIsCinematicPlaying] = useState<boolean>(false);
+  const {
+    galleryActiveIndex,
+    setGalleryActiveIndex,
+    isCinematicPlaying,
+    setIsCinematicPlaying,
+    hasMedia,
+    coverImage,
+    chaptersWithMedia,
+    unassignedMedia
+  } = useStoryTemplateData(story);
+
   const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
-
-  const hasMedia = story.media && story.media.length > 0;
-  const firstImage = story.media?.find((m) => m.type === "IMAGE");
-  const coverImage = story.media?.find((m) => m.id === story.coverMediaId) || firstImage;
-
-  const chaptersWithMedia = story.chapters
-    ?.map((chapter) => ({
-      chapter,
-      mediaItems: story.media
-        .map((item, index) => ({ item, index }))
-        .filter((m) => m.item.chapterId === chapter.id),
-    }))
-    .filter((c) => c.mediaItems.length > 0) || [];
 
   useEffect(() => {
     if (!onChapterChange) return;
@@ -54,9 +51,7 @@ export default function AppleTemplate({
     return () => observer.disconnect();
   }, [chaptersWithMedia, onChapterChange]);
 
-  const unassignedMedia = story.media
-    .map((item, index) => ({ item, index }))
-    .filter((m) => !m.item.chapterId);
+
 
   return (
     <div className="bg-[#F5F5F7] min-h-screen text-[#1D1D1F] font-sans">
