@@ -1,4 +1,5 @@
 import { getServerSession } from "next-auth";
+import Image from "next/image";
 import { authOptions } from "@/lib/auth";
 import LandingHero from "@/components/landing/LandingHero";
 import TemplateCards from "@/components/landing/TemplateCards";
@@ -36,7 +37,7 @@ export default async function LandingPage() {
             >
               <div className="relative w-12 h-12 flex items-center justify-center -ml-2">
                 { }
-                <img src="/icon.png" alt="MemoryFlix Logo" className="w-full h-full object-cover scale-[1.65] transition-transform duration-300 group-hover:scale-[1.75]" />
+                <Image src="/icon.png" alt="MemoryFlix Logo" fill priority sizes="48px" className="object-cover scale-[1.65] transition-transform duration-300 group-hover:scale-[1.75]" />
               </div>
               {/* Wordmark */}
               <span className="text-xl sm:text-2xl font-bold tracking-tight text-white group-hover:text-rose-50 transition-colors duration-200">
@@ -96,7 +97,7 @@ export default async function LandingPage() {
           <a href="/" className="flex items-center gap-0.5 opacity-60 hover:opacity-100 transition-opacity group">
             <div className="relative w-8 h-8 flex items-center justify-center -ml-1.5">
               { }
-              <img src="/icon.png" alt="MemoryFlix Logo" className="w-full h-full object-cover scale-[1.7] grayscale group-hover:grayscale-0 transition-all duration-300" />
+              <Image src="/icon.png" alt="MemoryFlix Logo" fill sizes="32px" className="object-cover scale-[1.7] grayscale group-hover:grayscale-0 transition-all duration-300" />
             </div>
             <span className="text-base font-semibold text-zinc-400">
               Memory<span className="text-rose-400">Flix</span>

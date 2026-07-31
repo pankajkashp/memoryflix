@@ -212,7 +212,7 @@ export default function LandingHero({
               style={{ top: '8%', right: '-5%', transform: 'rotate(8deg)' }}
               data-rotate="8"
             >
-              <Image src={PHOTOS[1].src} alt={PHOTOS[1].alt} fill className="object-cover opacity-95 hover:scale-105 transition-transform duration-700" />
+              <Image src={PHOTOS[1].src} alt={PHOTOS[1].alt} fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover opacity-95 hover:scale-105 transition-transform duration-700" />
             </div>
 
             {/* Satellite 2 (Bottom right: Campfire) */}
@@ -221,7 +221,7 @@ export default function LandingHero({
               style={{ bottom: '12%', right: '-10%', transform: 'rotate(-4deg)' }}
               data-rotate="-4"
             >
-              <Image src={PHOTOS[2].src} alt={PHOTOS[2].alt} fill className="object-cover opacity-95 hover:scale-105 transition-transform duration-700" />
+              <Image src={PHOTOS[2].src} alt={PHOTOS[2].alt} fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover opacity-95 hover:scale-105 transition-transform duration-700" />
             </div>
 
             {/* Dominant Hero Card (Sunset couple) */}
@@ -231,7 +231,7 @@ export default function LandingHero({
               data-rotate="-5"
             >
               <div className="relative w-full h-full rounded-[1.5rem] overflow-hidden">
-                <Image src={PHOTOS[0].src} alt={PHOTOS[0].alt} fill priority className="object-cover" />
+                <Image src={PHOTOS[0].src} alt={PHOTOS[0].alt} fill priority sizes="(max-width: 768px) 80vw, 50vw" className="object-cover" />
                 {/* Script text overlay */}
                 <div className="hidden md:flex absolute bottom-8 left-0 right-0 text-center pointer-events-none rotate-[-4deg] flex-col items-center">
                   <span 

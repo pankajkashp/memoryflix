@@ -5,12 +5,16 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import StoryCard from "@/components/story/StoryCard";
 import RotatingQuote from "@/components/dashboard/RotatingQuote";
-import DashboardAnimations from "@/components/dashboard/DashboardAnimations";
+import dynamic from "next/dynamic";
+
+const DashboardAnimations = dynamic(() => import("@/components/dashboard/DashboardAnimations"), { ssr: false });
 import { Clock, Play, Plus, Film, Image as ImageIcon, BookOpen, CheckCircle } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Dashboard — MemoryFlix",
 };
+
+export const dynamic = "force-dynamic";
 
 function timeAgo(date: Date) {
   const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);

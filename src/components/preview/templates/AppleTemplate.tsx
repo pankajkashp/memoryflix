@@ -10,6 +10,7 @@ import { useStoryTemplateData } from "@/hooks/useStoryTemplateData";
 import { StoryWithFullPayload } from "../PreviewClientWrapper";
 import { Play } from "lucide-react";
 import Image from "next/image";
+import LazyVideo from "@/components/common/LazyVideo";
 
 export default function AppleTemplate({ 
   story, 
@@ -63,7 +64,7 @@ export default function AppleTemplate({
         {coverImage && (
           <div className="absolute inset-0 z-0">
             {coverImage.type === "VIDEO" ? (
-              <video src={coverImage.url} className="w-full h-full object-cover opacity-80" autoPlay muted loop playsInline />
+              <LazyVideo src={coverImage.url} className="w-full h-full object-cover opacity-80" autoPlay muted loop playsInline />
             ) : (
               <Image src={coverImage.url} alt="Cover" fill sizes="100vw" className="object-cover opacity-80 scale-105" />
             )}
@@ -125,7 +126,7 @@ export default function AppleTemplate({
                     className="relative aspect-square md:aspect-[4/3] bg-white rounded-2xl md:rounded-3xl overflow-hidden cursor-pointer group shadow-sm hover:shadow-xl transition-all duration-500"
                   >
                     {item.type === "VIDEO" ? (
-                      <video src={item.url} className="w-full h-full object-cover" autoPlay muted loop playsInline />
+                      <LazyVideo src={item.url} className="w-full h-full object-cover" autoPlay muted loop playsInline />
                     ) : (
                       <Image src={item.url} alt="Media" fill sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
                     )}
@@ -158,7 +159,7 @@ export default function AppleTemplate({
                     className="relative aspect-square md:aspect-[4/3] bg-white rounded-2xl md:rounded-3xl overflow-hidden cursor-pointer group shadow-sm hover:shadow-xl transition-all duration-500"
                   >
                     {item.type === "VIDEO" ? (
-                      <video src={item.url} className="w-full h-full object-cover" autoPlay muted loop playsInline />
+                      <LazyVideo src={item.url} className="w-full h-full object-cover" autoPlay muted loop playsInline />
                     ) : (
                       <Image src={item.url} alt="Media" fill sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
                     )}

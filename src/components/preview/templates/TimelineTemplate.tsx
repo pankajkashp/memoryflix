@@ -10,6 +10,7 @@ import { useStoryTemplateData } from "@/hooks/useStoryTemplateData";
 import { StoryWithFullPayload } from "../PreviewClientWrapper";
 import { Play, BookOpen } from "lucide-react";
 import Image from "next/image";
+import LazyVideo from "@/components/common/LazyVideo";
 
 export default function TimelineTemplate({ 
   story, 
@@ -116,7 +117,7 @@ export default function TimelineTemplate({
                           >
                             <div className="relative aspect-video md:aspect-[4/3] rounded-xl overflow-hidden bg-zinc-50">
                               {item.type === "VIDEO" ? (
-                                <video src={item.url} className="w-full h-full object-cover" autoPlay muted loop playsInline />
+                                <LazyVideo src={item.url} className="w-full h-full object-cover" autoPlay muted loop playsInline />
                               ) : (
                                 <Image src={item.url} alt="Media" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
                               )}
@@ -161,7 +162,7 @@ export default function TimelineTemplate({
                       className="relative aspect-square bg-white rounded-xl overflow-hidden cursor-pointer shadow-sm border border-zinc-100 hover:shadow-md transition-shadow"
                     >
                       {item.type === "VIDEO" ? (
-                        <video src={item.url} className="w-full h-full object-cover" autoPlay muted loop playsInline />
+                        <LazyVideo src={item.url} className="w-full h-full object-cover" autoPlay muted loop playsInline />
                       ) : (
                         <Image src={item.url} alt="Media" fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover" />
                       )}
