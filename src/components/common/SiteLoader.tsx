@@ -15,17 +15,15 @@ export default function SiteLoader() {
   const [isFading, setIsFading] = useState(false);
 
   useEffect(() => {
-    let fallbackTimeout: NodeJS.Timeout;
-
     const hideLoader = () => {
       if (!isFading) {
         setIsFading(true);
-        setTimeout(() => setIsVisible(false), 800); // Wait for CSS fade out transition
+        setTimeout(() => setIsVisible(false), 800);
       }
     };
 
     // 1. Strict fallback timeout (4s max)
-    fallbackTimeout = setTimeout(() => {
+    const fallbackTimeout = setTimeout(() => {
       hideLoader();
     }, 4000);
 

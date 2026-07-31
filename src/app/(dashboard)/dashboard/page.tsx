@@ -5,9 +5,9 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import StoryCard from "@/components/story/StoryCard";
 import RotatingQuote from "@/components/dashboard/RotatingQuote";
-import dynamic from "next/dynamic";
+import nextDynamic from "next/dynamic";
 
-const DashboardAnimations = dynamic(() => import("@/components/dashboard/DashboardAnimations"), { ssr: false });
+const DashboardAnimations = nextDynamic(() => import("@/components/dashboard/DashboardAnimations"));
 import { Clock, Play, Plus, Film, Image as ImageIcon, BookOpen, CheckCircle } from "lucide-react";
 
 export const metadata: Metadata = {
