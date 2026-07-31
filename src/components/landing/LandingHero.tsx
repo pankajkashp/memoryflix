@@ -1,51 +1,23 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
-import { useState } from "react";
+import { Film, Sparkles, Share2, PlayCircle } from "lucide-react";
+import { gsap } from "@/lib/gsap-utils";
+import { GSAP_CONFIG } from "@/lib/gsapConfig";
+import { prefersReducedMotion } from "@/lib/gsap-utils";
+import Image from "next/image";
+import { Caveat } from "next/font/google";
 import FloatingParticles from "./FloatingParticles";
 
-// ─── Curated memory collage photos ─────────────────────────────────────────
-// 6 emotionally resonant Unsplash images — always shown as the base layer.
-// The hero.mp4 video (if present) fades in on top of this collage.
-const COLLAGE_IMAGES = [
-  {
-    src: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=900&auto=format&fit=crop",
-    alt: "Wedding couple",
-    delay: 0,
-  },
-  {
-    src: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=900&auto=format&fit=crop",
-    alt: "Romantic moment",
-    delay: 0.15,
-  },
-  {
-    src: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=900&auto=format&fit=crop",
-    alt: "Travel memories",
-    delay: 0.3,
-  },
-  {
-    src: "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=900&auto=format&fit=crop",
-    alt: "Anniversary",
-    delay: 0.1,
-  },
-  {
-    src: "https://images.unsplash.com/photo-1519741497674-611481863552?w=900&auto=format&fit=crop",
-    alt: "Wedding ceremony",
-    delay: 0.25,
-  },
-  {
-    src: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=900&auto=format&fit=crop",
-    alt: "Family moment",
-    delay: 0.2,
-  },
-];
+const caveat = Caveat({ subsets: ["latin"], weight: "700" });
 
-// ─── Hero copy — emotional, human, not SaaS ─────────────────────────────────
-const HEADLINE_TOP = "Your love story.";
-const HEADLINE_BOTTOM = "Finally on screen.";
-const SUB_COPY =
-  "The photos are in your camera roll. The videos are in a group chat.\nBring them back — beautifully, forever — in one cinematic story.";
+// Sample high-quality Unsplash photos
+const PHOTOS = [
+  { src: "/1.png", alt: "Sunset couple" },
+  { src: "/2.png", alt: "Mountain lake" },
+  { src: "/3.png", alt: "Campfire friends" },
+];
 
 export default function LandingHero({
   ctaHref,
@@ -54,227 +26,236 @@ export default function LandingHero({
   ctaHref: string;
   ctaText: string;
 }) {
-  const [videoError, setVideoError] = useState(false);
+  const containerRef = useRef<HTMLElement>(null);
 
-  // ─── HERO VIDEO ────────────────────────────────────────────────────────────
-  // Place your hero video at: public/videos/hero.mp4
-  // The collage always shows — the video fades in over it when available.
-  const videoUrl = "/videos/hero.mp4";
-  const showVideo = !videoError;
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const reduced = prefersReducedMotion();
+
+    const ctx = gsap.context(() => {
+      // 1. Text elements entrance
+      const textElements = containerRef.current?.querySelectorAll(".animate-text");
+      if (textElements) {
+        gsap.fromTo(
+          textElements,
+          { opacity: 0, y: reduced ? 0 : 30 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: GSAP_CONFIG.duration.enter * 1.5,
+            stagger: 0.1,
+            ease: GSAP_CONFIG.ease,
+          }
+        );
+      }
+
+      // 2. Photo collage entrance
+      const photoCards = containerRef.current?.querySelectorAll(".photo-card");
+      if (photoCards && !reduced) {
+        photoCards.forEach((card, i) => {
+          const targetRotate = parseFloat(card.getAttribute("data-rotate") || "0");
+          gsap.fromTo(
+            card,
+            { opacity: 0, scale: 0.8, rotation: targetRotate - (i % 2 === 0 ? 10 : -10), y: 40 },
+            {
+              opacity: 1,
+              scale: 1,
+              rotation: targetRotate,
+              y: 0,
+              duration: GSAP_CONFIG.duration.enter * 1.8,
+              delay: 0.4 + (i * 0.15),
+              ease: "back.out(1.2)",
+            }
+          );
+        });
+      } else if (photoCards && reduced) {
+        gsap.to(photoCards, { opacity: 1, duration: 1 });
+      }
+
+      // 3. Ambient floating motion (Hero photo & Optical flare)
+      if (!reduced) {
+        const heroCard = containerRef.current?.querySelector(".hero-photo");
+        if (heroCard) {
+          gsap.to(heroCard, {
+            y: "-=15",
+            rotation: "+=1.5",
+            duration: 5,
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut"
+          });
+        }
+      }
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
 
   return (
-    <section className="relative flex h-screen min-h-[680px] w-full items-center justify-center overflow-hidden">
-      {/* ── Layer 0: Memory Collage (always visible, base layer) ───────────── */}
-      <div className="absolute inset-0 z-0">
-        {/* 3×2 asymmetric mosaic grid */}
-        <div
-          className="h-full w-full"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1.4fr 1fr 1.2fr",
-            gridTemplateRows: "1fr 1fr",
-            gap: "3px",
-          }}
-        >
-          {COLLAGE_IMAGES.map((img, i) => (
-            <motion.div
-              key={img.src}
-              className="relative overflow-hidden"
-              // Row 0 col 0 spans 2 rows for the hero anchor photo
-              style={
-                i === 0
-                  ? { gridRow: "1 / 3" }
-                  : {}
-              }
-              initial={{ opacity: 0, scale: 1.06 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{
-                opacity: { duration: 1.8, delay: img.delay },
-                scale: { duration: 8, delay: img.delay, ease: "linear" },
-              }}
-            >
-              {/* Slow-zoom Ken Burns animation */}
-              <motion.img
-                src={img.src}
-                alt={img.alt}
-                className="absolute inset-0 h-full w-full object-cover"
-                loading="eager"
-                animate={{ scale: [1, 1.06] }}
-                transition={{
-                  duration: 12,
-                  repeat: Infinity,
-                  repeatType: "mirror",
-                  ease: "easeInOut",
-                  delay: i * 1.5,
-                }}
-              />
-            </motion.div>
-          ))}
-        </div>
+    <section 
+      ref={containerRef}
+      className="relative min-h-[100svh] w-full bg-gradient-to-br from-[#020617] via-[#0a0516] to-[#1e0510] overflow-hidden flex flex-col md:flex-row items-center pt-24 md:pt-0"
+    >
+      {/* ── Background Glows & Optical Flare ─────────────────────────────── */}
+      
+      {/* Deep purple/blue ambient background glow */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#1e0a2d]/50 via-transparent to-transparent opacity-90 pointer-events-none" />
+
+      {/* Glow behind the photo collage */}
+      <div className="absolute top-[75%] md:top-1/2 right-[10%] w-[300px] md:w-[600px] h-[300px] md:h-[600px] -translate-y-1/2 bg-rose-600/20 md:bg-rose-600/30 blur-[80px] md:blur-[120px] rounded-full pointer-events-none mix-blend-screen" />
+
+      {/* The strong optical lens flare (like in reference) */}
+      <div className="hidden md:block absolute top-1/2 left-[50%] md:left-[60%] -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none mix-blend-screen opacity-100 scale-100">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-56 h-56 bg-white rounded-full blur-[60px] opacity-80" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[28rem] h-[28rem] bg-rose-500 rounded-full blur-[100px] opacity-60" />
+        {/* Diagonal light streak */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1400px] h-2 bg-rose-400 blur-[8px] opacity-90 rotate-[18deg]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[2px] bg-white blur-[2px] opacity-80 rotate-[18deg]" />
       </div>
 
-      {/* ── Layer 1: Cinematic hero.mp4 (fades in over collage if available) ── */}
-      {showVideo && (
-        <motion.div
-          className="absolute inset-0 z-[1]"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 2.5, delay: 0.5, ease: "easeOut" }}
-        >
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="h-full w-full object-cover"
-            onError={() => setVideoError(true)}
-          >
-            <source src={videoUrl} type="video/mp4" />
-          </video>
-        </motion.div>
-      )}
+      {/* ── Floating Particles (Stars and Hearts) ────────────────────────── */}
+      <div className="hidden md:block">
+        <FloatingParticles />
+      </div>
 
-      {/* ── Layer 2: Cinematic overlay stack ──────────────────────────────── */}
-      {/* Base darkening — collage needs to be moody, not bright */}
-      <div className="absolute inset-0 z-[2] bg-black/60" />
-      {/* Vignette: strong bottom-to-top — ensures text is always readable */}
-      <div className="absolute inset-0 z-[2] bg-gradient-to-t from-black via-black/75 to-black/20" />
-      {/* Left + right side shadows — cinematic letterbox feel */}
-      <div className="absolute inset-0 z-[2] bg-gradient-to-r from-black/70 via-transparent to-black/70" />
-      {/* Top shadow for nav contrast */}
-      <div className="absolute inset-x-0 top-0 z-[2] h-40 bg-gradient-to-b from-black/80 to-transparent" />
+      {/* ── Glowing Film Strip Bottom Border ───────────────────────────────── */}
+      <div className="absolute bottom-0 left-0 w-full h-12 overflow-hidden opacity-30 pointer-events-none z-10 drop-shadow-[0_-5px_15px_rgba(236,72,153,0.3)]">
+        <svg width="100%" height="100%" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="bottom-film-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="rgba(168,85,247,0.4)" />
+              <stop offset="50%" stopColor="rgba(236,72,153,0.8)" />
+              <stop offset="100%" stopColor="rgba(168,85,247,0.4)" />
+            </linearGradient>
+            <mask id="bottom-film-mask">
+              <rect width="100%" height="100%" fill="white" />
+              <pattern id="bottom-holes" width="40" height="48" patternUnits="userSpaceOnUse">
+                <rect x="10" y="4" width="20" height="12" rx="2" fill="black" />
+                <rect x="10" y="32" width="20" height="12" rx="2" fill="black" />
+              </pattern>
+              <rect width="100%" height="100%" fill="url(#bottom-holes)" />
+            </mask>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#bottom-film-grad)" mask="url(#bottom-film-mask)" />
+        </svg>
+      </div>
 
-      {/* ── Layer 3: Particles ─────────────────────────────────────────────── */}
-      <FloatingParticles />
-
-      {/* ── Layer 4: Hero Content ─────────────────────────────────────────── */}
-      <div className="relative z-20 mx-auto max-w-5xl px-6 mt-32 sm:mt-0 text-center lg:px-8">
-        {/* Eyebrow label */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          className="mb-4 sm:mb-8 flex items-center justify-center gap-3"
-        >
-          <div className="h-px w-12 bg-gradient-to-r from-transparent to-rose-400/70" />
-          <span className="text-xs uppercase tracking-[0.35em] text-rose-300/90 font-semibold">
-            For the moments that matter
-          </span>
-          <div className="h-px w-12 bg-gradient-to-l from-transparent to-rose-400/70" />
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          className="mx-auto"
-        >
-          {/* Main headline — two lines, large serif-weight impact */}
-          <h1 className="text-5xl font-extrabold tracking-tighter sm:text-7xl lg:text-8xl xl:text-9xl drop-shadow-2xl leading-[1.05] pb-4">
-            <span className="text-transparent bg-clip-text bg-gradient-to-br from-white via-rose-50 to-white/60">
-              {HEADLINE_TOP}
-            </span>
-            <br />
-            <span 
-              className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-pink-400 to-purple-500 relative inline-block"
-              style={{ filter: "drop-shadow(0 0 20px rgba(244,63,94,0.3))" }}
-            >
-              {HEADLINE_BOTTOM}
-            </span>
+      {/* ── Main Content Container ───────────────────────────────────────── */}
+      <div className="w-full max-w-[1400px] mx-auto px-6 lg:px-12 flex flex-col md:flex-row items-center justify-between z-20 min-h-[100svh] md:min-h-0">
+        
+        {/* LEFT COLUMN (Text) */}
+        <div className="w-full md:w-[50%] flex flex-col items-start justify-center text-left pt-32 pb-32 md:pt-0 md:pb-0 relative z-30 min-h-[100svh] md:min-h-0">
+          
+          <h1 className="animate-text font-sans text-4xl sm:text-5xl md:text-6xl lg:text-[4.5rem] font-bold tracking-tight text-white leading-[1.1] mb-6 whitespace-normal break-words md:whitespace-nowrap w-full">
+            Turn Your Memories <br className="hidden md:block" />
+            Into <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-purple-500 drop-shadow-lg">Cinematic Stories</span>
           </h1>
 
-          {/* Emotional sub-copy */}
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.2, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-4 sm:mt-8 text-base sm:text-lg text-zinc-300/90 max-w-xl mx-auto leading-relaxed drop-shadow-md whitespace-pre-line"
-          >
-            {SUB_COPY}
-          </motion.p>
+          <p className="animate-text text-lg text-zinc-400 max-w-[420px] mb-10 leading-relaxed font-medium">
+            Create beautiful stories with your photos and videos. Cherish, preview, and share your unforgettable moments.
+          </p>
 
-          {/* CTAs */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-8 sm:mt-12 flex flex-col sm:flex-row gap-4 justify-center items-center"
-          >
-            {/* Primary — rose glow CTA */}
+          <div className="animate-text flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto mb-16">
             <Link
               href={ctaHref}
-              className="group relative inline-flex h-14 items-center justify-center rounded-full bg-gradient-to-r from-rose-500 to-rose-600 px-9 text-base font-semibold text-white shadow-lg shadow-rose-600/40 transition-all hover:scale-105 hover:shadow-rose-500/60 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-rose-400 focus:ring-offset-2 focus:ring-offset-black"
+              className="group relative flex items-center justify-center gap-2 w-full sm:w-auto h-12 sm:h-14 px-8 rounded-full bg-gradient-to-r from-rose-500 to-purple-600 text-white font-bold text-base transition-all hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(236,72,153,0.5)]"
             >
-              {/* Animated glow ring */}
-              <span className="absolute -inset-1 rounded-full bg-rose-500/30 blur-md opacity-0 transition-all group-hover:opacity-100 group-hover:blur-lg" />
-              <span className="relative flex items-center gap-2.5">
-                <svg
-                  className="w-4 h-4 fill-white opacity-90"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402z" />
-                </svg>
-                {ctaText}
-              </span>
+              <Sparkles className="w-5 h-5" />
+              {ctaText}
             </Link>
-
-            {/* Secondary — glassmorphism */}
+            
             <Link
               href="/demo"
-              className="group inline-flex h-14 items-center justify-center gap-2.5 rounded-full border border-white/20 bg-white/5 backdrop-blur-md px-8 text-base font-medium text-white/90 transition-all hover:bg-white/10 hover:border-white/40 hover:text-white focus:outline-none focus:ring-2 focus:ring-white/30"
+              className="flex items-center justify-center gap-2 w-full sm:w-auto h-12 sm:h-14 px-8 rounded-full border border-zinc-700 hover:border-zinc-400 hover:bg-white/5 bg-transparent text-zinc-300 hover:text-white font-semibold text-base transition-all"
             >
-              <svg
-                className="w-4 h-4 fill-white/80 transition-transform group-hover:scale-110"
-                viewBox="0 0 24 24"
-              >
-                <path d="M8 5v14l11-7z" />
-              </svg>
-              Watch a Story
+              <PlayCircle className="w-5 h-5" />
+              Watch Demo
             </Link>
-          </motion.div>
+          </div>
 
-          {/* Social proof micro-line */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1, duration: 1.2 }}
-            className="mt-6 sm:mt-8 text-[10px] sm:text-xs text-zinc-500 tracking-wide"
-          >
-            No credit card · Free forever · Your memories, your privacy
-          </motion.p>
-        </motion.div>
+          {/* Value Props Row */}
+          <div className="animate-text flex items-center justify-between gap-4 sm:gap-10 w-full max-w-[420px] relative z-40">
+            <div className="flex flex-col items-center gap-2">
+              <Film className="w-5 h-5 sm:w-6 sm:h-6 text-rose-500" />
+              <span className="text-[10px] sm:text-xs text-zinc-300 font-medium text-center tracking-wide">Add Memories</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-purple-500" />
+              <span className="text-[10px] sm:text-xs text-zinc-300 font-medium text-center tracking-wide">Cinematic Preview</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <Share2 className="w-5 h-5 sm:w-6 sm:h-6 text-pink-500" />
+              <span className="text-[10px] sm:text-xs text-zinc-300 font-medium text-center tracking-wide">Share & Cherish</span>
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT/BACKGROUND COLUMN (Photo Collage) */}
+        <div className="absolute inset-0 md:relative md:inset-auto w-full md:w-[50%] h-full md:h-[700px] mt-0 perspective-[1200px] z-0 md:z-20 flex-shrink-0 overflow-hidden md:overflow-visible opacity-100 pointer-events-none md:pointer-events-auto">
+          
+          {/* Mobile dark scrim overlay for text readability (Gradient Mask) */}
+          <div 
+            className="absolute inset-0 z-50 md:hidden block pointer-events-none" 
+            style={{
+              background: 'linear-gradient(to bottom, rgba(2,6,23,0.3) 0%, rgba(10,5,22,0.85) 30%, rgba(10,5,22,0.95) 75%, rgba(10,5,22,0.6) 100%)'
+            }}
+          />
+
+          {/* Intense glow right behind the main hero photo (Reduced) */}
+          <div className="hidden md:block absolute top-[15%] left-0 w-[65%] aspect-[4/5] bg-rose-500/15 blur-[60px] rounded-[2rem] pointer-events-none mix-blend-screen" style={{ transform: 'rotate(-5deg)' }} />
+
+          <div className="absolute inset-0 flex items-center justify-center translate-x-0 md:translate-x-12 lg:translate-x-20 scale-[1.3] md:scale-100 opacity-90 md:opacity-100 mt-12 md:mt-0">
+            
+            {/* Satellite 1 (Top right: Lake) */}
+            <div 
+              className="photo-card absolute w-[45%] md:w-[40%] aspect-square rounded-2xl overflow-hidden shadow-2xl border border-white/10 z-20"
+              style={{ top: '8%', right: '-5%', transform: 'rotate(8deg)' }}
+              data-rotate="8"
+            >
+              <Image src={PHOTOS[1].src} alt={PHOTOS[1].alt} fill className="object-cover opacity-95 hover:scale-105 transition-transform duration-700" />
+            </div>
+
+            {/* Satellite 2 (Bottom right: Campfire) */}
+            <div 
+              className="photo-card absolute w-[55%] md:w-[48%] aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl border border-white/10 z-20"
+              style={{ bottom: '12%', right: '-10%', transform: 'rotate(-4deg)' }}
+              data-rotate="-4"
+            >
+              <Image src={PHOTOS[2].src} alt={PHOTOS[2].alt} fill className="object-cover opacity-95 hover:scale-105 transition-transform duration-700" />
+            </div>
+
+            {/* Dominant Hero Card (Sunset couple) */}
+            <div 
+              className="photo-card hero-photo absolute w-[75%] md:w-[65%] max-w-[420px] aspect-[4/5] rounded-[2rem] p-2 bg-white/5 backdrop-blur-md border border-white/20 shadow-[0_30px_60px_rgba(0,0,0,0.6),_0_0_40px_rgba(236,72,153,0.15)] z-30"
+              style={{ top: '15%', left: '0%', transform: 'rotate(-5deg)' }}
+              data-rotate="-5"
+            >
+              <div className="relative w-full h-full rounded-[1.5rem] overflow-hidden">
+                <Image src={PHOTOS[0].src} alt={PHOTOS[0].alt} fill priority className="object-cover" />
+                {/* Script text overlay */}
+                <div className="hidden md:flex absolute bottom-8 left-0 right-0 text-center pointer-events-none rotate-[-4deg] flex-col items-center">
+                  <span 
+                    className={`${caveat.className} text-4xl sm:text-5xl text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] relative`}
+                    style={{ textShadow: "0 4px 20px rgba(0,0,0,0.6), 0 2px 4px rgba(0,0,0,0.8)" }}
+                  >
+                    Every memory<br/>tells a story
+                    {/* Little heart */}
+                    <span className="absolute text-rose-400 text-xl ml-2 top-10 rotate-[12deg] drop-shadow-md">♥</span>
+                  </span>
+                  
+                  {/* Wavy underline SVG */}
+                  <svg width="180" height="20" viewBox="0 0 180 20" className="mt-1 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]" fill="none">
+                    <path d="M2,15 C40,5 90,20 178,5" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+                    <path d="M10,18 C50,10 100,22 170,10" stroke="white" strokeWidth="1.5" strokeLinecap="round" opacity="0.6" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
       </div>
-
-      {/* ── Scroll indicator ────────────────────────────────────────────────── */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2, duration: 1 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2"
-      >
-        <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
-          className="flex flex-col items-center gap-1.5"
-        >
-          <span className="text-[10px] uppercase tracking-[0.3em] text-zinc-500 font-medium">
-            Scroll
-          </span>
-          <svg
-            className="w-5 h-5 text-zinc-600"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={1.5}
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M19 9l-7 7-7-7"
-            />
-          </svg>
-        </motion.div>
-      </motion.div>
     </section>
   );
 }
