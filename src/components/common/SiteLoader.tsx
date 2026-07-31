@@ -12,6 +12,7 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "@/lib/gsap-utils";
 import { prefersReducedMotion } from "@/lib/gsap-utils";
+import { GSAP_CONFIG } from "@/lib/gsapConfig";
 
 
 export default function SiteLoader() {
@@ -70,7 +71,7 @@ export default function SiteLoader() {
       // Background elements floating
       if (bgElements) {
         const items = bgElements.querySelectorAll(".float-item");
-        items.forEach((item, i) => {
+        items.forEach((item: Element, i: number) => {
           gsap.set(item, { 
             opacity: 0, 
             y: gsap.utils.random(10, 40), 
@@ -99,27 +100,27 @@ export default function SiteLoader() {
           });
           
           // Elements fade and scale out smoothly
-          exitTl.to(logoContainer, { scale: 1.15, filter: "blur(8px)", opacity: 0, duration: 0.7, ease: "power4.inOut" }, 0);
-          exitTl.to([title, subtitle, progressLine.parentElement], { opacity: 0, y: -20, duration: 0.5, ease: "power3.in" }, 0);
+          exitTl.to(logoContainer, { scale: 1.15, filter: "blur(8px)", opacity: 0, duration: GSAP_CONFIG.duration.exit, ease: GSAP_CONFIG.ease }, 0);
+          exitTl.to([title, subtitle, progressLine.parentElement], { opacity: 0, y: -20, duration: GSAP_CONFIG.duration.exit, ease: GSAP_CONFIG.ease }, 0);
           
           // Blur background
-          exitTl.to(loader, { backdropFilter: "blur(20px)", duration: 0.4 }, 0);
+          exitTl.to(loader, { backdropFilter: "blur(20px)", duration: GSAP_CONFIG.duration.exit }, 0);
           
           // Curtain slide up
-          exitTl.to(overlay, { y: "-100%", duration: 1.2, ease: "expo.inOut" }, 0.2);
+          exitTl.to(overlay, { y: "-100%", duration: GSAP_CONFIG.duration.exit * 2, ease: GSAP_CONFIG.ease }, 0.2);
           
           // Final container fade out
-          exitTl.to(loader, { opacity: 0, duration: 0.5 }, 0.9);
+          exitTl.to(loader, { opacity: 0, duration: GSAP_CONFIG.duration.exit }, 0.9);
         }
       });
 
       // Background fade in
       if (bgElements) {
-        tl.to(bgElements.querySelectorAll(".float-item"), { opacity: 0.04, duration: 1.5, stagger: 0.2 }, 0);
+        tl.to(bgElements.querySelectorAll(".float-item"), { opacity: 0.04, duration: GSAP_CONFIG.duration.enter, stagger: 0.2 }, 0);
       }
 
       // Logo entrance
-      tl.to(logoContainer, { opacity: 1, scale: 1, y: 0, duration: 1.4, ease: "expo.out" }, 0.2);
+      tl.to(logoContainer, { opacity: 1, scale: 1, y: 0, duration: GSAP_CONFIG.duration.enter, ease: GSAP_CONFIG.ease }, 0.2);
       
       // Gentle breathing glow
       gsap.to(logoContainer, {
@@ -131,17 +132,17 @@ export default function SiteLoader() {
       });
 
       // Title & Progress
-      tl.to(title, { opacity: 1, y: 0, duration: 1, ease: "power4.out" }, 0.5);
-      tl.to(progressLine, { scaleX: 1, duration: 2, ease: "power2.inOut" }, 0.6);
+      tl.to(title, { opacity: 1, y: 0, duration: GSAP_CONFIG.duration.enter, ease: GSAP_CONFIG.ease }, 0.5);
+      tl.to(progressLine, { scaleX: 1, duration: GSAP_CONFIG.duration.enter * 2, ease: GSAP_CONFIG.ease }, 0.6);
       
       // Subtitle letter reveal
       if (letters) {
         tl.to(letters, { 
           opacity: 1, 
           filter: "blur(0px)", 
-          duration: 0.5, 
-          stagger: 0.04, 
-          ease: "power2.out" 
+          duration: GSAP_CONFIG.duration.enter, 
+          stagger: GSAP_CONFIG.duration.stagger, 
+          ease: GSAP_CONFIG.ease 
         }, 0.8);
       }
 

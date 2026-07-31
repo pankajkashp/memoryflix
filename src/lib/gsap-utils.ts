@@ -10,6 +10,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
 import { Flip } from "gsap/Flip";
+import { GSAP_CONFIG } from "./gsapConfig";
 
 // ── Plugin Registration (idempotent) ──────────────────────────────────────────
 if (typeof window !== "undefined") {
@@ -50,9 +51,9 @@ export function animateCards(
         opacity: 1,
         y: 0,
         scale: 1,
-        duration: 0.7,
-        stagger: 0.1,
-        ease: "power3.out",
+        duration: GSAP_CONFIG.duration.enter,
+        stagger: GSAP_CONFIG.duration.stagger,
+        ease: GSAP_CONFIG.ease,
         scrollTrigger: {
           trigger: container,
           start: "top 85%",
@@ -69,9 +70,9 @@ export function animateCards(
       {
         opacity: 1,
         y: 0,
-        duration: 0.55,
-        stagger: 0.07,
-        ease: "power3.out",
+        duration: GSAP_CONFIG.duration.enter,
+        stagger: GSAP_CONFIG.duration.stagger,
+        ease: GSAP_CONFIG.ease,
         scrollTrigger: {
           trigger: container,
           start: "top 88%",
@@ -105,7 +106,7 @@ export function animateCards(
 // Stat count-up + slide-up cards + continue-story card entrance.
 export function animateDashboard(container: HTMLElement) {
   const reduced = prefersReducedMotion();
-  const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+  const tl = gsap.timeline({ defaults: { ease: GSAP_CONFIG.ease } });
 
   // Welcome heading
   const heading = container.querySelector<HTMLElement>("[data-dash-heading]");
