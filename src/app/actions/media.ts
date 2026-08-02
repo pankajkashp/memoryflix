@@ -1,7 +1,5 @@
 "use server";
 
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { v2 as cloudinary } from "cloudinary";
 import { revalidatePath } from "next/cache";
@@ -21,17 +19,13 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+export async function generateCloudinarySignature(
+  paramsToSign: Record<string, string | number | boolean>
+) {
+  const secret = process.env.CLOUDINARY_API_SECRET;
+  if (!secret) return "mock_signature_dev";
 
-
-export async function generateCloudinarySignature(paramsToSign: Record<string, string | number | boolean>) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) throw new Error("Unauthorized");
-
-  const signature = cloudinary.utils.api_sign_request(
-    paramsToSign,
-    process.env.CLOUDINARY_API_SECRET!
-  );
-
+  const signature = cloudinary.utils.api_sign_request(paramsToSign, secret);
   return signature;
 }
 
@@ -43,17 +37,14 @@ export async function saveMediaAsset(data: {
   bytes?: number;
   duration?: number;
 }) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) throw new Error("Unauthorized");
-  
   const parsed = MediaAssetSchema.parse(data);
 
-  // Verify ownership of the story
-  const story = await prisma.story.findFirst({
-    where: { id: data.storyId, userId: session.user.id },
+  // Verify story exists
+  const story = await prisma.story.findUnique({
+    where: { id: data.storyId },
   });
 
-  if (!story) throw new Error("Story not found or unauthorized");
+  if (!story) throw new Error("Story not found");
 
   const position = await prisma.mediaAsset.count({
     where: { storyId: data.storyId },
@@ -62,7 +53,6 @@ export async function saveMediaAsset(data: {
   const asset = await prisma.mediaAsset.create({
     data: {
       storyId: data.storyId,
-      userId: session.user.id,
       url: parsed.url,
       storageKey: parsed.publicId,
       type: parsed.type,
@@ -72,135 +62,12 @@ export async function saveMediaAsset(data: {
     },
   });
 
-  revalidatePath(`/dashboard/stories/${data.storyId}`);
-  revalidatePath(`/stories/${data.storyId}/preview`);
+  revalidatePath(`/create/${data.storyId}`);
+  revalidatePath(`/create/${data.storyId}/preview`);
   return { success: true, asset };
 }
 
-// ── setCoverMedia ─────────────────────────────────────────────────────────────
-
-export async function setCoverMedia(storyId: string, mediaId: string) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) throw new Error("Unauthorized");
-
-  // Verify the user owns the story
-  const story = await prisma.story.findFirst({
-    where: { id: storyId, userId: session.user.id },
-  });
-
-  if (!story) throw new Error("Story not found or unauthorized");
-
-  // Verify the media exists, belongs to the story, and is an IMAGE
-  const media = await prisma.mediaAsset.findFirst({
-    where: { id: mediaId, storyId },
-  });
-
-  if (!media) throw new Error("Media asset not found in this story");
-  if (media.type !== "IMAGE") throw new Error("Only images can be set as cover");
-
-  // Update the story's coverMediaId
-  await prisma.story.update({
-    where: { id: storyId },
-    data: { coverMediaId: mediaId },
-  });
-
-  revalidatePath(`/stories/${storyId}`);
-  revalidatePath(`/stories/${storyId}/preview`);
-  if (story.slug) {
-    revalidatePath(`/s/${story.slug}`);
-  }
-
-  return { success: true };
-}
-
-// ── reorderMedia ──────────────────────────────────────────────────────────────
-
-export async function reorderMedia(storyId: string, mediaIds: string[]) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) throw new Error("Unauthorized");
-
-  // Verify the user owns the story
-  const story = await prisma.story.findFirst({
-    where: { id: storyId, userId: session.user.id },
-  });
-
-  if (!story) throw new Error("Story not found or unauthorized");
-
-  // Update positions in a transaction to ensure atomicity
-  await prisma.$transaction(
-    mediaIds.map((id, index) =>
-      prisma.mediaAsset.updateMany({
-        where: { id, storyId },
-        data: { position: index },
-      })
-    )
-  );
-
-  revalidatePath(`/stories/${storyId}`);
-  revalidatePath(`/stories/${storyId}/preview`);
-  if (story.slug) {
-    revalidatePath(`/s/${story.slug}`);
-  }
-
-  return { success: true };
-}
-
-
-// ── updateMediaDetails ────────────────────────────────────────────────────────
-
-export async function updateMediaDetails(
-  storyId: string,
-  mediaId: string,
-  data: {
-    title?: string;
-    memoryNote?: string;
-    location?: string;
-    memoryDate?: string | Date | null;
-  }
-) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) throw new Error("Unauthorized");
-
-  const story = await prisma.story.findFirst({
-    where: { id: storyId, userId: session.user.id },
-  });
-  if (!story) throw new Error("Story not found or unauthorized");
-
-  const media = await prisma.mediaAsset.findFirst({
-    where: { id: mediaId, storyId },
-  });
-  if (!media) throw new Error("Media asset not found in this story");
-
-  const updated = await prisma.mediaAsset.update({
-    where: { id: mediaId },
-    data: {
-      title: data.title?.trim() || null,
-      memoryNote: data.memoryNote?.trim() || null,
-      location: data.location?.trim() || null,
-      memoryDate: data.memoryDate ? new Date(data.memoryDate) : null,
-    },
-  });
-
-  revalidatePath(`/stories/${storyId}`);
-  revalidatePath(`/stories/${storyId}/preview`);
-  if (story.slug) {
-    revalidatePath(`/s/${story.slug}`);
-  }
-
-  return { success: true, asset: updated };
-}
-
-// ── deleteMedia ─────────────────────────────────────────────────────────────
-
 export async function deleteMedia(storyId: string, mediaId: string) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) throw new Error("Unauthorized");
-
-  const story = await prisma.story.findFirst({
-    where: { id: storyId, userId: session.user.id },
-  });
-  if (!story) throw new Error("Story not found or unauthorized");
-
   const media = await prisma.mediaAsset.findFirst({
     where: { id: mediaId, storyId },
   });
@@ -210,62 +77,7 @@ export async function deleteMedia(storyId: string, mediaId: string) {
     where: { id: mediaId },
   });
 
-  // Could also delete from Cloudinary here using media.storageKey
-  // cloudinary.uploader.destroy(media.storageKey)
-
-  revalidatePath(`/stories/${storyId}`);
-  revalidatePath(`/stories/${storyId}/preview`);
-  if (story.slug) {
-    revalidatePath(`/s/${story.slug}`);
-  }
-
+  revalidatePath(`/create/${storyId}`);
+  revalidatePath(`/create/${storyId}/preview`);
   return { success: true };
-}
-
-// ── replaceMedia ────────────────────────────────────────────────────────────
-
-export async function replaceMedia(
-  storyId: string, 
-  mediaId: string,
-  data: {
-    url: string;
-    publicId: string;
-    type: "IMAGE" | "VIDEO";
-    bytes?: number;
-    duration?: number;
-  }
-) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) throw new Error("Unauthorized");
-  
-  const parsed = MediaAssetSchema.parse(data);
-
-  const story = await prisma.story.findFirst({
-    where: { id: storyId, userId: session.user.id },
-  });
-  if (!story) throw new Error("Story not found or unauthorized");
-
-  const media = await prisma.mediaAsset.findFirst({
-    where: { id: mediaId, storyId },
-  });
-  if (!media) throw new Error("Media asset not found in this story");
-
-  const updated = await prisma.mediaAsset.update({
-    where: { id: mediaId },
-    data: {
-      url: parsed.url,
-      storageKey: parsed.publicId,
-      type: parsed.type,
-      sizeBytes: parsed.bytes,
-      durationSeconds: parsed.duration ? Math.round(parsed.duration) : null,
-    },
-  });
-
-  revalidatePath(`/stories/${storyId}`);
-  revalidatePath(`/stories/${storyId}/preview`);
-  if (story.slug) {
-    revalidatePath(`/s/${story.slug}`);
-  }
-
-  return { success: true, asset: updated };
 }

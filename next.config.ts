@@ -13,6 +13,7 @@ const nextConfig: NextConfig = {
       }
     ],
   },
+  serverExternalPackages: ["@prisma/client", "prisma"],
   /* config options here */
   async headers() {
     return [

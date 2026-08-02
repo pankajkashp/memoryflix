@@ -22,7 +22,7 @@ const PLANS = [
       "Your memories. Your privacy.",
     ],
     cta: "Start Free",
-    href: "/register",
+    href: "/templates",
     highlighted: false,
     cardClass: "border border-white/10 bg-white/[0.03]",
     ctaClass:
@@ -46,7 +46,7 @@ const PLANS = [
       "AI features — coming soon ✦",
     ],
     cta: "Upgrade to Premium",
-    href: "/register",
+    href: "/templates",
     highlighted: true,
     cardClass:
       "border border-transparent bg-gradient-to-b from-rose-500/10 via-purple-500/5 to-transparent relative",

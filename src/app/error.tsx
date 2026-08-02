@@ -75,10 +75,10 @@ export default function Error({
             Try Again
           </button>
           <a
-            href="/dashboard"
+            href="/"
             className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-white/5 border border-white/10 text-white font-semibold text-sm hover:bg-white/10 transition-all"
           >
-            Go to Dashboard
+            Back to Home
           </a>
         </div>
       </div>

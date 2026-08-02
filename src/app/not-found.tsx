@@ -86,10 +86,10 @@ export default function NotFound() {
           style={{ willChange: "transform, opacity" }}
         >
           <Link
-            href="/dashboard"
+            href="/templates"
             className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-full bg-gradient-to-r from-rose-500 to-purple-600 text-white font-bold text-sm hover:from-rose-400 hover:to-purple-500 transition-all shadow-[0_0_30px_rgba(244,63,94,0.3)] hover:shadow-[0_0_50px_rgba(244,63,94,0.4)] hover:-translate-y-0.5"
           >
-            Go to Dashboard
+            Explore Templates
           </Link>
           <Link
             href="/"
