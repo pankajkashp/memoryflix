@@ -1,25 +1,22 @@
 "use client";
 
-
 import dynamic from "next/dynamic";
 import EmptyState from "@/components/preview/EmptyState";
-
-const MediaViewer = dynamic(() => import("@/components/preview/MediaViewer"), { ssr: false });
-const CinematicPlayer = dynamic(() => import("@/components/preview/CinematicPlayer"), { ssr: false });
 import { useStoryTemplateData } from "@/hooks/useStoryTemplateData";
 import { StoryWithFullPayload } from "../PreviewClientWrapper";
 import { Play, BookOpen } from "lucide-react";
 import Image from "next/image";
 import LazyVideo from "@/components/common/LazyVideo";
 
+const MediaViewer = dynamic(() => import("@/components/preview/MediaViewer"), { ssr: false });
+const CinematicPlayer = dynamic(() => import("@/components/preview/CinematicPlayer"), { ssr: false });
+
 export default function TimelineTemplate({ 
   story, 
   isEditable: _isEditable = false,
-  onChapterChange: _onChapterChange
 }: { 
   story: StoryWithFullPayload, 
   isEditable?: boolean,
-  onChapterChange?: (chapterId: string | null) => void
 }) {
   const {
     galleryActiveIndex,
@@ -27,8 +24,7 @@ export default function TimelineTemplate({
     isCinematicPlaying,
     setIsCinematicPlaying,
     hasMedia,
-    chaptersWithMedia,
-    unassignedMedia
+    allMedia,
   } = useStoryTemplateData(story);
 
   return (
@@ -63,114 +59,37 @@ export default function TimelineTemplate({
         </div>
       </div>
 
-      {/* Timeline Gallery */}
+      {/* Media Grid */}
       {hasMedia ? (
-        <div className="max-w-5xl mx-auto px-4 md:px-8 py-24 relative">
-          {/* Main vertical line */}
-          <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-1 bg-zinc-200 rounded-full md:-translate-x-1/2" />
-
-          <div className="space-y-24">
-            {chaptersWithMedia.map(({ chapter, mediaItems }, chapterIdx) => {
-              const isEven = chapterIdx % 2 === 0;
-              return (
-                <div key={chapter.id} className="relative">
-                  {/* Timeline Node */}
-                  <div className="absolute left-6 md:left-1/2 top-0 w-8 h-8 bg-white border-4 border-[#212529] rounded-full -translate-x-[14px] md:-translate-x-1/2 z-10 flex items-center justify-center shadow-md">
-                    <div className="w-2 h-2 bg-[#212529] rounded-full" />
-                  </div>
-
-                  {/* Chapter Header */}
-                  <div className={`ml-16 md:ml-0 md:w-1/2 ${isEven ? 'md:pr-12 md:text-right' : 'md:pl-12 md:ml-auto md:text-left'} pt-1 mb-8`}>
-                    <h2 className="text-2xl md:text-3xl font-bold text-[#212529] flex items-center gap-3 md:justify-end">
-                      {isEven ? (
-                        <>
-                          <span>{chapter.title}</span>
-                          {chapter.emoji && <span className="text-3xl bg-zinc-100 p-2 rounded-xl">{chapter.emoji}</span>}
-                        </>
-                      ) : (
-                        <>
-                          {chapter.emoji && <span className="text-3xl bg-zinc-100 p-2 rounded-xl">{chapter.emoji}</span>}
-                          <span>{chapter.title}</span>
-                        </>
-                      )}
-                    </h2>
-                  </div>
+        <div className="max-w-5xl mx-auto px-4 md:px-8 py-24">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {allMedia.map(({ item, index }) => (
+              <div
+                key={item.id}
+                onClick={() => setGalleryActiveIndex(index)}
+                className="relative bg-white p-4 rounded-2xl shadow-sm border border-zinc-100 cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300"
+              >
+                <div className="relative aspect-video md:aspect-[4/3] rounded-xl overflow-hidden bg-zinc-50">
+                  {item.type === "VIDEO" ? (
+                    <LazyVideo src={item.url} className="w-full h-full object-cover" autoPlay muted loop playsInline />
+                  ) : (
+                    <Image src={item.url} alt="Media" fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover" />
+                  )}
                   
-                  {/* Chapter Media Timeline */}
-                  <div className={`ml-16 md:ml-0 space-y-12`}>
-                    {mediaItems.map(({ item, index }, mediaIdx) => {
-                      // Alternate individual items side to side if on desktop
-                      const isItemEven = (chapterIdx + mediaIdx) % 2 === 0;
-                      return (
-                        <div key={item.id} className={`md:w-1/2 relative ${isItemEven ? 'md:pr-12' : 'md:pl-12 md:ml-auto'}`}>
-                          {/* Mini dot for media item */}
-                          <div className={`hidden md:block absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-zinc-300 rounded-full z-10 
-                            ${isItemEven ? '-right-2' : '-left-2'}`} />
-                          
-                          {/* Connecting line */}
-                          <div className={`hidden md:block absolute top-1/2 -translate-y-1/2 h-0.5 bg-zinc-200 z-0
-                            ${isItemEven ? 'right-0 w-12' : 'left-0 w-12'}`} />
-
-                          <div
-                            onClick={() => setGalleryActiveIndex(index)}
-                            className="relative bg-white p-4 rounded-2xl shadow-sm border border-zinc-100 cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all duration-300 z-10"
-                          >
-                            <div className="relative aspect-video md:aspect-[4/3] rounded-xl overflow-hidden bg-zinc-50">
-                              {item.type === "VIDEO" ? (
-                                <LazyVideo src={item.url} className="w-full h-full object-cover" autoPlay muted loop playsInline />
-                              ) : (
-                                <Image src={item.url} alt="Media" fill sizes="(max-width: 768px) 100vw, 50vw" className="object-cover" />
-                              )}
-                              
-                              {item.type === "VIDEO" && (
-                                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md rounded-full p-2 shadow-sm">
-                                  <Play className="w-4 h-4 text-[#212529] fill-current" />
-                                </div>
-                              )}
-                            </div>
-                            
-                            {item.caption && (
-                              <p className="mt-4 text-[#6c757d] font-medium text-sm text-center">
-                                {item.caption}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
-
-            {unassignedMedia.length > 0 && (
-              <div className="relative pt-12">
-                {/* Timeline End Node */}
-                <div className="absolute left-6 md:left-1/2 top-12 w-6 h-6 bg-zinc-200 rounded-full -translate-x-[10px] md:-translate-x-1/2 z-10 border-4 border-white shadow-sm" />
-
-                <div className="ml-16 md:ml-0 text-center mb-12">
-                  <h2 className="text-2xl font-bold text-[#6c757d] inline-block bg-[#f8f9fa] px-4 relative z-20">
-                    Additional Memories
-                  </h2>
+                  {item.type === "VIDEO" && (
+                    <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md rounded-full p-2 shadow-sm">
+                      <Play className="w-4 h-4 text-[#212529] fill-current" />
+                    </div>
+                  )}
                 </div>
                 
-                <div className="ml-16 md:ml-0 grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {unassignedMedia.map(({ item, index }) => (
-                    <div
-                      key={item.id}
-                      onClick={() => setGalleryActiveIndex(index)}
-                      className="relative aspect-square bg-white rounded-xl overflow-hidden cursor-pointer shadow-sm border border-zinc-100 hover:shadow-md transition-shadow"
-                    >
-                      {item.type === "VIDEO" ? (
-                        <LazyVideo src={item.url} className="w-full h-full object-cover" autoPlay muted loop playsInline />
-                      ) : (
-                        <Image src={item.url} alt="Media" fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover" />
-                      )}
-                    </div>
-                  ))}
-                </div>
+                {item.caption && (
+                  <p className="mt-4 text-[#6c757d] font-medium text-sm text-center">
+                    {item.caption}
+                  </p>
+                )}
               </div>
-            )}
+            ))}
           </div>
         </div>
       ) : (
@@ -188,7 +107,6 @@ export default function TimelineTemplate({
       {isCinematicPlaying && story.media && (
         <CinematicPlayer
           media={story.media}
-          chapters={story.chapters}
           initialIndex={0}
           onClose={() => setIsCinematicPlaying(false)}
         />

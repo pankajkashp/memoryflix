@@ -1,37 +1,30 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import dynamic from "next/dynamic";
 import EmptyState from "@/components/preview/EmptyState";
+import { StoryWithFullPayload } from "../PreviewClientWrapper";
+import { Play, Share2 } from "lucide-react";
+import { getPresetConfig, getAccentConfig } from "@/lib/typography-presets";
+import { getFontClassName } from "@/lib/fonts";
+import { useStoryTemplateData } from "@/hooks/useStoryTemplateData";
+import Image from "next/image";
+import LazyVideo from "@/components/common/LazyVideo";
 
 const MediaViewer = dynamic(() => import("@/components/preview/MediaViewer"), { ssr: false });
 const CinematicPlayer = dynamic(() => import("@/components/preview/CinematicPlayer"), { ssr: false });
-import { StoryWithFullPayload } from "../PreviewClientWrapper";
-import ChapterLayoutRenderer from "./../ChapterLayoutRenderer";
-import ChapterPosterCard from "./netflix/ChapterPosterCard";
-import { Play, Share2, ArrowLeft, ArrowRight, ChevronLeft, MapPin, Calendar, Image as ImageIcon, ChevronRight } from "lucide-react";
-import { getPresetConfig, getAccentConfig } from "@/lib/typography-presets";
-import { getFontClassName } from "@/lib/fonts";
-import { motion } from "framer-motion";
-import { gsap, animateChapterReveal } from "@/lib/gsap-utils";
-import { useStoryTemplateData } from "@/hooks/useStoryTemplateData";
-import Image from "next/image";
 
 export default function NetflixTemplate({ 
   story, 
-  isEditable = false,
-  onChapterChange
+  isEditable: _isEditable = false,
 }: { 
   story: StoryWithFullPayload, 
   isEditable?: boolean,
-  onChapterChange?: (chapterId: string | null) => void 
 }) {
   const presetConfig = getPresetConfig(story.typographyPreset);
   const accentConfig = getAccentConfig(story.accentColor);
   const fontClassName = getFontClassName(presetConfig.fontId);
-  
-  const [selectedChapterId, setSelectedChapterId] = useState<string | null>(null);
-  const [showChapterIntro, setShowChapterIntro] = useState<boolean>(false);
+
   const {
     galleryActiveIndex,
     setGalleryActiveIndex,
@@ -39,299 +32,21 @@ export default function NetflixTemplate({
     setIsCinematicPlaying,
     hasMedia,
     coverImage,
-    allChapters,
-    chaptersWithMedia,
-    unassignedMedia
+    allMedia,
   } = useStoryTemplateData(story);
 
-  const currentChapterIndex = chaptersWithMedia.findIndex(c => c.chapter.id === selectedChapterId);
-  const currentChapterData = currentChapterIndex >= 0 ? chaptersWithMedia[currentChapterIndex] : null;
-  const nextChapterData = currentChapterIndex >= 0 && currentChapterIndex < chaptersWithMedia.length - 1 
-    ? chaptersWithMedia[currentChapterIndex + 1] : null;
-  const prevChapterData = currentChapterIndex > 0 
-    ? chaptersWithMedia[currentChapterIndex - 1] : null;
-
-  const openChapter = (chapterId: string) => {
-    setSelectedChapterId(chapterId);
-    setShowChapterIntro(true);
-    if (onChapterChange) onChapterChange(chapterId);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const goToChapter = (chapterId: string | null) => {
-    setSelectedChapterId(chapterId);
-    setShowChapterIntro(chapterId !== null);
-    if (onChapterChange) onChapterChange(chapterId);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const backToStory = () => {
-    setSelectedChapterId(null);
-    setShowChapterIntro(false);
-    if (onChapterChange) onChapterChange(null);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  const [showShareToast, setShowShareToast] = useState(false);
 
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({ title: story.title, url: window.location.href });
     } else {
       navigator.clipboard.writeText(window.location.href);
+      setShowShareToast(true);
+      setTimeout(() => setShowShareToast(false), 2500);
     }
   };
 
-  // ─── Chapter grid scroll animation ──────────────────────────────────────────
-  useEffect(() => {
-    if (selectedChapterId || showChapterIntro) return;
-    const grid = document.querySelector<HTMLElement>("[data-chapter-grid]");
-    if (!grid) return;
-    const ctx = gsap.context(() => {
-      animateChapterReveal(grid);
-    }, grid);
-    return () => ctx.revert();
-  }, [selectedChapterId, showChapterIntro]);
-
-  // ─── CHAPTER INTRO SCREEN ───────────────────────────────────────────────────
-  if (showChapterIntro && currentChapterData) {
-    const { chapter, mediaItems } = currentChapterData;
-    const chapterCover = chapter.coverMediaId 
-      ? mediaItems.find(m => m.item.id === chapter.coverMediaId)?.item || mediaItems[0]?.item
-      : mediaItems[0]?.item;
-    const chapterNum = currentChapterIndex + 1;
-    const totalChapters = chaptersWithMedia.length;
-
-    return (
-      <div className={`${fontClassName} bg-black min-h-screen text-white flex flex-col items-center justify-center relative overflow-hidden`}>
-        {/* Cinematic full-screen background */}
-        {chapterCover && (
-          <div className="absolute inset-0 z-0 overflow-hidden bg-black">
-            {chapterCover.type === "IMAGE" ? (
-              <motion.div
-                initial={{ scale: 1 }}
-                animate={{ scale: 1.1 }}
-                transition={{ duration: 20, ease: "linear" }}
-                className="w-full h-full relative"
-              >
-                <Image
-                  src={chapterCover.url}
-                  alt=""
-                  fill
-                  sizes="100vw"
-                  className="object-cover opacity-80"
-                  priority
-                />
-              </motion.div>
-            ) : (
-              <video
-                src={chapterCover.url}
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="w-full h-full object-cover opacity-80"
-              />
-            )}
-            <div className="absolute inset-0 bg-black/40 bg-gradient-to-t from-black via-black/30 to-black/70" />
-          </div>
-        )}
-
-        {/* Back to story */}
-        <button
-          onClick={backToStory}
-          className="absolute top-6 left-6 z-20 flex items-center gap-2 text-zinc-400 hover:text-white bg-white/10 hover:bg-white/20 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 transition-all"
-        >
-          <ChevronLeft className="w-5 h-5" /> All Chapters
-        </button>
-
-        {/* Chapter progress */}
-        <div className="absolute top-6 right-6 z-20 text-zinc-500 text-sm font-medium bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/10">
-          Chapter {chapterNum} of {totalChapters}
-        </div>
-
-        {/* Cinematic Intro Content */}
-        <div className="relative z-10 text-center max-w-3xl mx-auto px-6 animate-in fade-in slide-in-from-bottom-8 duration-700">
-          <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-rose-500/60 to-transparent mx-auto mb-12" />
-          
-          <p className={`${accentConfig.text} font-bold tracking-[0.4em] uppercase text-sm mb-6`}>
-            Chapter {chapterNum} • {chaptersWithMedia.length} Episodes
-          </p>
-
-          {chapter.emoji && (
-            <div className="text-7xl md:text-9xl mb-8 drop-shadow-2xl animate-in zoom-in duration-500 delay-200">
-              {chapter.emoji}
-            </div>
-          )}
-
-          <h1 className={`${presetConfig.heroStyle} ${accentConfig.text} mb-4`}>
-            {chapter.title}
-          </h1>
-
-          {chapter.subtitle && (
-            <p className="text-xl md:text-2xl text-zinc-300 italic mb-8 font-medium">
-              &quot;{chapter.subtitle}&quot;
-            </p>
-          )}
-
-          <div className="flex items-center justify-center gap-6 text-zinc-400 font-medium mb-12 flex-wrap">
-            {chapter.date && (
-              <span className="flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-rose-500" />
-                {new Date(chapter.date).toLocaleDateString("en-US", { month: "long", year: "numeric" })}
-              </span>
-            )}
-            {chapter.location && (
-              <span className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-rose-500" /> {chapter.location}
-              </span>
-            )}
-            <span className="flex items-center gap-2">
-              <ImageIcon className="w-4 h-4 text-rose-500" /> {mediaItems.length} Memories
-            </span>
-          </div>
-
-          <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-rose-500/60 to-transparent mx-auto mb-12" />
-
-          <button
-            onClick={() => setShowChapterIntro(false)}
-            className="inline-flex items-center gap-3 bg-white text-black px-10 py-4 rounded-full font-black text-lg hover:bg-rose-50 transition-all hover:scale-105 active:scale-95 shadow-2xl"
-          >
-            <Play className="w-5 h-5 fill-current" />
-            Begin Chapter
-          </button>
-
-          {/* Prev / Next */}
-          <div className="flex items-center justify-center gap-4 mt-8">
-            {prevChapterData && (
-              <button
-                onClick={() => goToChapter(prevChapterData.chapter.id)}
-                className="flex items-center gap-2 text-zinc-500 hover:text-white transition-colors text-sm"
-              >
-                <ArrowLeft className="w-4 h-4" /> {prevChapterData.chapter.emoji} {prevChapterData.chapter.title}
-              </button>
-            )}
-            {nextChapterData && (
-              <button
-                onClick={() => goToChapter(nextChapterData.chapter.id)}
-                className="flex items-center gap-2 text-zinc-500 hover:text-white transition-colors text-sm ml-auto"
-              >
-                {nextChapterData.chapter.emoji} {nextChapterData.chapter.title} <ArrowRight className="w-4 h-4" />
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // ─── CHAPTER MEMORY EXPERIENCE ──────────────────────────────────────────────
-  if (selectedChapterId && currentChapterData) {
-    const { chapter, mediaItems } = currentChapterData;
-    const chapterNum = currentChapterIndex + 1;
-    const totalChapters = chaptersWithMedia.length;
-    const videoCount = mediaItems.filter(m => m.item.type === "VIDEO").length;
-
-    return (
-      <div className={`${fontClassName} bg-[#0f0f0f] min-h-screen text-white font-sans selection:bg-rose-500/30`}>
-        {/* ── Chapter Navigation Bar ── */}
-        <div className="sticky top-0 z-40 bg-[#0f0f0f]/95 backdrop-blur-xl border-b border-white/10">
-          <div className="px-6 md:px-12 flex items-center gap-4 py-4">
-            <button
-              onClick={backToStory}
-              className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors shrink-0"
-            >
-              <ChevronLeft className="w-5 h-5" />
-              <span className="hidden sm:inline text-sm font-medium">All Chapters</span>
-            </button>
-
-            <div className="flex-1 flex items-center justify-center gap-3 overflow-x-auto hide-scrollbar">
-              {chaptersWithMedia.map(({ chapter: ch }, i) => (
-                <button
-                  key={ch.id}
-                  onClick={() => openChapter(ch.id)}
-                  className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
-                    ch.id === selectedChapterId
-                      ? "bg-rose-500 text-white shadow-lg shadow-rose-500/30"
-                      : "text-zinc-500 hover:text-white hover:bg-white/10"
-                  }`}
-                >
-                  {ch.emoji && <span>{ch.emoji}</span>}
-                  <span className="hidden sm:inline">{ch.title}</span>
-                  <span className="sm:hidden">{i + 1}</span>
-                </button>
-              ))}
-            </div>
-
-            <div className="shrink-0 flex items-center gap-2">
-              {prevChapterData && (
-                <button
-                  onClick={() => goToChapter(prevChapterData.chapter.id)}
-                  title={prevChapterData.chapter.title}
-                  className="p-2 rounded-full text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                </button>
-              )}
-              <span className="text-xs font-medium text-zinc-600 hidden sm:inline">{chapterNum}/{totalChapters}</span>
-              {nextChapterData && (
-                <button
-                  onClick={() => goToChapter(nextChapterData.chapter.id)}
-                  title={nextChapterData.chapter.title}
-                  className="p-2 rounded-full text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
-                >
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* ── Chapter Title Header ── */}
-        <div className="px-6 md:px-16 pt-12 pb-8">
-          <div className={`flex items-center gap-3 ${accentConfig.text} font-bold tracking-[0.3em] uppercase text-xs mb-4 opacity-80`}>
-            <span>Chapter {chapterNum} of {totalChapters}</span>
-            {chapter.date && <><span>•</span><span>{new Date(chapter.date).toLocaleDateString("en-US", { month: "long", year: "numeric" })}</span></>}
-            {chapter.location && <><span>•</span><span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{chapter.location}</span></>}
-          </div>
-          <h2 className={`${presetConfig.chapterStyle} ${accentConfig.text} mb-3 flex items-center gap-4`}>
-            {chapter.emoji && <span className="text-5xl md:text-7xl">{chapter.emoji}</span>}
-            {chapter.title}
-          </h2>
-          {chapter.subtitle && (
-            <p className="text-xl text-zinc-400 italic">&quot;{chapter.subtitle}&quot;</p>
-          )}
-        </div>
-
-        {/* ── Media Layout ── */}
-        <div className="px-4 md:px-16 pb-8 group/chapter">
-          <ChapterLayoutRenderer
-            chapter={chapter}
-            mediaItems={mediaItems}
-            storyId={story.id}
-            chapters={story.chapters ?? []}
-            coverMediaId={story.coverMediaId}
-            isEditable={isEditable}
-            onMediaSelect={(index) => setGalleryActiveIndex(index)}
-            nextChapter={nextChapterData?.chapter ?? null}
-            onNextChapter={nextChapterData ? () => goToChapter(nextChapterData.chapter.id) : undefined}
-            chapterIndex={currentChapterIndex}
-            totalChapters={chaptersWithMedia.length}
-            videoCount={videoCount}
-          />
-        </div>
-
-        {/* ── Lightbox ── */}
-        {galleryActiveIndex !== null && story.media && (
-          <MediaViewer
-            media={story.media}
-            initialIndex={galleryActiveIndex}
-            onClose={() => setGalleryActiveIndex(null)}
-          />
-        )}
-      </div>
-    );
-  }
-
-  // ─── HOMEPAGE (Story Overview) ──────────────────────────────────────────────
   return (
     <div className={`${fontClassName} bg-[#0f0f0f] min-h-screen text-white font-sans selection:bg-rose-500/30`}>
       {/* 1. Cover Hero */}
@@ -339,7 +54,7 @@ export default function NetflixTemplate({
         {coverImage && (
           <div className="absolute inset-0 z-0">
             {coverImage.type === "VIDEO" ? (
-              <video src={coverImage.url} className="w-full h-full object-cover opacity-80 sm:opacity-60 scale-105" autoPlay muted loop playsInline />
+              <LazyVideo src={coverImage.url} className="w-full h-full object-cover opacity-80 sm:opacity-60 scale-105" autoPlay muted loop playsInline />
             ) : (
               <Image src={coverImage.url} alt="Cover" fill sizes="100vw" className="object-cover opacity-80 sm:opacity-60 scale-105" priority />
             )}
@@ -357,9 +72,7 @@ export default function NetflixTemplate({
           <h1 className={`${presetConfig.heroStyle} ${accentConfig.text} mb-3 sm:mb-6 leading-tight break-words max-w-full !text-4xl sm:!text-6xl md:!text-7xl`}>{story.title}</h1>
           <div className="flex items-center flex-wrap gap-2 sm:gap-4 text-zinc-300 font-medium mb-5 sm:mb-8 text-xs sm:text-lg drop-shadow-md">
             {story.eventDate && <span>{new Date(story.eventDate).getFullYear()}</span>}
-            {story.eventDate && chaptersWithMedia.length > 0 && <span>•</span>}
-            {chaptersWithMedia.length > 0 && <span>{chaptersWithMedia.length} Chapters</span>}
-            {chaptersWithMedia.length > 0 && <span>•</span>}
+            {story.eventDate && story.media.length > 0 && <span>•</span>}
             <span>{story.media.length} Memories</span>
           </div>
 
@@ -370,14 +83,6 @@ export default function NetflixTemplate({
                 className="flex-1 min-w-[120px] flex items-center justify-center gap-1.5 sm:gap-2 bg-white text-black px-3 sm:px-8 py-2.5 sm:py-3.5 rounded-md font-bold text-sm sm:text-lg hover:bg-zinc-200 transition-colors whitespace-nowrap"
               >
                 <Play className="w-4 h-4 sm:w-6 sm:h-6 fill-current shrink-0" /> Play Story
-              </button>
-            )}
-            {chaptersWithMedia.length > 0 && (
-              <button
-                onClick={() => openChapter(chaptersWithMedia[0].chapter.id)}
-                className="flex-1 min-w-[120px] flex items-center justify-center gap-1.5 sm:gap-2 bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 px-3 sm:px-8 py-2.5 sm:py-3.5 rounded-md font-bold text-sm sm:text-lg backdrop-blur-md transition-colors border border-rose-500/30 whitespace-nowrap"
-              >
-                Start Chapter 1 <ChevronRight className="w-4 h-4 sm:w-6 sm:h-6 shrink-0" />
               </button>
             )}
             <button
@@ -395,70 +100,56 @@ export default function NetflixTemplate({
         </div>
       </div>
 
-      {/* 2. Memory Chapters — show ALL chapters, even empty ones */}
-      {allChapters.length > 0 ? (
-        <div className="px-6 md:px-16 py-16">
+      {/* 2. Memories Gallery */}
+      {hasMedia ? (
+        <div className="px-4 md:px-16 py-12">
           <div className="flex items-center gap-4 mb-10">
             <span className={`w-1.5 h-10 ${accentConfig.color} rounded-full`} />
             <div>
-              <h2 className="text-3xl font-black text-white">Memory Chapters</h2>
-              <p className="text-zinc-500 text-sm mt-1">{allChapters.length} episodes • {story.media.length} memories</p>
+              <h2 className="text-3xl font-black text-white">Memories</h2>
+              <p className="text-zinc-500 text-sm mt-1">{story.media.length} moments captured</p>
             </div>
           </div>
 
-          <div
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-            data-chapter-grid
-          >
-            {allChapters.map(({ chapter, mediaItems }, idx) => {
-              const coverMedia = chapter.coverMediaId 
-                ? mediaItems.find(m => m.item.id === chapter.coverMediaId)?.item || mediaItems[0]?.item
-                : mediaItems[0]?.item;
-              const hasChapterMedia = mediaItems.length > 0;
-              return (
-                <div key={chapter.id} data-chapter-card style={{ willChange: "transform, opacity" }}>
-                  <ChapterPosterCard
-                    chapter={chapter}
-                    mediaItems={mediaItems}
-                    coverMedia={coverMedia}
-                    chapterIndex={idx}
-                    accentColor={accentConfig.color}
-                    onClick={hasChapterMedia ? () => openChapter(chapter.id) : undefined}
-                  />
-                </div>
-              );
-            })}
-          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+            {allMedia.map(({ item, index }) => (
+              <div
+                key={item.id}
+                onClick={() => setGalleryActiveIndex(index)}
+                className="relative aspect-[4/3] rounded-xl overflow-hidden cursor-pointer group bg-zinc-900"
+              >
+                {item.type === "VIDEO" ? (
+                  <LazyVideo src={item.url} className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105" autoPlay muted loop playsInline />
+                ) : (
+                  <Image src={item.url} alt={item.caption || "Memory"} fill sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw" className="object-cover opacity-90 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105" />
+                )}
 
-          {/* Unassigned media at bottom, minimal */}
-          {unassignedMedia.length > 0 && (
-            <div className="mt-20 pt-12 border-t border-white/5">
-              <h3 className="text-lg font-bold text-zinc-500 mb-6">More From This Story</h3>
-              <ChapterLayoutRenderer
-                mediaItems={unassignedMedia}
-                storyId={story.id}
-                chapters={story.chapters ?? []}
-                coverMediaId={story.coverMediaId}
-                isEditable={isEditable}
-                onMediaSelect={(index) => setGalleryActiveIndex(index)}
-              />
-            </div>
-          )}
-        </div>
-      ) : hasMedia ? (
-        // No chapters — fall back to full gallery
-        <div className="px-4 md:px-16 py-12">
-          <ChapterLayoutRenderer
-            mediaItems={unassignedMedia}
-            storyId={story.id}
-            chapters={[]}
-            coverMediaId={story.coverMediaId}
-            isEditable={isEditable}
-            onMediaSelect={(index) => setGalleryActiveIndex(index)}
-          />
+                {/* Video badge */}
+                {item.type === "VIDEO" && (
+                  <div className="absolute top-3 right-3 bg-black/50 backdrop-blur-sm rounded-full p-1.5">
+                    <Play className="w-3 h-3 text-white fill-current" />
+                  </div>
+                )}
+
+                {/* Caption overlay */}
+                {item.caption && (
+                  <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/70 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                    <p className="text-white text-xs font-medium truncate">{item.caption}</p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       ) : (
         <EmptyState />
+      )}
+
+      {/* Share toast */}
+      {showShareToast && (
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[200] bg-white text-black px-6 py-3 rounded-full font-semibold text-sm shadow-2xl animate-in fade-in slide-in-from-bottom-4">
+          Link copied! ✓
+        </div>
       )}
 
       {galleryActiveIndex !== null && story.media && (
@@ -472,7 +163,6 @@ export default function NetflixTemplate({
       {isCinematicPlaying && story.media && (
         <CinematicPlayer
           media={story.media}
-          chapters={story.chapters}
           initialIndex={0}
           onClose={() => setIsCinematicPlaying(false)}
         />

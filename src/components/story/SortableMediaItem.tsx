@@ -4,7 +4,7 @@ import React, { useState, useTransition, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { MediaAsset, Chapter } from "@prisma/client";
+import { MediaAsset } from "@prisma/client";
 import { GripVertical, MoreVertical, Trash2, MapPin, Image as ImageIcon, Type } from "lucide-react";
 import { deleteMedia, setCoverMedia } from "@/app/actions/media";
 import MediaDetailsDrawer from "./MediaDetailsDrawer";
@@ -14,7 +14,6 @@ interface SortableMediaItemProps {
   asset: MediaAsset;
   storyId?: string;
   coverMediaId?: string | null;
-  chapters?: Chapter[];
   /** 1-based position label shown on the card */
   position?: number;
   /** True when this item is the active drag source (overlay is floating above it) */
@@ -29,7 +28,6 @@ export default function SortableMediaItem({
   asset,
   storyId,
   coverMediaId,
-  chapters,
   position: _position,
   isBeingDragged = false,
   isSelected = false,
@@ -82,7 +80,7 @@ export default function SortableMediaItem({
     willChange: "transform",
   };
 
-  const currentChapter = chapters?.find(c => c.id === asset.chapterId);
+
 
   const handleDelete = () => {
     setShowDeleteModal(true);
@@ -226,12 +224,7 @@ export default function SortableMediaItem({
             </div>
           )}
           
-          {currentChapter && (
-            <div className="rounded-full bg-black/60 backdrop-blur-md px-2 py-1 text-[8px] sm:text-[10px] font-bold text-white/90 border border-white/10 flex items-center gap-1 shadow-lg max-w-full min-w-0">
-              <MapPin className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-rose-400 shrink-0" />
-              <span className="truncate min-w-0">{currentChapter.title}</span>
-            </div>
-          )}
+
         </div>
 
         {/* ── Video badge ─────────────────────────────────────────────────── */}

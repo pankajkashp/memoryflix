@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState, useTransition, useRef, useEffect, memo } from "react";
 import { Story, StoryTemplate, MediaAsset } from "@prisma/client";
 import { deleteStory } from "@/app/actions/story";
-import { Play, Edit2, Share2, Trash2, BookOpen, Image as ImageIcon, Clock, ExternalLink } from "lucide-react";
+import { Play, Edit2, Share2, Trash2, Image as ImageIcon, Clock, ExternalLink } from "lucide-react";
 
 import toast from "react-hot-toast";
 import { ConfirmModal } from "../ui/ConfirmModal";
@@ -15,7 +15,6 @@ type StoryWithRelations = Story & {
   coverMedia: MediaAsset | null;
   _count?: {
     media: number;
-    chapters: number;
   };
 };
 
@@ -37,7 +36,7 @@ function timeAgo(date: Date) {
 export default memo(function StoryCard({ story }: { story: StoryWithRelations }) {
   const isPublished = story.status === "PUBLISHED";
   const mediaCount = story._count?.media || 0;
-  const chapterCount = story._count?.chapters || 0;
+
   const lastEdited = timeAgo(new Date(story.updatedAt));
   const [isPending, startTransition] = useTransition();
   const [isHovered, setIsHovered] = useState(false);
@@ -173,10 +172,6 @@ export default memo(function StoryCard({ story }: { story: StoryWithRelations })
             <ImageIcon className="w-3.5 h-3.5" /> {mediaCount}
           </span>
           <span className="w-1 h-1 bg-zinc-600 rounded-full" />
-          <span className="flex items-center gap-1">
-            <BookOpen className="w-3.5 h-3.5" /> {chapterCount} ch
-          </span>
-          <span className="w-1 h-1 bg-zinc-600 rounded-full" />
           <span className="flex items-center gap-1 text-rose-400/70">
             <Clock className="w-3.5 h-3.5" /> {lastEdited}
           </span>
@@ -242,7 +237,7 @@ export default memo(function StoryCard({ story }: { story: StoryWithRelations })
       <ConfirmModal
         isOpen={showDeleteModal}
         title="Delete Story?"
-        description="This action cannot be undone. All media and chapters will be permanently deleted."
+        description="This action cannot be undone. All media will be permanently deleted."
         confirmText="Delete Story"
         onConfirm={confirmDelete}
         onCancel={() => setShowDeleteModal(false)}

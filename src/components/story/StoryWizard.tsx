@@ -1,12 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Story, StoryTemplate, MediaAsset, Chapter } from "@prisma/client";
+import { Story, StoryTemplate, MediaAsset } from "@prisma/client";
 import EditStoryForm from "./EditStoryForm";
 import MediaUploader from "./MediaUploader";
 import MediaList from "./MediaList";
 import PublishButton from "./PublishButton";
-import ChapterEditor from "./ChapterEditor";
 import TemplateSelector from "./TemplateSelector";
 import Link from "next/link";
 import TypographySelector from "./TypographySelector";
@@ -16,7 +15,6 @@ import WizardTimeline, { STEPS } from "./WizardTimeline";
 type StoryWithRelations = Story & {
   template: StoryTemplate;
   media: MediaAsset[];
-  chapters: Chapter[];
 };
 
 
@@ -28,15 +26,9 @@ export default function StoryWizard({
   templates?: StoryTemplate[];
 }) {
   const [currentStep, setCurrentStep] = useState(1);
-  
-  // Chapter live preview state
-  const [activeChapterId, setActiveChapterId] = useState<string | null>(null);
 
   const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, STEPS.length));
   const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
-
-  // Determine if we can proceed
-  // e.g. Step 3 requires media to proceed to Step 4? Not strictly enforcing to keep it flexible, but we could.
 
   return (
     <div className="mx-auto pt-4 pb-24 transition-all duration-500 px-3 sm:px-4 max-w-4xl">
@@ -112,57 +104,38 @@ export default function StoryWizard({
                 </div>
               )}
 
-              {/* STEP 3: CHAPTERS */}
+              {/* STEP 3: MEDIA */}
               {currentStep === 3 && (
-                <div>
-                  <h2 className="text-3xl font-black tracking-tight text-white mb-2">Memory Chapters</h2>
-                  <p className="text-zinc-400 mb-8 max-w-xl text-lg">
-                    Organize your story into chapters. You'll assign media to these chapters in the next step.
-                  </p>
-                  
-                  <ChapterEditor 
-                    storyId={story.id} 
-                    chapters={story.chapters} 
-                    media={story.media} 
-                    activeChapterId={activeChapterId}
-                    setActiveChapterId={setActiveChapterId}
-                    onDraftChange={() => {}}
-                  />
-                </div>
-              )}
-
-              {/* STEP 4: MEDIA */}
-              {currentStep === 4 && (
                 <div>
                   <h2 className="text-3xl font-black tracking-tight text-white mb-2">Upload Memories</h2>
                   <p className="text-zinc-400 mb-8 max-w-xl text-lg">
-                    Add photos and videos to your story. Assign them to chapters using the dropdown menu on each media card.
+                    Add photos and videos to your story.
                   </p>
                   
                   <MediaUploader storyId={story.id} onUploadComplete={() => nextStep()} />
                   
                   <div className="mt-8 border-t border-white/10 pt-8">
-                    <MediaList media={story.media} storyId={story.id} coverMediaId={story.coverMediaId} chapters={story.chapters} />
+                    <MediaList media={story.media} storyId={story.id} coverMediaId={story.coverMediaId} />
                   </div>
                 </div>
               )}
 
-              {/* STEP 5: COVER IMAGE */}
-              {currentStep === 5 && (
+              {/* STEP 4: COVER IMAGE */}
+              {currentStep === 4 && (
                 <div>
                   <h2 className="text-3xl font-black tracking-tight text-white mb-2">The Poster</h2>
                   <p className="text-zinc-400 mb-8 max-w-xl text-lg">
-                    Hover over an image below and click "Set Cover" to use it as the cinematic poster for your story.
+                    Hover over an image below and click &quot;Set Cover&quot; to use it as the cinematic poster for your story.
                   </p>
                   
                   <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-                    <MediaList media={story.media} storyId={story.id} coverMediaId={story.coverMediaId} chapters={story.chapters} />
+                    <MediaList media={story.media} storyId={story.id} coverMediaId={story.coverMediaId} />
                   </div>
                 </div>
               )}
 
-              {/* STEP 6: TYPOGRAPHY */}
-              {currentStep === 6 && (
+              {/* STEP 5: TYPOGRAPHY */}
+              {currentStep === 5 && (
                 <div>
                   <h2 className="text-3xl font-black tracking-tight text-white mb-2">Typography & Mood</h2>
                   <p className="text-zinc-400 mb-8 max-w-xl text-lg">
@@ -177,13 +150,12 @@ export default function StoryWizard({
                 </div>
               )}
 
-              {/* STEP 7: PREVIEW */}
-              {currentStep === 7 && (() => {
+              {/* STEP 6: PREVIEW */}
+              {currentStep === 6 && (() => {
                 const hasTitle = story.title && story.title !== "Untitled Story";
                 const hasCover = !!story.coverMediaId;
-                const hasChapter = story.chapters.length > 0;
                 const hasMinMedia = story.media.length >= 4;
-                const isReadyForPreview = hasTitle && hasCover && hasChapter && hasMinMedia;
+                const isReadyForPreview = hasTitle && hasCover && hasMinMedia;
 
                 return (
                   <div className="h-full flex flex-col items-center justify-center text-center py-12">
@@ -203,12 +175,6 @@ export default function StoryWizard({
                               {hasCover && <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
                             </div>
                             <span className={hasCover ? 'text-zinc-300 font-medium' : 'text-zinc-500'}>Choose Cover Image</span>
-                          </li>
-                          <li className="flex items-center gap-3">
-                            <div className={`w-6 h-6 rounded-full flex items-center justify-center ${hasChapter ? 'bg-green-500' : 'border border-zinc-500'}`}>
-                              {hasChapter && <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
-                            </div>
-                            <span className={hasChapter ? 'text-zinc-300 font-medium' : 'text-zinc-500'}>Create at least 1 Chapter</span>
                           </li>
                           <li className="flex items-center gap-3">
                             <div className={`w-6 h-6 rounded-full flex items-center justify-center ${hasMinMedia ? 'bg-green-500' : 'border border-zinc-500'}`}>
@@ -247,15 +213,14 @@ export default function StoryWizard({
                 );
               })()}
 
-              {/* STEP 8: PUBLISH */}
-              {currentStep === 8 && (() => {
+              {/* STEP 7: PUBLISH */}
+              {currentStep === 7 && (() => {
                 const hasTitle = story.title && story.title !== "Untitled Story";
                 const hasCover = !!story.coverMediaId;
-                const hasChapter = story.chapters.length > 0;
                 const hasMinMedia = story.media.length >= 6;
                 const hasDescription = story.description && story.description.trim().length > 0;
                 
-                const isReadyForPublish = hasTitle && hasCover && hasChapter && hasMinMedia && hasDescription;
+                const isReadyForPublish = hasTitle && hasCover && hasMinMedia && hasDescription;
 
                 return (
                   <div className="h-full flex flex-col items-center justify-center text-center py-12">
@@ -305,12 +270,6 @@ export default function StoryWizard({
                                 {hasDescription && <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
                               </div>
                               <span className={hasDescription ? 'text-zinc-300 font-medium' : 'text-zinc-500'}>Add Description (Step 2)</span>
-                            </li>
-                            <li className="flex items-center gap-3">
-                              <div className={`w-6 h-6 rounded-full flex items-center justify-center ${hasChapter ? 'bg-green-500' : 'border border-zinc-500'}`}>
-                                {hasChapter && <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
-                              </div>
-                              <span className={hasChapter ? 'text-zinc-300 font-medium' : 'text-zinc-500'}>Create at least 1 Chapter</span>
                             </li>
                             <li className="flex items-center gap-3">
                               <div className={`w-6 h-6 rounded-full flex items-center justify-center ${hasMinMedia ? 'bg-green-500' : 'border border-zinc-500'}`}>

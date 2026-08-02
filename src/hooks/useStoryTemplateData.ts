@@ -9,18 +9,7 @@ export function useStoryTemplateData(story: StoryWithFullPayload) {
   const firstImage = story.media?.find((m) => m.type === "IMAGE");
   const coverImage = story.media?.find((m) => m.id === story.coverMediaId) || firstImage;
 
-  const allChapters = (story.chapters || []).map((chapter) => ({
-    chapter,
-    mediaItems: (story.media || [])
-      .map((item, index) => ({ item, index }))
-      .filter((m) => m.item.chapterId === chapter.id),
-  }));
-
-  const chaptersWithMedia = allChapters.filter((c) => c.mediaItems.length > 0);
-
-  const unassignedMedia = (story.media || [])
-    .map((item, index) => ({ item, index }))
-    .filter((m) => !m.item.chapterId);
+  const allMedia = (story.media || []).map((item, index) => ({ item, index }));
 
   return {
     galleryActiveIndex,
@@ -30,8 +19,6 @@ export function useStoryTemplateData(story: StoryWithFullPayload) {
     hasMedia,
     firstImage,
     coverImage,
-    allChapters,
-    chaptersWithMedia,
-    unassignedMedia
+    allMedia,
   };
 }

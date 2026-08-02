@@ -20,7 +20,6 @@ export default async function PreviewPage({ params }: PageProps) {
     where: { id, userId: session.user.id },
     include: { 
       media: { orderBy: { position: "asc" } },
-      chapters: { orderBy: { position: "asc" } },
       template: true,
     },
   });

@@ -13,7 +13,6 @@ const MediaAssetSchema = z.object({
   type: z.enum(["IMAGE", "VIDEO"]),
   bytes: z.number().positive().optional(),
   duration: z.number().nonnegative().optional(),
-  chapterId: z.string().optional(),
 });
 
 cloudinary.config({
@@ -43,7 +42,6 @@ export async function saveMediaAsset(data: {
   type: "IMAGE" | "VIDEO";
   bytes?: number;
   duration?: number;
-  chapterId?: string;
 }) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) throw new Error("Unauthorized");
@@ -58,7 +56,7 @@ export async function saveMediaAsset(data: {
   if (!story) throw new Error("Story not found or unauthorized");
 
   const position = await prisma.mediaAsset.count({
-    where: { storyId: data.storyId, chapterId: data.chapterId || null },
+    where: { storyId: data.storyId },
   });
 
   const asset = await prisma.mediaAsset.create({
@@ -71,7 +69,6 @@ export async function saveMediaAsset(data: {
       position,
       sizeBytes: parsed.bytes,
       durationSeconds: parsed.duration ? Math.round(parsed.duration) : null,
-      chapterId: parsed.chapterId || null,
     },
   });
 
@@ -191,79 +188,6 @@ export async function updateMediaDetails(
   }
 
   return { success: true, asset: updated };
-}
-
-// ── assignMediaToChapter ────────────────────────────────────────────────────────
-
-export async function assignMediaToChapter(
-  storyId: string,
-  mediaId: string,
-  chapterId: string | null
-) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) throw new Error("Unauthorized");
-
-  const story = await prisma.story.findFirst({
-    where: { id: storyId, userId: session.user.id },
-  });
-  if (!story) throw new Error("Story not found or unauthorized");
-
-  if (chapterId) {
-    const chapter = await prisma.chapter.findFirst({
-      where: { id: chapterId, storyId },
-    });
-    if (!chapter) throw new Error("Chapter not found in this story");
-  }
-
-  const updated = await prisma.mediaAsset.updateMany({
-    where: { id: mediaId, storyId },
-    data: { chapterId },
-  });
-
-  revalidatePath(`/stories/${storyId}`);
-  revalidatePath(`/stories/${storyId}/preview`);
-  if (story.slug) {
-    revalidatePath(`/s/${story.slug}`);
-  }
-
-  return { success: true, asset: updated };
-}
-
-export async function assignMultipleMediaToChapter(
-  storyId: string,
-  mediaIds: string[],
-  chapterId: string | null
-) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) throw new Error("Unauthorized");
-
-  const story = await prisma.story.findFirst({
-    where: { id: storyId, userId: session.user.id },
-  });
-  if (!story) throw new Error("Story not found or unauthorized");
-
-  if (chapterId) {
-    const chapter = await prisma.chapter.findFirst({
-      where: { id: chapterId, storyId },
-    });
-    if (!chapter) throw new Error("Chapter not found in this story");
-  }
-
-  const updated = await prisma.mediaAsset.updateMany({
-    where: { 
-      id: { in: mediaIds }, 
-      storyId 
-    },
-    data: { chapterId },
-  });
-
-  revalidatePath(`/stories/${storyId}`);
-  revalidatePath(`/stories/${storyId}/preview`);
-  if (story.slug) {
-    revalidatePath(`/s/${story.slug}`);
-  }
-
-  return { success: true, count: updated.count };
 }
 
 // ── deleteMedia ─────────────────────────────────────────────────────────────

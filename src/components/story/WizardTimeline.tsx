@@ -3,12 +3,11 @@ import { motion } from "framer-motion";
 export const STEPS = [
   { id: 1, name: "Template" },
   { id: 2, name: "Details" },
-  { id: 3, name: "Chapters" },
-  { id: 4, name: "Media" },
-  { id: 5, name: "Cover" },
-  { id: 6, name: "Typography" },
-  { id: 7, name: "Preview" },
-  { id: 8, name: "Publish" },
+  { id: 3, name: "Media" },
+  { id: 4, name: "Cover" },
+  { id: 5, name: "Typography" },
+  { id: 6, name: "Preview" },
+  { id: 7, name: "Publish" },
 ];
 
 export default function WizardTimeline({ currentStep, setCurrentStep }: { currentStep: number; setCurrentStep: (step: number) => void }) {

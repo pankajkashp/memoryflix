@@ -1,24 +1,22 @@
 "use client";
 
-
 import dynamic from "next/dynamic";
 import EmptyState from "@/components/preview/EmptyState";
-
-const MediaViewer = dynamic(() => import("@/components/preview/MediaViewer"), { ssr: false });
-const CinematicPlayer = dynamic(() => import("@/components/preview/CinematicPlayer"), { ssr: false });
 import { useStoryTemplateData } from "@/hooks/useStoryTemplateData";
 import { StoryWithFullPayload } from "../PreviewClientWrapper";
 import { Play } from "lucide-react";
 import Image from "next/image";
+import LazyVideo from "@/components/common/LazyVideo";
+
+const MediaViewer = dynamic(() => import("@/components/preview/MediaViewer"), { ssr: false });
+const CinematicPlayer = dynamic(() => import("@/components/preview/CinematicPlayer"), { ssr: false });
 
 export default function WeddingTemplate({ 
   story, 
   isEditable: _isEditable = false,
-  onChapterChange: _onChapterChange
 }: { 
   story: StoryWithFullPayload, 
   isEditable?: boolean,
-  onChapterChange?: (chapterId: string | null) => void
 }) {
   const {
     galleryActiveIndex,
@@ -27,11 +25,8 @@ export default function WeddingTemplate({
     setIsCinematicPlaying,
     hasMedia,
     coverImage,
-    chaptersWithMedia,
-    unassignedMedia
+    allMedia,
   } = useStoryTemplateData(story);
-
-
 
   return (
     <div className="bg-[#0f0f0f] min-h-screen text-[#FDFBF7] font-serif selection:bg-[#D4AF37]/30">
@@ -40,7 +35,7 @@ export default function WeddingTemplate({
         {coverImage && (
           <div className="absolute inset-0 z-0 opacity-40">
             {coverImage.type === "VIDEO" ? (
-              <video src={coverImage.url} className="w-full h-full object-cover scale-105" autoPlay muted loop playsInline />
+              <LazyVideo src={coverImage.url} className="w-full h-full object-cover scale-105" autoPlay muted loop playsInline />
             ) : (
               <Image src={coverImage.url} alt="Cover" fill sizes="100vw" className="object-cover scale-105" priority />
             )}
@@ -78,76 +73,44 @@ export default function WeddingTemplate({
         </div>
       </div>
 
-      {/* Gallery Section */}
+      {/* Masonry Gallery */}
       {hasMedia ? (
-        <div className="max-w-6xl mx-auto px-4 md:px-8 py-24 space-y-32">
-          {chaptersWithMedia.map(({ chapter, mediaItems }) => (
-            <div key={chapter.id} className="space-y-16">
-              <div className="text-center space-y-4">
-                <div className="flex items-center justify-center gap-4 text-[#D4AF37]">
-                  <div className="h-px w-12 bg-[#D4AF37]/30" />
-                  <span className="text-2xl">{chapter.emoji || "✧"}</span>
-                  <div className="h-px w-12 bg-[#D4AF37]/30" />
-                </div>
-                <h2 className="text-4xl md:text-5xl font-light tracking-wide text-[#FDFBF7]">
-                  {chapter.title}
-                </h2>
-              </div>
-              
-              {/* Elegant Masonry/Staggered Grid */}
-              <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
-                {mediaItems.map(({ item, index }) => (
-                  <div
-                    key={item.id}
-                    onClick={() => setGalleryActiveIndex(index)}
-                    className="relative break-inside-avoid cursor-pointer group rounded-sm overflow-hidden border border-white/5"
-                  >
-                    {item.type === "VIDEO" ? (
-                      <video src={item.url} className="w-full h-auto object-cover opacity-90 group-hover:opacity-100 transition-all duration-700" autoPlay muted loop playsInline />
-                    ) : (
-                       
-                      <img src={item.url} alt="Media" className="w-full h-auto object-cover opacity-90 group-hover:opacity-100 transition-all duration-700 scale-100 group-hover:scale-105" />
-                    )}
-                    
-                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
-                      {item.type === "VIDEO" && (
-                        <div className="w-12 h-12 rounded-full border border-white/50 flex items-center justify-center backdrop-blur-sm">
-                          <Play className="w-4 h-4 text-white fill-current ml-0.5" />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
+        <div className="max-w-6xl mx-auto px-4 md:px-8 py-24">
+          <div className="text-center mb-16">
+            <div className="flex items-center justify-center gap-4 text-[#D4AF37] mb-4">
+              <div className="h-px w-12 bg-[#D4AF37]/30" />
+              <span className="text-2xl">✧</span>
+              <div className="h-px w-12 bg-[#D4AF37]/30" />
             </div>
-          ))}
+            <h2 className="text-4xl md:text-5xl font-light tracking-wide text-[#FDFBF7]">
+              The Collection
+            </h2>
+          </div>
 
-          {unassignedMedia.length > 0 && (
-            <div className="space-y-16 pt-16 border-t border-white/5">
-              {chaptersWithMedia.length > 0 && (
-                <div className="text-center">
-                  <h2 className="text-3xl md:text-4xl font-light tracking-wide text-[#FDFBF7] italic">
-                    The Collection
-                  </h2>
+          {/* Elegant Masonry/Staggered Grid */}
+          <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
+            {allMedia.map(({ item, index }) => (
+              <div
+                key={item.id}
+                onClick={() => setGalleryActiveIndex(index)}
+                className="relative break-inside-avoid cursor-pointer group rounded-sm overflow-hidden border border-white/5"
+              >
+                {item.type === "VIDEO" ? (
+                  <LazyVideo src={item.url} className="w-full h-auto object-cover opacity-90 group-hover:opacity-100 transition-all duration-700" autoPlay muted loop playsInline />
+                ) : (
+                  <img src={item.url} alt="Media" className="w-full h-auto object-cover opacity-90 group-hover:opacity-100 transition-all duration-700 scale-100 group-hover:scale-105" />
+                )}
+                
+                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
+                  {item.type === "VIDEO" && (
+                    <div className="w-12 h-12 rounded-full border border-white/50 flex items-center justify-center backdrop-blur-sm">
+                      <Play className="w-4 h-4 text-white fill-current ml-0.5" />
+                    </div>
+                  )}
                 </div>
-              )}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-                {unassignedMedia.map(({ item, index }) => (
-                  <div
-                    key={item.id}
-                    onClick={() => setGalleryActiveIndex(index)}
-                    className="relative aspect-[3/4] cursor-pointer group overflow-hidden border border-white/5"
-                  >
-                    {item.type === "VIDEO" ? (
-                      <video src={item.url} className="w-full h-full object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-700" autoPlay muted loop playsInline />
-                    ) : (
-                      <Image src={item.url} alt="Media" fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-700 scale-100 group-hover:scale-105" />
-                    )}
-                  </div>
-                ))}
               </div>
-            </div>
-          )}
+            ))}
+          </div>
         </div>
       ) : (
         <EmptyState />
@@ -164,7 +127,6 @@ export default function WeddingTemplate({
       {isCinematicPlaying && story.media && (
         <CinematicPlayer
           media={story.media}
-          chapters={story.chapters}
           initialIndex={0}
           onClose={() => setIsCinematicPlaying(false)}
         />

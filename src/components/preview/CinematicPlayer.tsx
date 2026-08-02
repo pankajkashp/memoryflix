@@ -1,86 +1,50 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { MediaAsset, Chapter } from "@prisma/client";
+import { useState, useEffect } from "react";
+import { MediaAsset } from "@prisma/client";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Pause, Play } from "lucide-react";
-import ChapterComposition from "./ChapterComposition";
+import Image from "next/image";
 
 interface CinematicPlayerProps {
   media: MediaAsset[];
-  chapters?: Chapter[];
   initialIndex?: number;
   onClose: () => void;
 }
 
+const SLIDE_DURATION = 5000; // ms per photo slide
+
 export default function CinematicPlayer({
   media,
-  chapters,
   initialIndex = 0,
   onClose,
 }: CinematicPlayerProps) {
-  // 1. Group Media by Chapter to create "Scenes"
-  const [scenes, setScenes] = useState<{ chapter: Chapter | null, mediaItems: MediaAsset[] }[]>([]);
-  const [currentSceneIndex, setCurrentSceneIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [isPaused, setIsPaused] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
-  const [isLandscapeMobile, setIsLandscapeMobile] = useState(false);
 
-  // Initialize Scenes
-  useEffect(() => {
-    if (!media || media.length === 0) return;
-    
-    let groupedScenes: { chapter: Chapter | null, mediaItems: MediaAsset[] }[] = [];
-    
-    if (chapters && chapters.length > 0) {
-      groupedScenes = chapters.map(ch => ({
-        chapter: ch,
-        mediaItems: media.filter(m => m.chapterId === ch.id)
-      })).filter(c => c.mediaItems.length > 0);
-      
-      const unassigned = media.filter(m => !m.chapterId);
-      if (unassigned.length > 0) {
-        groupedScenes.push({ chapter: null, mediaItems: unassigned });
-      }
-    } else {
-      groupedScenes = [{ chapter: null, mediaItems: media }];
-    }
-    
-    setScenes(groupedScenes);
-
-    // If initialIndex is provided, find which scene contains that media
-    if (initialIndex > 0 && initialIndex < media.length) {
-      const targetMedia = media[initialIndex];
-      const sIndex = groupedScenes.findIndex(s => s.mediaItems.some(m => m.id === targetMedia.id));
-      if (sIndex >= 0) setCurrentSceneIndex(sIndex);
-    }
-  }, [media, chapters, initialIndex]);
-
-  // Handle Orientation
-  useEffect(() => {
-    const handleResize = () => {
-      const isMobile = window.innerWidth <= 768;
-      const isLandscape = window.matchMedia("(orientation: landscape)").matches;
-      setIsLandscapeMobile(isMobile && isLandscape);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  const current = media[currentIndex];
 
   const goToNext = () => {
-    if (currentSceneIndex < scenes.length - 1) {
-      setCurrentSceneIndex(c => c + 1);
+    if (currentIndex < media.length - 1) {
+      setCurrentIndex((c) => c + 1);
     } else {
       setIsFinished(true);
     }
   };
 
   const goToPrev = () => {
-    if (currentSceneIndex > 0) {
-      setCurrentSceneIndex(c => c - 1);
+    if (currentIndex > 0) {
+      setCurrentIndex((c) => c - 1);
     }
   };
+
+  // Auto-advance timer for photos
+  useEffect(() => {
+    if (isPaused || isFinished || !current || current.type === "VIDEO") return;
+    const timer = setTimeout(goToNext, SLIDE_DURATION);
+    return () => clearTimeout(timer);
+  }, [currentIndex, isPaused, isFinished, current]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -88,45 +52,38 @@ export default function CinematicPlayer({
       if (isFinished) return;
       if (e.key === "ArrowRight") goToNext();
       if (e.key === "ArrowLeft") goToPrev();
-      if (e.key === " " || e.key === "Spacebar") setIsPaused(p => !p);
+      if (e.key === " " || e.key === "Spacebar") setIsPaused((p) => !p);
       if (e.key === "Escape") onClose();
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentSceneIndex, isFinished]);
+  }, [currentIndex, isFinished]);
 
-  // Swipe gestures
+  // Swipe
   const handleDragEnd = (_e: unknown, { offset }: { offset: { x: number } }) => {
     if (offset.x < -50) goToNext();
     else if (offset.x > 50) goToPrev();
   };
 
-  if (scenes.length === 0) return null;
+  if (!media || media.length === 0) return null;
 
   return (
-    <div 
-      className="fixed inset-0 z-[100] bg-black flex flex-col justify-center overflow-hidden touch-pan-y"
-      style={{ touchAction: 'pan-y' }} // Prevent pinch zoom, allow vertical scrolling only if needed
-    >
+    <div className="fixed inset-0 z-[100] bg-black flex flex-col justify-center overflow-hidden">
       <div className="absolute inset-0 bg-zinc-950" />
 
-      {/* Progress Bars (Safe Area support) */}
+      {/* Progress Bars */}
       <div className="absolute top-0 left-0 w-full z-50 p-4 pt-[calc(env(safe-area-inset-top)+1.5rem)] flex gap-1 bg-gradient-to-b from-black/80 to-transparent">
-        {scenes.map((_, idx) => (
+        {media.map((_, idx) => (
           <div key={idx} className="h-[3px] flex-1 bg-white/25 rounded-full overflow-hidden">
             <div
-              className="h-full bg-white rounded-full transition-all duration-300 ease-linear"
-              style={{
-                width: idx < currentSceneIndex ? "100%" : idx === currentSceneIndex ? "50%" : "0%", 
-                // A true progress bar per scene would require hooking into the ChapterComposition's internal timer, 
-                // but 50% for active scene works well for discrete chapter navigation.
-              }}
+              className="h-full bg-white rounded-full transition-all duration-300"
+              style={{ width: idx < currentIndex ? "100%" : idx === currentIndex ? "50%" : "0%" }}
             />
           </div>
         ))}
       </div>
 
-      {/* Controls (Safe Area support) */}
+      {/* Controls */}
       <div className="absolute top-14 right-4 z-50 flex items-center gap-3">
         <button
           onClick={() => setIsPaused(!isPaused)}
@@ -140,35 +97,26 @@ export default function CinematicPlayer({
         </button>
       </div>
 
-      {/* Title overlay */}
-      {!isFinished && scenes[currentSceneIndex]?.chapter && (
-        <div className="absolute top-20 left-6 z-40">
-          <h2 className="text-white/80 font-bold text-lg md:text-2xl drop-shadow-md">
-            {scenes[currentSceneIndex].chapter?.title}
-          </h2>
-        </div>
-      )}
-
-      {/* Swipe zone for mobile & Click zone for desktop */}
+      {/* Swipe zone */}
       <motion.div
         className="absolute inset-0 z-30"
         drag="x"
         dragConstraints={{ left: 0, right: 0 }}
         dragElastic={0.2}
         onDragEnd={handleDragEnd}
-        // Tap and hold to pause
         onPointerDown={() => setIsPaused(true)}
         onPointerUp={() => setIsPaused(false)}
         onPointerLeave={() => setIsPaused(false)}
       />
 
-      <div className="absolute inset-0 z-40 flex pointer-events-none hidden md:flex">
-         <div className="w-1/3 h-full pointer-events-auto cursor-pointer" onClick={goToPrev} />
-         <div className="w-1/3 h-full pointer-events-auto cursor-pointer" onClick={() => setIsPaused(p=>!p)} />
-         <div className="w-1/3 h-full pointer-events-auto cursor-pointer" onClick={goToNext} />
+      {/* Click zones (desktop) */}
+      <div className="absolute inset-0 z-40 hidden md:flex pointer-events-none">
+        <div className="w-1/3 h-full pointer-events-auto cursor-pointer" onClick={goToPrev} />
+        <div className="w-1/3 h-full pointer-events-auto cursor-pointer" onClick={() => setIsPaused((p) => !p)} />
+        <div className="w-1/3 h-full pointer-events-auto cursor-pointer" onClick={goToNext} />
       </div>
 
-      {/* Render Current Scene */}
+      {/* Media */}
       <AnimatePresence mode="wait">
         {isFinished ? (
           <motion.div
@@ -184,7 +132,7 @@ export default function CinematicPlayer({
             </h2>
             <div className="flex gap-4 mt-8">
               <button
-                onClick={() => { setIsFinished(false); setCurrentSceneIndex(0); }}
+                onClick={() => { setIsFinished(false); setCurrentIndex(0); }}
                 className="bg-white text-black px-8 py-3 rounded-full font-bold hover:bg-zinc-200 transition"
               >
                 Replay Story
@@ -198,25 +146,49 @@ export default function CinematicPlayer({
             </div>
           </motion.div>
         ) : (
-          <motion.div 
-            key={currentSceneIndex}
-            className="w-full h-full relative z-20 pointer-events-none"
+          <motion.div
+            key={currentIndex}
+            className="absolute inset-0 z-20 pointer-events-none"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <ChapterComposition
-              media={
-                // If on landscape mobile, force single-hero fallback for multi-item compositions to save space
-                isLandscapeMobile && scenes[currentSceneIndex].mediaItems.length > 1
-                  ? [scenes[currentSceneIndex].mediaItems[0]] // Force first item full screen
-                  : scenes[currentSceneIndex].mediaItems
-              }
-              isActive={!isFinished}
-              onFinished={goToNext}
-              isPaused={isPaused}
-            />
+            {current?.type === "VIDEO" ? (
+              <video
+                src={current.url}
+                className="w-full h-full object-cover"
+                autoPlay
+                playsInline
+                preload="metadata"
+                onEnded={goToNext}
+                muted={false}
+              />
+            ) : (
+              <motion.div
+                className="w-full h-full"
+                animate={{ scale: isPaused ? 1.0 : 1.08 }}
+                transition={{ duration: SLIDE_DURATION / 1000, ease: "linear" }}
+              >
+                <Image
+                  src={current?.url || ""}
+                  alt={current?.caption || "Story media"}
+                  fill
+                  sizes="100vw"
+                  className="object-cover"
+                  priority
+                />
+              </motion.div>
+            )}
+
+            {/* Caption overlay */}
+            {current?.caption && (
+              <div className="absolute bottom-16 left-0 right-0 text-center px-6 pointer-events-none">
+                <p className="text-white/90 text-lg font-medium drop-shadow-lg bg-black/30 backdrop-blur-sm rounded-xl px-4 py-2 inline-block">
+                  {current.caption}
+                </p>
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

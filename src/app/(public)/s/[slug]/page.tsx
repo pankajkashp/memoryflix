@@ -40,7 +40,6 @@ export default async function PublicStoryPage({ params }: PageProps) {
     where: { slug },
     include: { 
       media: { orderBy: { position: "asc" } },
-      chapters: { orderBy: { position: "asc" } },
       template: true,
     },
   });

@@ -3,23 +3,21 @@
 import { useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import EmptyState from "@/components/preview/EmptyState";
-
-const MediaViewer = dynamic(() => import("@/components/preview/MediaViewer"), { ssr: false });
-const CinematicPlayer = dynamic(() => import("@/components/preview/CinematicPlayer"), { ssr: false });
 import { useStoryTemplateData } from "@/hooks/useStoryTemplateData";
 import { StoryWithFullPayload } from "../PreviewClientWrapper";
 import { Play } from "lucide-react";
 import Image from "next/image";
 import LazyVideo from "@/components/common/LazyVideo";
 
+const MediaViewer = dynamic(() => import("@/components/preview/MediaViewer"), { ssr: false });
+const CinematicPlayer = dynamic(() => import("@/components/preview/CinematicPlayer"), { ssr: false });
+
 export default function AppleTemplate({ 
   story, 
   isEditable: _isEditable = false,
-  onChapterChange
 }: { 
   story: StoryWithFullPayload, 
   isEditable?: boolean,
-  onChapterChange?: (chapterId: string | null) => void
 }) {
   const {
     galleryActiveIndex,
@@ -28,34 +26,14 @@ export default function AppleTemplate({
     setIsCinematicPlaying,
     hasMedia,
     coverImage,
-    chaptersWithMedia,
-    unassignedMedia
+    allMedia,
   } = useStoryTemplateData(story);
 
-  const sectionRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (!onChapterChange) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const chapId = entry.target.id.replace("chapter-", "");
-            onChapterChange(chapId);
-          }
-        });
-      },
-      { rootMargin: "-20% 0px -80% 0px" }
-    );
-
-    Object.values(sectionRefs.current).forEach((ref) => {
-      if (ref) observer.observe(ref);
-    });
-
-    return () => observer.disconnect();
-  }, [chaptersWithMedia, onChapterChange]);
-
-
+    // Placeholder for future scroll-based reveal animations
+  }, [allMedia]);
 
   return (
     <div className="bg-[#F5F5F7] min-h-screen text-[#1D1D1F] font-sans">
@@ -102,78 +80,28 @@ export default function AppleTemplate({
 
       {/* Gallery Section */}
       {hasMedia ? (
-        <div className="max-w-7xl mx-auto px-4 md:px-8 py-16 space-y-24">
-          {chaptersWithMedia.map(({ chapter, mediaItems }) => (
-            <div 
-              key={chapter.id} 
-              id={`chapter-${chapter.id}`}
-              ref={(el) => { sectionRefs.current[`chapter-${chapter.id}`] = el; }}
-              className="space-y-6"
-            >
-              <div className="border-b border-[#D2D2D7] pb-4">
-                <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-[#1D1D1F] flex items-center gap-3">
-                  {chapter.emoji && <span>{chapter.emoji}</span>}
-                  {chapter.title}
-                </h2>
-              </div>
-              
-              {/* Clean Apple-style Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
-                {mediaItems.map(({ item, index }) => (
-                  <div
-                    key={item.id}
-                    onClick={() => setGalleryActiveIndex(index)}
-                    className="relative aspect-square md:aspect-[4/3] bg-white rounded-2xl md:rounded-3xl overflow-hidden cursor-pointer group shadow-sm hover:shadow-xl transition-all duration-500"
-                  >
-                    {item.type === "VIDEO" ? (
-                      <LazyVideo src={item.url} className="w-full h-full object-cover" autoPlay muted loop playsInline />
-                    ) : (
-                      <Image src={item.url} alt="Media" fill sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
-                    )}
-                    
-                    {item.type === "VIDEO" && (
-                      <div className="absolute top-3 right-3 bg-white/80 backdrop-blur-md rounded-full p-1.5">
-                        <Play className="w-4 h-4 text-[#1D1D1F] fill-current" />
-                      </div>
-                    )}
+        <div ref={containerRef} className="max-w-7xl mx-auto px-4 md:px-8 py-16">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
+            {allMedia.map(({ item, index }) => (
+              <div
+                key={item.id}
+                onClick={() => setGalleryActiveIndex(index)}
+                className="relative aspect-square md:aspect-[4/3] bg-white rounded-2xl md:rounded-3xl overflow-hidden cursor-pointer group shadow-sm hover:shadow-xl transition-all duration-500"
+              >
+                {item.type === "VIDEO" ? (
+                  <LazyVideo src={item.url} className="w-full h-full object-cover" autoPlay muted loop playsInline />
+                ) : (
+                  <Image src={item.url} alt="Media" fill sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
+                )}
+                
+                {item.type === "VIDEO" && (
+                  <div className="absolute top-3 right-3 bg-white/80 backdrop-blur-md rounded-full p-1.5">
+                    <Play className="w-4 h-4 text-[#1D1D1F] fill-current" />
                   </div>
-                ))}
+                )}
               </div>
-            </div>
-          ))}
-
-          {unassignedMedia.length > 0 && (
-            <div className="space-y-6">
-              {chaptersWithMedia.length > 0 && (
-                <div className="border-b border-[#D2D2D7] pb-4">
-                  <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-[#1D1D1F]">
-                    All Photos
-                  </h2>
-                </div>
-              )}
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
-                {unassignedMedia.map(({ item, index }) => (
-                  <div
-                    key={item.id}
-                    onClick={() => setGalleryActiveIndex(index)}
-                    className="relative aspect-square md:aspect-[4/3] bg-white rounded-2xl md:rounded-3xl overflow-hidden cursor-pointer group shadow-sm hover:shadow-xl transition-all duration-500"
-                  >
-                    {item.type === "VIDEO" ? (
-                      <LazyVideo src={item.url} className="w-full h-full object-cover" autoPlay muted loop playsInline />
-                    ) : (
-                      <Image src={item.url} alt="Media" fill sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
-                    )}
-                    
-                    {item.type === "VIDEO" && (
-                      <div className="absolute top-3 right-3 bg-white/80 backdrop-blur-md rounded-full p-1.5">
-                        <Play className="w-4 h-4 text-[#1D1D1F] fill-current" />
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+            ))}
+          </div>
         </div>
       ) : (
         <EmptyState />
@@ -190,7 +118,6 @@ export default function AppleTemplate({
       {isCinematicPlaying && story.media && (
         <CinematicPlayer
           media={story.media}
-          chapters={story.chapters}
           initialIndex={0}
           onClose={() => setIsCinematicPlaying(false)}
         />

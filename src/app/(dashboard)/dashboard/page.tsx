@@ -36,7 +36,7 @@ export default async function DashboardPage() {
 
   const stories = await prisma.story.findMany({
     where: { userId: session!.user.id },
-    include: { template: true, coverMedia: true, _count: { select: { media: true, chapters: true } } },
+    include: { template: true, coverMedia: true, _count: { select: { media: true } } },
     orderBy: { updatedAt: "desc" },
   });
 
@@ -46,7 +46,7 @@ export default async function DashboardPage() {
   const totalStories = stories.length;
   const publishedStories = stories.filter(s => s.status === "PUBLISHED").length;
   const totalPhotos = stories.reduce((sum, s) => sum + (s._count?.media || 0), 0);
-  const totalChapters = stories.reduce((sum, s) => sum + (s._count?.chapters || 0), 0);
+  const totalDrafts = stories.filter(s => s.status === "DRAFT").length;
 
   return (
     <div className="relative min-h-screen bg-transparent overflow-hidden pb-32" data-dash-root>
@@ -117,8 +117,8 @@ export default async function DashboardPage() {
                 <BookOpen className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-white leading-none" data-dash-stat-num data-count={totalChapters}>{totalChapters}</p>
-                <p className="text-xs text-zinc-400 font-medium mt-1 uppercase tracking-wider">Chapters</p>
+                <p className="text-2xl font-bold text-white leading-none" data-dash-stat-num data-count={totalDrafts}>{totalDrafts}</p>
+                <p className="text-xs text-zinc-400 font-medium mt-1 uppercase tracking-wider">Drafts</p>
               </div>
             </div>
           </div>
@@ -140,8 +140,6 @@ export default async function DashboardPage() {
                   </h3>
                   <div className="flex flex-wrap items-center gap-3 text-sm font-medium text-zinc-400">
                     <span className="flex items-center gap-1"><ImageIcon className="w-4 h-4" /> {lastEditedStory._count?.media || 0} Photos</span>
-                    <span>•</span>
-                    <span className="flex items-center gap-1"><BookOpen className="w-4 h-4" /> {lastEditedStory._count?.chapters || 0} Chapters</span>
                     <span className="hidden sm:inline">•</span>
                     <span className="flex items-center gap-1 text-rose-400/80"><Clock className="w-4 h-4" /> Last edited {timeAgo(new Date(lastEditedStory.updatedAt))}</span>
                   </div>

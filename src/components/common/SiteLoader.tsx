@@ -44,7 +44,7 @@ export default function SiteLoader() {
 
         // Slight delay to ensure first meaningful paint is ready
         setTimeout(hideLoader, 50);
-      } catch (err) {
+      } catch {
         // Fallback handles errors
       }
     };

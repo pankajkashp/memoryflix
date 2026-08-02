@@ -12,7 +12,6 @@ const getStory = cache(async (id: string, userId: string) => {
     include: {
       template: true,
       media: { orderBy: { position: "asc" } },
-      chapters: { orderBy: { position: "asc" } },
     },
   });
 });

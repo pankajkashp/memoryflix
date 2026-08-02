@@ -74,7 +74,6 @@ model Story {
   template   StoryTemplate @relation(fields: [templateId], references: [id])
   media      MediaAsset[]  @relation("StoryMedia")
   coverMedia MediaAsset?   @relation("StoryCover", fields: [coverMediaId], references: [id], onDelete: SetNull)
-  chapters   Chapter[]
   payments   Payment[]
 
   @@index([userId])
@@ -96,43 +95,15 @@ model MediaAsset {
   position        Int       @default(0)
   durationSeconds Int?
   sizeBytes       Int?
-  chapterId       String?
   createdAt       DateTime  @default(now())
 
   story   Story    @relation("StoryMedia", fields: [storyId], references: [id], onDelete: Cascade)
   user    User     @relation(fields: [userId], references: [id])
-  chapter Chapter? @relation(fields: [chapterId], references: [id], onDelete: SetNull)
 
   storyCover Story[] @relation("StoryCover")
-  chapterCover Chapter[] @relation("ChapterCover")
 
   @@index([storyId])
   @@index([userId])
-  @@index([chapterId])
-}
-
-model Chapter {
-  id        String    @id @default(cuid())
-  storyId   String
-  title     String
-  emoji     String?
-  subtitle  String?
-  location  String?
-  date      DateTime?
-  position    Int       @default(0)
-  layout      String    @default("MASONRY")
-  musicTrack  String?
-  musicType   String?     // "BUILT_IN", "CUSTOM", "NONE"
-  musicUrl    String?
-  musicSource String?
-  coverMediaId String?
-  createdAt   DateTime  @default(now())
-
-  story     Story        @relation(fields: [storyId], references: [id], onDelete: Cascade)
-  media     MediaAsset[]
-  coverMedia MediaAsset? @relation("ChapterCover", fields: [coverMediaId], references: [id], onDelete: SetNull)
-
-  @@index([storyId])
 }
 
 model Payment {
