@@ -200,7 +200,7 @@ export default function LabeledPhotoPage({
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-full min-h-[100dvh] flex flex-col items-center justify-between p-4 sm:p-8 overflow-hidden select-none cursor-pointer"
+      className="relative w-full h-full min-h-[100dvh] flex flex-col items-center justify-between p-4 sm:p-8 md:p-12 lg:p-16 overflow-hidden select-none cursor-pointer"
       style={{ backgroundColor }}
     >
       {/* Textured Canvas Background */}
@@ -208,24 +208,24 @@ export default function LabeledPhotoPage({
 
       {/* Background glow */}
       <div
-        className="absolute w-[600px] h-[600px] rounded-full blur-[150px] pointer-events-none opacity-20 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+        className="absolute w-[800px] h-[800px] rounded-full blur-[180px] pointer-events-none opacity-25 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
         style={{ backgroundColor: accentColor }}
       />
 
-      <div className="w-full flex flex-col items-center z-10 flex-1 justify-center">
+      <div className="w-full flex flex-col items-center z-10 my-auto justify-center">
         {/* Header info directly on canvas */}
         {(data.title || data.subtitle) && (
-          <div className="text-center mb-5 z-10 space-y-1">
+          <div className="text-center mb-6 sm:mb-8 z-10 space-y-2">
             {data.title && (
               <h2
-                className="text-2xl sm:text-4xl font-bold tracking-tight font-serif drop-shadow-sm"
+                className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight font-serif drop-shadow-md"
                 style={{ color: textColor }}
               >
                 {data.title}
               </h2>
             )}
             {data.subtitle && (
-              <p className="text-xs sm:text-sm text-zinc-400 font-mono tracking-wide">
+              <p className="text-xs sm:text-base md:text-xl text-zinc-300 font-mono tracking-wide">
                 {data.subtitle}
               </p>
             )}
@@ -235,9 +235,9 @@ export default function LabeledPhotoPage({
         {/* Photo with SVG overlay directly on canvas */}
         <div
           ref={photoContainerRef}
-          className="relative w-full max-w-3xl aspect-[4/3] sm:aspect-[16/10] rounded-2xl overflow-hidden shadow-2xl z-10"
+          className="relative w-full max-w-[min(95vw,1200px)] lg:max-w-[min(85vw,1400px)] aspect-[4/3] sm:aspect-[16/10] lg:aspect-[16/9] rounded-3xl sm:rounded-[2.5rem] overflow-hidden shadow-2xl z-10 border-2 border-white/15"
           style={{
-            boxShadow: `0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 35px -10px ${accentColor}25`,
+            boxShadow: `0 30px 70px -15px rgba(0, 0, 0, 0.85), 0 0 45px -10px ${accentColor}30`,
           }}
         >
           {/* The Base Photo */}
@@ -247,7 +247,7 @@ export default function LabeledPhotoPage({
             fill
             priority
             className="object-cover"
-            sizes="(max-width: 1024px) 100vw, 850px"
+            sizes="(max-width: 1024px) 100vw, 1400px"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/10 pointer-events-none" />
 
@@ -318,19 +318,19 @@ export default function LabeledPhotoPage({
                 }}
               >
                 <div
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/20 backdrop-blur-xl shadow-xl transition-transform duration-300 hover:scale-105"
+                  className="inline-flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-full border-2 border-white/25 backdrop-blur-2xl shadow-2xl transition-transform duration-300 hover:scale-105"
                   style={{
                     backgroundColor: cardBg,
-                    boxShadow: `0 8px 25px -3px rgba(0, 0, 0, 0.7), 0 0 15px -3px ${accentColor}40`,
+                    boxShadow: `0 12px 30px -3px rgba(0, 0, 0, 0.8), 0 0 20px -3px ${accentColor}50`,
                   }}
                 >
                   {item.badge ? (
-                    <Sparkles className="w-3 h-3 text-amber-400" />
+                    <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
                   ) : (
-                    <Tag className="w-3 h-3" style={{ color: accentColor }} />
+                    <Tag className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: accentColor }} />
                   )}
                   <span
-                    className="text-xs font-semibold whitespace-nowrap tracking-wide"
+                    className="text-xs sm:text-base md:text-lg font-bold whitespace-nowrap tracking-wide"
                     style={{ color: textColor }}
                   >
                     {item.text}
@@ -343,7 +343,7 @@ export default function LabeledPhotoPage({
       </div>
 
       {/* Subtle in-context Tap to Continue visual cue */}
-      <div className="pt-6 relative z-20">
+      <div className="pt-4 relative z-20">
         <TapToAdvanceCue accentColor={accentColor} />
       </div>
     </div>

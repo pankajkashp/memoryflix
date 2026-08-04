@@ -152,7 +152,7 @@ export default function NotificationPage({
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-full min-h-[100dvh] flex flex-col items-center justify-center p-6 sm:p-12 overflow-hidden select-none cursor-pointer"
+      className="relative w-full h-full min-h-[100dvh] flex flex-col items-center justify-between p-4 sm:p-8 md:p-12 lg:p-16 overflow-hidden select-none cursor-pointer"
       style={{ backgroundColor }}
     >
       {/* Textured Canvas Background */}
@@ -160,36 +160,36 @@ export default function NotificationPage({
 
       {/* Background ambient radial glow */}
       <div
-        className="absolute w-[600px] h-[600px] rounded-full blur-[150px] pointer-events-none opacity-20 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+        className="absolute w-[800px] h-[800px] rounded-full blur-[180px] pointer-events-none opacity-25 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
         style={{ backgroundColor: accentColor }}
       />
 
       {/* Floating decorative elements across full canvas */}
       <div ref={heartsRef} className="absolute inset-0 pointer-events-none z-20">
-        <div className="floating-heart absolute top-[18%] left-[10%] sm:left-[18%] text-rose-500 drop-shadow-[0_0_15px_rgba(244,63,94,0.5)]">
-          <Heart className="w-8 h-8 fill-rose-500 animate-bounce" />
+        <div className="floating-heart absolute top-[15%] left-[8%] sm:left-[14%] text-rose-500 drop-shadow-[0_0_20px_rgba(244,63,94,0.6)]">
+          <Heart className="w-8 h-8 sm:w-12 sm:h-12 md:w-16 md:h-16 fill-rose-500 animate-bounce" />
         </div>
-        <div className="floating-heart absolute top-[28%] right-[10%] sm:right-[18%] text-pink-400 drop-shadow-[0_0_12px_rgba(244,114,182,0.5)]">
-          <Heart className="w-6 h-6 fill-pink-400" />
+        <div className="floating-heart absolute top-[22%] right-[8%] sm:right-[14%] text-pink-400 drop-shadow-[0_0_16px_rgba(244,114,182,0.6)]">
+          <Heart className="w-6 h-6 sm:w-10 sm:h-10 md:w-12 md:h-12 fill-pink-400" />
         </div>
-        <div className="floating-heart absolute bottom-[20%] left-[12%] sm:left-[22%] text-amber-400 drop-shadow-[0_0_15px_rgba(251,191,36,0.4)]">
-          <Sparkles className="w-7 h-7 fill-amber-400" />
+        <div className="floating-heart absolute bottom-[18%] left-[10%] sm:left-[16%] text-amber-400 drop-shadow-[0_0_20px_rgba(251,191,36,0.5)]">
+          <Sparkles className="w-7 h-7 sm:w-10 sm:h-10 md:w-14 md:h-14 fill-amber-400" />
         </div>
-        <div className="floating-heart absolute bottom-[25%] right-[12%] sm:right-[20%] text-rose-400 opacity-80">
-          <Heart className="w-5 h-5 fill-rose-400" />
+        <div className="floating-heart absolute bottom-[22%] right-[10%] sm:right-[16%] text-rose-400 opacity-80">
+          <Heart className="w-6 h-6 sm:w-9 sm:h-9 md:w-12 md:h-12 fill-rose-400" />
         </div>
       </div>
 
       {/* Main Content (Directly on Full-Bleed Canvas) */}
-      <div className="relative z-10 w-full max-w-xl flex flex-col items-center text-center space-y-6">
+      <div className="relative z-10 w-full max-w-[min(92vw,950px)] lg:max-w-[min(65vw,1050px)] flex flex-col items-center text-center space-y-6 sm:space-y-10 my-auto">
         {/* Lockscreen / Clock Header */}
-        <div ref={headerRef} className="space-y-1.5">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-xs font-mono tracking-widest uppercase text-zinc-300">
-            <Bell className="w-3.5 h-3.5" style={{ color: accentColor }} />
+        <div ref={headerRef} className="space-y-2 sm:space-y-3">
+          <div className="inline-flex items-center gap-2 px-4 sm:px-5 py-1.5 sm:py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs sm:text-sm md:text-base font-mono tracking-widest uppercase text-zinc-300 shadow-md">
+            <Bell className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: accentColor }} />
             <span>{data.time || "Special Delivery"}</span>
           </div>
           <h2
-            className="text-5xl sm:text-7xl font-light tracking-tight font-sans drop-shadow-sm pt-1"
+            className="text-6xl sm:text-8xl md:text-9xl lg:text-[10rem] font-light tracking-tight font-sans drop-shadow-md pt-1 leading-none"
             style={{ color: textColor }}
           >
             11:11
@@ -203,60 +203,62 @@ export default function NotificationPage({
             e.stopPropagation();
             setIsOpen(!isOpen);
           }}
-          className="w-full rounded-2xl p-5 sm:p-6 backdrop-blur-2xl border border-white/15 shadow-2xl transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] text-left"
+          className="w-full rounded-3xl sm:rounded-[2.25rem] p-6 sm:p-8 md:p-10 lg:p-12 backdrop-blur-2xl border-2 border-white/20 shadow-2xl transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] text-left"
           style={{
             backgroundColor: cardBg,
-            boxShadow: `0 20px 40px -10px rgba(0, 0, 0, 0.6), 0 0 30px -5px ${accentColor}30`,
+            boxShadow: `0 30px 60px -15px rgba(0, 0, 0, 0.7), 0 0 45px -5px ${accentColor}35`,
           }}
         >
           {/* Notification Header */}
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2.5">
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
+            <div className="flex items-center gap-3 sm:gap-4">
               <div
-                className="w-8 h-8 rounded-xl flex items-center justify-center shadow-md shrink-0"
+                className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-2xl flex items-center justify-center shadow-lg shrink-0"
                 style={{ backgroundColor: accentColor }}
               >
-                <Bell className="w-4 h-4 text-white fill-white" />
+                <Bell className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 text-white fill-white" />
               </div>
               <div>
                 <span
-                  className="text-xs sm:text-sm font-bold tracking-tight block"
+                  className="text-sm sm:text-lg md:text-xl lg:text-2xl font-bold tracking-tight block"
                   style={{ color: textColor }}
                 >
                   {data.sender || "MemoryFlix"}
                 </span>
-                <span className="text-[10px] text-zinc-400 font-mono">Priority Message</span>
+                <span className="text-xs sm:text-sm md:text-base text-zinc-400 font-mono">
+                  Priority Message
+                </span>
               </div>
             </div>
-            <span className="text-[11px] font-mono text-zinc-400">now</span>
+            <span className="text-xs sm:text-sm md:text-base font-mono text-zinc-400">now</span>
           </div>
 
           {/* Notification Title */}
           <h4
-            className="text-base sm:text-lg font-bold tracking-tight mb-1.5"
+            className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight mb-2 sm:mb-3"
             style={{ color: textColor }}
           >
             {data.notificationTitle || "You have 1 new unforgettable memory"}
           </h4>
 
           {/* Notification Body */}
-          <p className="text-sm sm:text-base text-zinc-300 leading-relaxed font-sans">
+          <p className="text-base sm:text-xl md:text-2xl lg:text-3xl text-zinc-200 leading-relaxed font-sans">
             {data.notificationText}
           </p>
 
           {/* Revealed Secret / Reply on Tap */}
           {isOpen && data.replyText && (
-            <div className="mt-4 pt-3.5 border-t border-white/10 text-xs sm:text-sm flex items-center gap-2 text-rose-300 animate-fadeIn">
-              <MessageCircle className="w-4 h-4 shrink-0 text-rose-400" />
+            <div className="mt-6 pt-5 border-t border-white/15 text-sm sm:text-lg md:text-xl flex items-center gap-3 text-rose-300 animate-fadeIn">
+              <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 shrink-0 text-rose-400" />
               <span>{data.replyText}</span>
             </div>
           )}
         </div>
+      </div>
 
-        {/* Subtle in-context Tap to Continue visual cue */}
-        <div className="pt-2">
-          <TapToAdvanceCue accentColor={accentColor} />
-        </div>
+      {/* Subtle in-context Tap to Continue visual cue */}
+      <div className="pt-4 relative z-20">
+        <TapToAdvanceCue accentColor={accentColor} />
       </div>
     </div>
   );

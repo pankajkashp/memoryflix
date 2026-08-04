@@ -164,7 +164,7 @@ export default function SearchResultsPage({
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-full min-h-[100dvh] flex flex-col items-center justify-between p-6 sm:p-12 overflow-hidden select-none cursor-pointer"
+      className="relative w-full h-full min-h-[100dvh] flex flex-col items-center justify-between p-4 sm:p-8 md:p-12 lg:p-16 overflow-hidden select-none cursor-pointer"
       style={{ backgroundColor }}
     >
       {/* Textured Canvas Background */}
@@ -172,53 +172,53 @@ export default function SearchResultsPage({
 
       {/* Ambient background glow */}
       <div
-        className="absolute w-[600px] h-[350px] rounded-full blur-[150px] pointer-events-none opacity-20 -top-10 left-1/2 -translate-x-1/2"
+        className="absolute w-[900px] h-[500px] rounded-full blur-[180px] pointer-events-none opacity-25 -top-10 left-1/2 -translate-x-1/2"
         style={{ backgroundColor: accentColor }}
       />
 
-      <div className="w-full max-w-4xl flex flex-col items-center z-10 flex-1">
+      <div className="w-full max-w-[min(95vw,1350px)] lg:max-w-[min(88vw,1550px)] flex flex-col items-center z-10 my-auto">
         {/* Search Bar Container directly on Canvas */}
         <div
           ref={searchBarRef}
-          className="w-full max-w-2xl rounded-full p-2 backdrop-blur-2xl border border-white/15 shadow-2xl flex items-center gap-3 px-5 mb-5"
+          className="w-full max-w-3xl sm:max-w-4xl rounded-full p-2.5 sm:p-3.5 backdrop-blur-2xl border-2 border-white/20 shadow-2xl flex items-center gap-4 px-6 sm:px-8 mb-6 sm:mb-8"
           style={{
             backgroundColor: cardBg,
-            boxShadow: `0 15px 35px -5px rgba(0, 0, 0, 0.6), 0 0 25px -5px ${accentColor}25`,
+            boxShadow: `0 20px 50px -10px rgba(0, 0, 0, 0.7), 0 0 35px -5px ${accentColor}30`,
           }}
         >
-          <Search className="w-5 h-5 shrink-0 text-zinc-400" />
-          <div className="flex-1 text-sm sm:text-base font-medium truncate py-1.5 flex items-center">
+          <Search className="w-6 h-6 sm:w-8 sm:h-8 shrink-0 text-zinc-400" />
+          <div className="flex-1 text-base sm:text-2xl md:text-3xl font-medium truncate py-1 sm:py-2 flex items-center">
             <span style={{ color: textColor }}>{typedText}</span>
-            <span className="w-0.5 h-4 ml-0.5 bg-rose-500 animate-pulse inline-block" />
+            <span className="w-0.5 sm:w-1 h-5 sm:h-7 ml-1 bg-rose-500 animate-pulse inline-block" />
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <span className="hidden sm:inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-white/10 text-zinc-300">
-              <Sparkles className="w-3 h-3 text-amber-400" /> Best Matches
+            <span className="hidden sm:inline-flex items-center gap-1.5 text-xs sm:text-base font-semibold px-4 py-1.5 rounded-full bg-white/10 text-zinc-200">
+              <Sparkles className="w-4 h-4 text-amber-400" /> Best Matches
             </span>
           </div>
         </div>
 
         {/* Results Metadata directly on Canvas */}
-        <div className="w-full flex items-center justify-between text-xs text-zinc-400 px-2 mb-4 font-mono">
+        <div className="w-full flex items-center justify-between text-xs sm:text-base md:text-lg text-zinc-400 px-3 mb-6 font-mono">
           <span>{data.resultsCount || "Showing top curated moments"}</span>
-          <span className="flex items-center gap-1.5 text-zinc-300">
-            <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" /> Saved forever
+          <span className="flex items-center gap-2 text-zinc-200">
+            <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-rose-500 fill-rose-500" /> Saved forever
           </span>
         </div>
 
         {/* Photo Grid directly on Canvas */}
         <div
           ref={gridRef}
-          className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
+          className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10"
         >
           {photoItems.map((item, idx) => (
             <div
               key={idx}
-              className="search-card-item group relative rounded-2xl overflow-hidden border border-white/10 backdrop-blur-md shadow-xl transition-all duration-300 hover:-translate-y-1 hover:border-white/20"
+              className="search-card-item group relative rounded-3xl sm:rounded-[2rem] overflow-hidden border-2 border-white/15 backdrop-blur-md shadow-2xl transition-all duration-300 hover:-translate-y-2 hover:border-white/30"
               style={{ backgroundColor: cardBg }}
             >
               {/* Photo */}
-              <div className="relative w-full h-44 sm:h-52 overflow-hidden">
+              <div className="relative w-full h-56 sm:h-72 md:h-80 lg:h-96 overflow-hidden">
                 <Image
                   src={item.url}
                   alt={item.title || `Search result ${idx + 1}`}
@@ -229,24 +229,24 @@ export default function SearchResultsPage({
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
                 {/* Badge on photo */}
-                <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/15 text-[10px] font-mono text-zinc-300">
+                <div className="absolute top-4 left-4 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-xs sm:text-sm font-mono text-zinc-200 shadow-md">
                   #{idx + 1}
                 </div>
               </div>
 
               {/* Card Caption */}
               {(item.title || item.caption) && (
-                <div className="p-3.5">
+                <div className="p-5 sm:p-6 space-y-1.5">
                   {item.title && (
                     <h4
-                      className="text-sm font-bold truncate"
+                      className="text-base sm:text-xl md:text-2xl font-bold truncate"
                       style={{ color: textColor }}
                     >
                       {item.title}
                     </h4>
                   )}
                   {item.caption && (
-                    <p className="text-xs text-zinc-400 mt-1 line-clamp-2">
+                    <p className="text-xs sm:text-base text-zinc-300 line-clamp-2">
                       {item.caption}
                     </p>
                   )}
@@ -258,7 +258,7 @@ export default function SearchResultsPage({
       </div>
 
       {/* Subtle in-context Tap to Continue visual cue */}
-      <div className="pt-6 relative z-20">
+      <div className="pt-4 relative z-20">
         <TapToAdvanceCue accentColor={accentColor} />
       </div>
     </div>

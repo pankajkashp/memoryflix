@@ -14,6 +14,7 @@ import {
   Eye,
 } from "lucide-react";
 import PageRenderer from "@/components/story-pages/PageRenderer";
+import AtmosphericBackground from "@/components/common/AtmosphericBackground";
 import { createStoryFromTemplate } from "@/app/actions/templateStory";
 import toast from "react-hot-toast";
 
@@ -113,26 +114,29 @@ export default function TemplateDetailClient({
   };
 
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-rose-500/30 select-none">
+    <div className="relative min-h-screen bg-[#050508] text-white selection:bg-rose-500/30 select-none overflow-x-hidden">
+      {/* Ambient Atmospheric Background (Radial glow + noise/grid + floating particles) */}
+      <AtmosphericBackground glowColor="rose" includeGrid={true} />
+
       {/* Top Navbar */}
       <header className="sticky top-0 z-40 backdrop-blur-xl bg-black/70 border-b border-white/10 px-4 sm:px-8 py-3.5 flex items-center justify-between">
         <Link
           href="/templates"
-          className="inline-flex items-center gap-2 text-xs text-zinc-400 hover:text-white transition-colors"
+          className="inline-flex items-center gap-2 text-xs sm:text-sm text-zinc-400 hover:text-white transition-colors"
         >
           <ArrowLeft className="w-4 h-4" /> Back to Templates
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <span className="text-xs font-mono uppercase tracking-widest text-zinc-400">
             {template.category}
           </span>
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">
+          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30 shadow-sm">
             ₹{priceInRupees}
           </span>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-8 py-8 sm:py-12">
+      <main className="max-w-7xl mx-auto px-4 sm:px-8 py-8 sm:py-12 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Column: Interactive Sample Preview Player (7 cols) */}
           <div className="lg:col-span-7 flex flex-col space-y-4">
@@ -140,15 +144,21 @@ export default function TemplateDetailClient({
               <div className="flex items-center gap-2">
                 <Eye className="w-4 h-4 text-rose-500" />
                 <span className="text-xs font-mono uppercase tracking-widest text-zinc-300 font-semibold">
-                  Interactive Live Sample
+                  Interactive Live Sample ({currentPageIdx + 1}/{template.pages.length})
                 </span>
               </div>
+              <span className="text-[11px] font-mono text-zinc-500">
+                Tap frame to advance
+              </span>
             </div>
 
             {/* Live Page Preview Frame (Tap anywhere to advance) */}
             <div
               onClick={handleAdvance}
-              className="relative w-full aspect-[4/3] sm:aspect-[16/11] rounded-3xl overflow-hidden border border-white/15 bg-zinc-950 shadow-2xl cursor-pointer"
+              className="relative w-full aspect-[4/3] sm:aspect-[16/11] rounded-3xl overflow-hidden border-2 border-white/20 bg-zinc-950 shadow-2xl cursor-pointer transition-transform duration-300 hover:scale-[1.005]"
+              style={{
+                boxShadow: "0 25px 60px -15px rgba(0,0,0,0.9), 0 0 40px -10px rgba(244,63,94,0.2)",
+              }}
             >
               {activeBlueprint && (
                 <PageRenderer
@@ -165,16 +175,16 @@ export default function TemplateDetailClient({
 
           {/* Right Column: Template Info & CTA Card (5 cols) */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="rounded-3xl p-6 sm:p-8 bg-zinc-950/90 border border-white/10 backdrop-blur-xl shadow-2xl space-y-6">
+            <div className="rounded-3xl p-6 sm:p-8 bg-zinc-950/90 border border-white/15 backdrop-blur-2xl shadow-2xl space-y-6">
               {/* Badge & Title */}
               <div className="space-y-3">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-rose-500/10 border border-rose-500/30 text-rose-300">
-                  <Sparkles className="w-3.5 h-3.5" /> {template.category} Special
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-rose-500/15 border border-rose-500/30 text-rose-300 shadow-sm">
+                  <Sparkles className="w-3.5 h-3.5 text-rose-400" /> {template.category} Special
                 </div>
-                <h1 className="text-3xl sm:text-4xl font-serif font-bold tracking-tight text-white">
+                <h1 className="text-3xl sm:text-4xl font-serif font-bold tracking-tight text-white drop-shadow-sm">
                   {template.name}
                 </h1>
-                <p className="text-sm text-zinc-400 leading-relaxed">
+                <p className="text-sm text-zinc-300/85 leading-relaxed">
                   {template.description}
                 </p>
               </div>
@@ -194,7 +204,7 @@ export default function TemplateDetailClient({
               <button
                 onClick={handleCreate}
                 disabled={isPending}
-                className="w-full py-4 rounded-2xl bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-400 hover:to-pink-500 text-white font-bold text-base shadow-lg shadow-rose-500/30 flex items-center justify-center gap-2 transition-all duration-300 disabled:opacity-50 cursor-pointer active:scale-98"
+                className="w-full py-4 rounded-2xl bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-400 hover:to-pink-500 text-white font-bold text-base shadow-lg shadow-rose-500/35 flex items-center justify-center gap-2 transition-all duration-300 disabled:opacity-50 cursor-pointer active:scale-98"
               >
                 {isPending ? (
                   <>

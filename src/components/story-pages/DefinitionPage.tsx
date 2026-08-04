@@ -155,7 +155,7 @@ export default function DefinitionPage({
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-full min-h-[100dvh] flex flex-col items-center justify-between p-6 sm:p-12 overflow-hidden select-none cursor-pointer"
+      className="relative w-full h-full min-h-[100dvh] flex flex-col items-center justify-between p-4 sm:p-8 md:p-12 lg:p-16 overflow-hidden select-none cursor-pointer"
       style={{ backgroundColor }}
     >
       {/* Textured Canvas Background */}
@@ -163,23 +163,23 @@ export default function DefinitionPage({
 
       {/* Background glow */}
       <div
-        className="absolute w-[600px] h-[600px] rounded-full blur-[150px] pointer-events-none opacity-20 -top-20 -left-20"
+        className="absolute w-[800px] h-[800px] rounded-full blur-[180px] pointer-events-none opacity-25 -top-20 -left-20"
         style={{ backgroundColor: accentColor }}
       />
 
-      <div className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center z-10 my-auto">
+      <div className="w-full max-w-[min(94vw,1400px)] lg:max-w-[min(88vw,1600px)] grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center z-10 my-auto">
         {/* Left Column: Dictionary definition directly on canvas */}
-        <div className="md:col-span-7 flex flex-col justify-center space-y-6">
+        <div className="lg:col-span-7 flex flex-col justify-center space-y-6 sm:space-y-8">
           {/* Header pill */}
-          <div className="inline-flex items-center gap-2 text-xs font-mono tracking-widest text-zinc-400 uppercase">
-            <BookOpen className="w-3.5 h-3.5" style={{ color: accentColor }} />
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-xs sm:text-sm md:text-base font-mono tracking-widest text-zinc-300 uppercase self-start shadow-sm">
+            <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: accentColor }} />
             The Living Dictionary
           </div>
 
           {/* Word Heading */}
           <h1
             ref={wordRef}
-            className="text-4xl sm:text-6xl lg:text-7xl font-serif font-bold tracking-tight flex flex-wrap drop-shadow-sm"
+            className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-serif font-bold tracking-tight flex flex-wrap drop-shadow-md leading-none"
             style={{ color: textColor }}
           >
             {wordLetters.map((char, i) => (
@@ -190,34 +190,34 @@ export default function DefinitionPage({
           </h1>
 
           {/* Details (Phonetic, Part of Speech, Definition, Example) */}
-          <div ref={detailsRef} className="space-y-4">
+          <div ref={detailsRef} className="space-y-4 sm:space-y-6">
             {/* Phonetics row */}
-            <div className="flex items-center gap-3 text-sm sm:text-base text-zinc-400 font-mono">
-              <span className="text-zinc-300 font-medium">
+            <div className="flex items-center gap-3 sm:gap-4 text-base sm:text-xl md:text-2xl text-zinc-300 font-mono">
+              <span className="text-zinc-200 font-medium">
                 {data.phonetic || "/lʌv/"}
               </span>
-              <span className="w-1.5 h-1.5 rounded-full bg-zinc-600" />
+              <span className="w-2 h-2 rounded-full bg-zinc-500" />
               <span className="italic font-serif font-semibold" style={{ color: accentColor }}>
                 {data.partOfSpeech || "noun"}
               </span>
-              <Volume2 className="w-4 h-4 text-zinc-500 cursor-pointer hover:text-zinc-300 transition-colors" />
+              <Volume2 className="w-5 h-5 sm:w-6 sm:h-6 text-zinc-400 cursor-pointer hover:text-zinc-200 transition-colors" />
             </div>
 
             {/* Divider */}
-            <div className="w-20 h-0.5 bg-white/20 my-2" />
+            <div className="w-28 sm:w-36 h-1 bg-white/20 my-2 sm:my-3 rounded-full" />
 
             {/* Definition */}
             <p
-              className="text-base sm:text-xl font-sans leading-relaxed text-zinc-200"
+              className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-sans leading-relaxed text-zinc-100 font-normal"
               style={{ color: textColor }}
             >
-              <span className="font-bold mr-2 text-zinc-400">1.</span>
+              <span className="font-bold mr-3 text-zinc-400">1.</span>
               {data.definition}
             </p>
 
             {/* Example sentence */}
             {data.exampleSentence && (
-              <p className="text-sm sm:text-base italic text-zinc-400 pl-4 border-l-2 border-white/20 mt-2 font-serif">
+              <p className="text-base sm:text-xl md:text-2xl lg:text-3xl italic text-zinc-300 pl-5 sm:pl-7 border-l-4 border-white/20 mt-3 sm:mt-4 font-serif">
                 &ldquo;{data.exampleSentence}&rdquo;
               </p>
             )}
@@ -225,34 +225,34 @@ export default function DefinitionPage({
         </div>
 
         {/* Right Column: Physical Polaroid Memory Card on the Canvas */}
-        <div className="md:col-span-5 flex justify-center items-center">
+        <div className="lg:col-span-5 flex justify-center items-center">
           <div
             ref={photoFrameRef}
-            className="relative w-full max-w-[300px] sm:max-w-[340px] rounded-2xl p-4 shadow-2xl border border-white/10 backdrop-blur-xl group transition-transform duration-500 hover:rotate-0"
+            className="relative w-full max-w-[320px] sm:max-w-[420px] md:max-w-[500px] lg:max-w-[580px] rounded-3xl p-5 sm:p-7 md:p-8 shadow-2xl border-2 border-white/15 backdrop-blur-xl group transition-transform duration-500 hover:rotate-0"
             style={{
               backgroundColor: cardBg,
-              boxShadow: `0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 35px -10px ${accentColor}25`,
+              boxShadow: `0 30px 70px -15px rgba(0, 0, 0, 0.85), 0 0 45px -10px ${accentColor}30`,
             }}
           >
             {/* Washi Tape detail on top of Polaroid */}
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-20 h-6 bg-white/15 backdrop-blur-md rounded-sm rotate-[-2deg] border border-white/20 pointer-events-none" />
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-28 sm:w-36 h-8 sm:h-10 bg-white/20 backdrop-blur-md rounded-md rotate-[-2deg] border border-white/30 pointer-events-none shadow-md" />
 
             {/* Photo inside Polaroid */}
-            <div className="relative w-full aspect-[4/5] rounded-xl overflow-hidden shadow-inner">
+            <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden shadow-inner">
               <Image
                 src={data.photoUrl}
                 alt={data.word}
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
-                sizes="(max-width: 768px) 100vw, 340px"
+                sizes="(max-width: 768px) 100vw, 580px"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
             </div>
 
             {/* Caption on Polaroid bottom */}
-            <div className="pt-3 text-center">
+            <div className="pt-4 sm:pt-5 text-center">
               <p
-                className="text-xs font-mono uppercase tracking-widest text-zinc-400 truncate"
+                className="text-xs sm:text-sm md:text-base font-mono uppercase tracking-widest text-zinc-300 truncate"
                 style={{ color: `${textColor}90` }}
               >
                 Fig. 1 — Definition in Action
@@ -263,7 +263,7 @@ export default function DefinitionPage({
       </div>
 
       {/* Subtle in-context Tap to Continue visual cue */}
-      <div className="pt-6 relative z-20">
+      <div className="pt-4 relative z-20">
         <TapToAdvanceCue accentColor={accentColor} />
       </div>
     </div>

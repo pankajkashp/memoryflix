@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Award, Sparkles, ShieldCheck } from "lucide-react";
+import { Award, ShieldCheck } from "lucide-react";
 import { gsap } from "gsap";
 import {
   DEFAULT_EASE,
@@ -138,7 +138,7 @@ export default function CertificatePage({
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-full min-h-[100dvh] flex flex-col items-center justify-between p-4 sm:p-8 overflow-hidden select-none cursor-pointer"
+      className="relative w-full h-full min-h-[100dvh] flex flex-col items-center justify-between p-4 sm:p-8 md:p-12 lg:p-16 overflow-hidden select-none cursor-pointer"
       style={{ backgroundColor }}
     >
       {/* Textured Canvas Background */}
@@ -146,52 +146,52 @@ export default function CertificatePage({
 
       {/* Background ambient gold lighting */}
       <div
-        className="absolute w-[600px] h-[600px] rounded-full blur-[160px] pointer-events-none opacity-20 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+        className="absolute w-[800px] h-[800px] rounded-full blur-[180px] pointer-events-none opacity-25 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
         style={{ backgroundColor: accentColor }}
       />
 
       {/* Certificate Document directly on Canvas */}
       <div
         ref={certFrameRef}
-        className="relative w-full max-w-2xl rounded-3xl p-6 sm:p-10 backdrop-blur-2xl border-2 shadow-2xl overflow-hidden z-10 my-auto"
+        className="relative w-full max-w-[min(94vw,1000px)] lg:max-w-[min(70vw,1150px)] rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-10 md:p-14 lg:p-16 backdrop-blur-2xl border-2 shadow-2xl overflow-hidden z-10 my-auto"
         style={{
           backgroundColor: cardBg,
           borderColor: `${accentColor}50`,
-          boxShadow: `0 25px 60px -10px rgba(0, 0, 0, 0.8), 0 0 35px -5px ${accentColor}30`,
+          boxShadow: `0 30px 70px -15px rgba(0, 0, 0, 0.85), 0 0 50px -5px ${accentColor}35`,
         }}
       >
         {/* Certificate Linen/Parchment Texture */}
-        <CanvasTexture texture="linen" className="opacity-25 rounded-3xl" />
+        <CanvasTexture texture="linen" className="opacity-25 rounded-3xl sm:rounded-[2.5rem]" />
 
         {/* Ornate Gold Border lines */}
         <div
-          className="absolute inset-3 sm:inset-4 rounded-2xl border border-dashed pointer-events-none"
+          className="absolute inset-3 sm:inset-5 md:inset-6 rounded-2xl sm:rounded-[2rem] border-2 border-dashed pointer-events-none"
           style={{ borderColor: `${accentColor}40` }}
         />
 
-        <div ref={textLinesRef} className="relative z-10 text-center space-y-4 sm:space-y-5">
+        <div ref={textLinesRef} className="relative z-10 text-center space-y-4 sm:space-y-6 md:space-y-8">
           {/* Header pill */}
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-[10px] font-mono uppercase tracking-widest text-zinc-300">
-            <ShieldCheck className="w-3.5 h-3.5" style={{ color: accentColor }} />
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 text-xs sm:text-sm md:text-base font-mono uppercase tracking-widest text-zinc-300 shadow-sm">
+            <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: accentColor }} />
             <span>Official Recognition</span>
           </div>
 
           {/* Certificate Title */}
           <h1
-            className="text-2xl sm:text-4xl font-extrabold font-serif tracking-tight uppercase"
+            className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold font-serif tracking-tight uppercase"
             style={{ color: accentColor }}
           >
             {data.title || "Certificate of Eternal Friendship"}
           </h1>
 
-          <p className="text-xs sm:text-sm font-mono text-zinc-400 uppercase tracking-widest">
+          <p className="text-xs sm:text-base md:text-lg font-mono text-zinc-400 uppercase tracking-widest">
             This certifies that
           </p>
 
           {/* Recipient Name */}
-          <div className="py-1">
+          <div className="py-1 sm:py-2">
             <h2
-              className="text-3xl sm:text-5xl font-serif font-bold italic tracking-wide pb-2 border-b-2 inline-block px-6"
+              className="text-3xl sm:text-6xl md:text-7xl lg:text-8xl font-serif font-bold italic tracking-wide pb-2 sm:pb-3 border-b-2 sm:border-b-4 inline-block px-6 sm:px-10"
               style={{
                 color: textColor,
                 borderColor: accentColor,
@@ -202,18 +202,18 @@ export default function CertificatePage({
           </div>
 
           {/* Certificate Citation */}
-          <p className="text-sm sm:text-base text-zinc-300 max-w-lg mx-auto leading-relaxed font-sans pt-2">
+          <p className="text-base sm:text-xl md:text-2xl lg:text-3xl text-zinc-200 max-w-4xl mx-auto leading-relaxed font-sans pt-2 sm:pt-3">
             {data.message}
           </p>
 
           {/* Footer (Date, Seal, Signature) */}
-          <div className="pt-6 sm:pt-8 flex items-end justify-between border-t border-white/10 text-left">
+          <div className="pt-6 sm:pt-10 md:pt-12 flex items-end justify-between border-t border-white/10 text-left">
             {/* Left: Date */}
-            <div className="space-y-1">
-              <span className="text-[10px] font-mono uppercase text-zinc-500 block">
+            <div className="space-y-1 sm:space-y-1.5">
+              <span className="text-xs sm:text-sm md:text-base font-mono uppercase text-zinc-400 block">
                 Presented On
               </span>
-              <span className="text-xs sm:text-sm font-medium font-mono text-zinc-300">
+              <span className="text-sm sm:text-lg md:text-2xl font-medium font-mono text-zinc-200">
                 {data.date || "For All Eternity"}
               </span>
             </div>
@@ -221,22 +221,22 @@ export default function CertificatePage({
             {/* Center: Gold Foil Stamp */}
             <div
               ref={sealRef}
-              className="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex flex-col items-center justify-center shadow-lg border border-white/30"
+              className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 rounded-full flex flex-col items-center justify-center shadow-2xl border-2 border-white/30"
               style={{
                 background: `linear-gradient(135deg, ${accentColor}, #d97706)`,
-                boxShadow: `0 0 20px ${accentColor}80`,
+                boxShadow: `0 0 30px ${accentColor}90`,
               }}
             >
-              <Award className="w-7 h-7 sm:w-8 sm:h-8 text-black" />
+              <Award className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 text-black" />
             </div>
 
             {/* Right: Issuer Signature */}
-            <div className="text-right space-y-1">
-              <span className="text-[10px] font-mono uppercase text-zinc-500 block">
+            <div className="text-right space-y-1 sm:space-y-1.5">
+              <span className="text-xs sm:text-sm md:text-base font-mono uppercase text-zinc-400 block">
                 Signed By
               </span>
               <span
-                className="text-xs sm:text-sm font-serif italic font-bold"
+                className="text-sm sm:text-lg md:text-2xl lg:text-3xl font-serif italic font-bold"
                 style={{ color: accentColor }}
               >
                 {data.issuer || "Your Best Friend"}
@@ -247,7 +247,7 @@ export default function CertificatePage({
       </div>
 
       {/* Subtle in-context Tap to Continue visual cue */}
-      <div className="pt-6 relative z-20">
+      <div className="pt-4 relative z-20">
         <TapToAdvanceCue accentColor={accentColor} />
       </div>
     </div>

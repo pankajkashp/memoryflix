@@ -162,7 +162,7 @@ export default function LoadingPage({
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-full min-h-[100dvh] flex flex-col items-center justify-between p-6 sm:p-12 overflow-hidden select-none cursor-pointer"
+      className="relative w-full h-full min-h-[100dvh] flex flex-col items-center justify-between p-4 sm:p-8 md:p-12 lg:p-16 overflow-hidden select-none cursor-pointer"
       style={{ backgroundColor }}
     >
       {/* Textured Canvas Background */}
@@ -170,57 +170,57 @@ export default function LoadingPage({
 
       {/* Background ambient lighting */}
       <div
-        className="absolute w-[600px] h-[600px] rounded-full blur-[160px] pointer-events-none opacity-20 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+        className="absolute w-[800px] h-[800px] rounded-full blur-[180px] pointer-events-none opacity-25 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
         style={{ backgroundColor: accentColor }}
       />
 
-      <div className="w-full max-w-xl flex flex-col items-center z-10 my-auto">
+      <div className="w-full max-w-[min(94vw,1000px)] lg:max-w-[min(68vw,1150px)] flex flex-col items-center z-10 my-auto">
         {/* PHASE 1: Loading bar directly on Canvas */}
         {!isCompleted && (
           <div
             ref={loadingPhaseRef}
-            className="w-full flex flex-col items-center space-y-6 text-center"
+            className="w-full flex flex-col items-center space-y-6 sm:space-y-8 text-center"
           >
             {/* Spinning indicator */}
-            <div className="relative w-16 h-16">
+            <div className="relative w-20 h-20 sm:w-28 sm:h-28">
               <div
-                className="absolute inset-0 rounded-full border-4 border-white/10 animate-spin"
+                className="absolute inset-0 rounded-full border-4 sm:border-6 border-white/10 animate-spin"
                 style={{ borderTopColor: accentColor }}
               />
               <div className="absolute inset-0 flex items-center justify-center">
-                <Sparkles className="w-6 h-6" style={{ color: accentColor }} />
+                <Sparkles className="w-8 h-8 sm:w-12 sm:h-12" style={{ color: accentColor }} />
               </div>
             </div>
 
             {/* Loading Label */}
-            <div className="space-y-1">
+            <div className="space-y-2">
               <h3
-                className="text-sm sm:text-base font-mono uppercase tracking-widest text-zinc-300 font-bold"
+                className="text-base sm:text-2xl md:text-3xl font-mono uppercase tracking-widest text-zinc-200 font-bold"
                 style={{ color: textColor }}
               >
                 {data.loadingLabel || "CALCULATING COMPATIBILITY..."}
               </h3>
-              <p className="text-xs text-zinc-400 font-mono">
+              <p className="text-xs sm:text-base md:text-lg text-zinc-400 font-mono">
                 Processing moments, laughs & memories...
               </p>
             </div>
 
             {/* Glowing Progress Bar */}
-            <div className="w-full space-y-2">
-              <div className="w-full h-3.5 rounded-full bg-white/10 overflow-hidden p-0.5 border border-white/15">
+            <div className="w-full space-y-3">
+              <div className="w-full h-4 sm:h-6 rounded-full bg-white/10 overflow-hidden p-1 border-2 border-white/20">
                 <div
                   ref={progressBarRef}
                   className="h-full rounded-full transition-all duration-75 shadow-lg"
                   style={{
                     width: `${progress}%`,
                     backgroundColor: accentColor,
-                    boxShadow: `0 0 15px ${accentColor}`,
+                    boxShadow: `0 0 20px ${accentColor}`,
                   }}
                 />
               </div>
-              <div className="flex justify-between text-xs font-mono text-zinc-400 px-1">
+              <div className="flex justify-between text-xs sm:text-base font-mono text-zinc-400 px-2">
                 <span>0%</span>
-                <span className="font-bold text-white">{Math.round(progress)}%</span>
+                <span className="font-bold text-white text-sm sm:text-lg">{Math.round(progress)}%</span>
                 <span>100%</span>
               </div>
             </div>
@@ -231,49 +231,49 @@ export default function LoadingPage({
         {isCompleted && (
           <div
             ref={rewardPhaseRef}
-            className="w-full flex flex-col items-center text-center space-y-6 animate-fadeIn"
+            className="w-full flex flex-col items-center text-center space-y-6 sm:space-y-8 animate-fadeIn"
           >
             {/* Trophy Icon */}
             <div
               ref={trophyRef}
-              className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-3xl flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-2xl"
+              className="relative w-32 h-32 sm:w-44 sm:h-44 md:w-56 md:h-56 rounded-3xl sm:rounded-[2.5rem] flex items-center justify-center shadow-2xl border-2 border-white/25 backdrop-blur-2xl"
               style={{
                 backgroundColor: cardBg,
-                boxShadow: `0 20px 50px -10px ${accentColor}50, 0 0 40px ${accentColor}30`,
+                boxShadow: `0 30px 70px -15px ${accentColor}50, 0 0 50px ${accentColor}35`,
               }}
             >
               <Trophy
-                className="w-16 h-16 sm:w-20 sm:h-20 drop-shadow-md"
+                className="w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 drop-shadow-md"
                 style={{ color: accentColor }}
               />
-              <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center shadow-lg">
-                <CheckCircle2 className="w-5 h-5 text-white" />
+              <div className="absolute -top-3 -right-3 w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-emerald-500 flex items-center justify-center shadow-xl border-2 border-white/40">
+                <CheckCircle2 className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
               </div>
             </div>
 
             {/* Badge pill */}
-            <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs font-mono tracking-widest uppercase text-zinc-300">
-              <Award className="w-3.5 h-3.5" style={{ color: accentColor }} />
+            <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs sm:text-sm md:text-base font-mono tracking-widest uppercase text-zinc-200 shadow-md">
+              <Award className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: accentColor }} />
               <span>Official Achievement Unlocked</span>
             </div>
 
             {/* Award Title */}
             <h2
-              className="text-2xl sm:text-4xl font-extrabold font-serif tracking-tight drop-shadow-sm"
+              className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold font-serif tracking-tight drop-shadow-md leading-tight"
               style={{ color: textColor }}
             >
               {data.awardTitle || "THE UNBREAKABLE BOND AWARD"}
             </h2>
 
             {/* Subtitle / Description */}
-            <p className="text-base sm:text-lg text-zinc-200 leading-relaxed font-sans max-w-lg">
+            <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl text-zinc-100 leading-relaxed font-sans max-w-4xl">
               {data.rewardText}
             </p>
 
             {data.subtitle && (
               <p
-                className="text-xs sm:text-sm font-mono tracking-wide italic text-zinc-400"
-                style={{ color: `${textColor}80` }}
+                className="text-xs sm:text-base md:text-xl font-mono tracking-wide italic text-zinc-400 pt-2"
+                style={{ color: `${textColor}90` }}
               >
                 &mdash; {data.subtitle} &mdash;
               </p>
@@ -283,7 +283,7 @@ export default function LoadingPage({
       </div>
 
       {/* Subtle in-context Tap to Continue visual cue */}
-      <div className="pt-6 relative z-20">
+      <div className="pt-4 relative z-20">
         <TapToAdvanceCue accentColor={accentColor} />
       </div>
     </div>
