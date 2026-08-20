@@ -1321,7 +1321,332 @@ async function main() {
     ],
   });
 
-  console.log("\n✅ All 3 templates seeded with textured canvas backgrounds!");
+  // ==========================================
+  // 4. Secret Surprises & Mystery Notes Template (Light / Pastel / Interactive)
+  // Featuring PICK_REVEAL interactive choice pages
+  // ==========================================
+  await seedTemplate({
+    name: "Secret Surprises",
+    slug: "secret-surprises",
+    category: "Surprise",
+    price: 4900, // ₹49
+    description:
+      "A delightful interactive mystery story on warm aesthetic beige canvas. Scratch to uncover secret notes, tap cute bears and message bottles, and explore glowing pink memory surprises.",
+    previewUrl: "/2.png",
+    blueprints: [
+      {
+        position: 1,
+        componentKey: "SCRATCH_REVEAL",
+        fixedConfig: {
+          backgroundColor: "#F7F2EA",
+          textColor: "#2D1822",
+          accentColor: "#f43f5e",
+          accentTextColor: "#e11d48",
+          cardBg: "rgba(255, 255, 255, 0.96)",
+          backgroundTexture: "paper-grain",
+        },
+        editableSchema: {
+          title: "Scratch & Reveal Opener",
+          description: "An interactive foil scratch card revealing your secret opener.",
+          fields: [
+            {
+              name: "title",
+              label: "Revealed Title",
+              type: "text",
+              required: true,
+              default: "A Secret Story For You 💖",
+            },
+            {
+              name: "subtitle",
+              label: "Opener Tagline",
+              type: "text",
+              required: true,
+              default: "Someone created a mystery just for you",
+            },
+            {
+              name: "secretMessage",
+              label: "Secret Message",
+              type: "textarea",
+              required: true,
+              default:
+                "Every great memory begins with a spark.\nUnfold the surprises waiting for you inside!",
+            },
+            {
+              name: "sender",
+              label: "Sender Label",
+              type: "text",
+              required: false,
+              default: "MysteryFlix Surprise 🎁",
+            },
+            {
+              name: "photoUrl",
+              label: "Preview Photo (optional)",
+              type: "image",
+              required: false,
+              default: "/2.png",
+            },
+          ],
+        },
+      },
+      {
+        position: 2,
+        componentKey: "PICK_REVEAL",
+        fixedConfig: {
+          backgroundColor: "#F7F2EA",
+          textColor: "#2D1822",
+          accentColor: "#f43f5e",
+          accentTextColor: "#e11d48",
+          cardBg: "rgba(255, 255, 255, 0.95)",
+          backgroundTexture: "paper-grain",
+          characterSet: "bears",
+        },
+        editableSchema: {
+          title: "Bear's Secret Notes",
+          description: "Choose 1 of 3 cute bears to unfold a hidden note.",
+          fields: [
+            {
+              name: "prompt",
+              label: "Prompt Text",
+              type: "text",
+              required: true,
+              default: "Pick one to open 🐻",
+            },
+            {
+              name: "option1Text",
+              label: "Bear 1 Secret Message",
+              type: "textarea",
+              required: true,
+              default: "You have the warmest energy in any room we walk into ✨",
+            },
+            {
+              name: "option1Photo",
+              label: "Bear 1 Photo (optional)",
+              type: "image",
+              required: false,
+              default: "/1.png",
+            },
+            {
+              name: "option2Text",
+              label: "Bear 2 Secret Message",
+              type: "textarea",
+              required: true,
+              default: "Remember our midnight conversations? They're my favorite memories 🌙",
+            },
+            {
+              name: "option2Photo",
+              label: "Bear 2 Photo (optional)",
+              type: "image",
+              required: false,
+              default: "/2.png",
+            },
+            {
+              name: "option3Text",
+              label: "Bear 3 Secret Message",
+              type: "textarea",
+              required: true,
+              default: "Through every high and low, I am forever grateful for you ❤️",
+            },
+            {
+              name: "option3Photo",
+              label: "Bear 3 Photo (optional)",
+              type: "image",
+              required: false,
+              default: "/3.png",
+            },
+          ],
+        },
+      },
+      {
+        position: 3,
+        componentKey: "LABELED_PHOTO",
+        fixedConfig: {
+          backgroundColor: "#F7F2EA",
+          textColor: "#2D1822",
+          accentColor: "#f43f5e",
+          cardBg: "rgba(255, 255, 255, 0.96)",
+          backgroundTexture: "dots",
+        },
+        editableSchema: {
+          title: "Anatomy of Our Favorite Day",
+          description: "Break down a memorable photo with interactive callouts.",
+          fields: [
+            {
+              name: "title",
+              label: "Page Title",
+              type: "text",
+              required: true,
+              default: "Anatomy of a Perfect Day",
+            },
+            {
+              name: "subtitle",
+              label: "Subtitle",
+              type: "text",
+              required: false,
+              default: "Every little detail captured in time",
+            },
+            {
+              name: "photoUrl",
+              label: "Featured Photo",
+              type: "image",
+              required: true,
+              default: "/2.png",
+            },
+            {
+              name: "label1",
+              label: "Callout 1",
+              type: "text",
+              required: true,
+              default: "Your genuine bright smile",
+            },
+            {
+              name: "label2",
+              label: "Callout 2",
+              type: "text",
+              required: true,
+              default: "The sunlit view behind us",
+            },
+            {
+              name: "label3",
+              label: "Callout 3",
+              type: "text",
+              required: true,
+              default: "Uncontrollable laughter",
+            },
+            {
+              name: "label4",
+              label: "Callout 4",
+              type: "text",
+              required: true,
+              default: "A memory we will keep forever",
+            },
+          ],
+        },
+      },
+      {
+        position: 4,
+        componentKey: "PICK_REVEAL",
+        fixedConfig: {
+          backgroundColor: "#F7F2EA",
+          textColor: "#2D1822",
+          accentColor: "#0d9488",
+          accentTextColor: "#0f766e",
+          cardBg: "rgba(255, 255, 255, 0.95)",
+          backgroundTexture: "linen",
+          characterSet: "bottles",
+        },
+        editableSchema: {
+          title: "Message in a Bottle",
+          description: "Pick 1 of 3 message bottles to uncork a special wish.",
+          fields: [
+            {
+              name: "prompt",
+              label: "Prompt Text",
+              type: "text",
+              required: true,
+              default: "Pick a bottle to uncork its secret 🍾",
+            },
+            {
+              name: "option1Text",
+              label: "Bottle 1 Wish / Message",
+              type: "textarea",
+              required: true,
+              default: "Wandering with you makes every ordinary street look like an adventure 🌊",
+            },
+            {
+              name: "option1Photo",
+              label: "Bottle 1 Photo (optional)",
+              type: "image",
+              required: false,
+              default: "/3.png",
+            },
+            {
+              name: "option2Text",
+              label: "Bottle 2 Wish / Message",
+              type: "textarea",
+              required: true,
+              default: "Here's to a lifetime of late-night laughing fits and impromptu road trips 🚗",
+            },
+            {
+              name: "option2Photo",
+              label: "Bottle 2 Photo (optional)",
+              type: "image",
+              required: false,
+              default: "/1.png",
+            },
+            {
+              name: "option3Text",
+              label: "Bottle 3 Wish / Message",
+              type: "textarea",
+              required: true,
+              default: "May every wish you hold close to your heart come true in the most magical way ✨",
+            },
+            {
+              name: "option3Photo",
+              label: "Bottle 3 Photo (optional)",
+              type: "image",
+              required: false,
+              default: "/2.png",
+            },
+          ],
+        },
+      },
+      {
+        position: 5,
+        componentKey: "LETTER",
+        fixedConfig: {
+          backgroundColor: "#F7F2EA",
+          textColor: "#2D1822",
+          accentColor: "#f43f5e",
+          cardBg: "rgba(255, 255, 255, 0.95)",
+          backgroundTexture: "paper-grain",
+        },
+        editableSchema: {
+          title: "Heartfelt Final Letter",
+          description: "A beautiful personalized letter with attached memory.",
+          fields: [
+            {
+              name: "recipientName",
+              label: "Dear...",
+              type: "text",
+              required: true,
+              default: "My Favorite Person",
+            },
+            {
+              name: "message",
+              label: "Your Message",
+              type: "textarea",
+              required: true,
+              default:
+                "Thank you for being the person who makes life so much brighter, funnier, and more meaningful.\n\nI created this little story to remind you of just how much you mean to me. Keep shining always!",
+            },
+            {
+              name: "senderName",
+              label: "With love, (Your Name)",
+              type: "text",
+              required: true,
+              default: "Yours Always ❤️",
+            },
+            {
+              name: "date",
+              label: "Date / Header Note",
+              type: "text",
+              required: false,
+              default: "Forever & Always",
+            },
+            {
+              name: "photoUrl",
+              label: "Attached Photo (optional)",
+              type: "image",
+              required: false,
+              default: "/1.png",
+            },
+          ],
+        },
+      },
+    ],
+  });
+
+  console.log("\n✅ All 4 templates seeded with textured canvas backgrounds and Pick & Reveal interactions!");
 }
 
 main()

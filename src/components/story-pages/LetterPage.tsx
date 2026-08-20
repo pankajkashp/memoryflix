@@ -46,6 +46,16 @@ export default function LetterPage({
     cardBg = "rgba(24, 24, 27, 0.9)",
   } = fixedConfig;
 
+  // Detect light / beige background
+  const isLightBg =
+    fixedConfig.mode === "light" ||
+    (backgroundColor.startsWith("#") &&
+      ["#f", "#e", "#d"].some((prefix) => backgroundColor.toLowerCase().startsWith(prefix)));
+
+  const resolvedTextColor = isLightBg ? (textColor === "#fafafa" ? "#2D1822" : textColor) : textColor;
+  const resolvedCardBg = isLightBg ? (cardBg.startsWith("rgba(24") ? "rgba(255, 255, 255, 0.96)" : cardBg) : cardBg;
+  const resolvedBorder = isLightBg ? "border-2 border-stone-200/80" : "border-2 border-white/20";
+
   // Entrance animation
   useEffect(() => {
     if (!isActive) return;
@@ -126,36 +136,56 @@ export default function LetterPage({
       style={{ backgroundColor }}
     >
       {/* Textured Canvas Background */}
-      <CanvasTexture texture={fixedConfig.backgroundTexture || "paper-grain"} />
+      <CanvasTexture
+        texture={fixedConfig.backgroundTexture || "paper-grain"}
+        mode={isLightBg ? "light" : "dark"}
+      />
 
       {/* Background ambient lighting */}
       <div
-        className="absolute w-[800px] h-[800px] rounded-full blur-[180px] pointer-events-none opacity-25 -top-20 -right-20"
+        className={`absolute w-[800px] h-[800px] rounded-full blur-[180px] pointer-events-none ${
+          isLightBg ? "opacity-35" : "opacity-25"
+        } -top-20 -right-20`}
         style={{ backgroundColor: accentColor }}
       />
-      <div className="absolute w-[600px] h-[600px] rounded-full blur-[150px] pointer-events-none opacity-20 -bottom-20 -left-20 bg-amber-500/20" />
+      <div
+        className={`absolute w-[600px] h-[600px] rounded-full blur-[150px] pointer-events-none ${
+          isLightBg ? "opacity-25" : "opacity-20"
+        } -bottom-20 -left-20 bg-amber-500/20`}
+      />
 
       {/* Physical Letter Card Document directly on Canvas */}
       <div
         ref={cardRef}
-        className="relative w-full max-w-[min(92vw,950px)] lg:max-w-[min(65vw,1050px)] rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-10 md:p-14 lg:p-16 backdrop-blur-xl border-2 border-white/20 shadow-2xl overflow-hidden z-10 my-auto"
+        className={`relative w-full max-w-[min(92vw,950px)] lg:max-w-[min(65vw,1050px)] rounded-3xl sm:rounded-[2.5rem] p-6 sm:p-10 md:p-14 lg:p-16 backdrop-blur-xl ${resolvedBorder} shadow-2xl overflow-hidden z-10 my-auto`}
         style={{
-          backgroundColor: cardBg,
-          boxShadow: `0 30px 70px -15px rgba(0, 0, 0, 0.85), 0 0 45px -10px ${accentColor}30`,
+          backgroundColor: resolvedCardBg,
+          boxShadow: isLightBg
+            ? "0 25px 60px -15px rgba(244, 63, 94, 0.15), 0 10px 30px rgba(0, 0, 0, 0.08)"
+            : `0 30px 70px -15px rgba(0, 0, 0, 0.85), 0 0 45px -10px ${accentColor}30`,
         }}
       >
         {/* Letter Card Paper Grain Texture */}
-        <CanvasTexture texture="paper-grain" className="opacity-30 rounded-3xl sm:rounded-[2.5rem]" />
+        <CanvasTexture
+          texture="paper-grain"
+          mode={isLightBg ? "light" : "dark"}
+          className="opacity-25 rounded-3xl sm:rounded-[2.5rem]"
+        />
 
         {/* Subtle decorative letterhead accent */}
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-transparent via-rose-500/70 to-transparent" />
 
         <div ref={contentRef} className="space-y-6 sm:space-y-8 relative z-10">
           {/* Header (Date / Salutation) */}
-          <div className="flex items-center justify-between border-b border-white/15 pb-4 sm:pb-6">
+          <div
+            className={`flex items-center justify-between border-b ${
+              isLightBg ? "border-stone-200" : "border-white/15"
+            } pb-4 sm:pb-6`}
+          >
             <span
-              className="text-xs sm:text-base md:text-lg uppercase tracking-widest font-mono text-zinc-400"
-              style={{ color: `${textColor}80` }}
+              className={`text-xs sm:text-base md:text-lg uppercase tracking-widest font-mono ${
+                isLightBg ? "text-stone-500 font-semibold" : "text-zinc-400"
+              }`}
             >
               {data.date || "A Note For You"}
             </span>
@@ -171,15 +201,21 @@ export default function LetterPage({
 
           {/* Letter Body */}
           <div
-            className="text-lg sm:text-2xl md:text-3xl lg:text-4xl leading-relaxed font-serif whitespace-pre-line text-zinc-100"
-            style={{ color: textColor }}
+            className={`text-lg sm:text-2xl md:text-3xl lg:text-4xl leading-relaxed font-serif whitespace-pre-line ${
+              isLightBg ? "text-stone-800" : "text-zinc-100"
+            }`}
+            style={{ color: resolvedTextColor }}
           >
             {data.message}
           </div>
 
           {/* Optional Attached Photo */}
           {data.photoUrl && (
-            <div className="relative w-full h-56 sm:h-72 md:h-80 lg:h-96 rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border-2 border-white/15 mt-6 group">
+            <div
+              className={`relative w-full h-56 sm:h-72 md:h-80 lg:h-96 rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl ${
+                isLightBg ? "border-2 border-stone-200" : "border-2 border-white/15"
+              } mt-6 group`}
+            >
               <Image
                 src={data.photoUrl}
                 alt="Attached memory"
@@ -193,8 +229,18 @@ export default function LetterPage({
 
           {/* Signature / Footer */}
           {data.senderName && (
-            <div className="flex flex-col items-end pt-5 sm:pt-7 border-t border-white/15">
-              <span className="text-xs sm:text-base md:text-lg italic text-zinc-400 font-mono">With love,</span>
+            <div
+              className={`flex flex-col items-end pt-5 sm:pt-7 border-t ${
+                isLightBg ? "border-stone-200" : "border-white/15"
+              }`}
+            >
+              <span
+                className={`text-xs sm:text-base md:text-lg italic font-mono ${
+                  isLightBg ? "text-stone-500 font-medium" : "text-zinc-400"
+                }`}
+              >
+                With love,
+              </span>
               <span
                 className="text-2xl sm:text-4xl md:text-5xl font-serif italic font-bold tracking-tight mt-1 sm:mt-2"
                 style={{ color: accentColor }}
@@ -208,7 +254,7 @@ export default function LetterPage({
 
       {/* Subtle in-context Tap to Continue visual cue */}
       <div className="pt-4 relative z-20">
-        <TapToAdvanceCue accentColor={accentColor} />
+        <TapToAdvanceCue accentColor={accentColor} isLight={isLightBg} />
       </div>
     </div>
   );

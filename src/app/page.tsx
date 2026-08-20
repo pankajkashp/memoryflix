@@ -51,9 +51,9 @@ export default function LandingPage() {
           <div className="flex shrink-0 justify-end items-center gap-3 sm:gap-6">
             <Link
               href="/templates"
-              className="rounded-full bg-rose-500 px-5 py-2 text-sm font-semibold text-white hover:bg-rose-400 transition-colors shadow-md shadow-rose-600/30"
+              className="group relative inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-rose-500 to-pink-600 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-rose-600/30 hover:shadow-rose-600/50 hover:scale-105 transition-all duration-300 border border-white/20"
             >
-              Create Story
+              <span>Create Story</span>
             </Link>
           </div>
         </nav>

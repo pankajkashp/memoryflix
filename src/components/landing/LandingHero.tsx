@@ -94,23 +94,61 @@ export default function LandingHero({
   return (
     <section 
       ref={containerRef}
-      className="relative min-h-[100svh] w-full bg-gradient-to-br from-[#020617] via-[#0a0516] to-[#1e0510] overflow-hidden flex flex-col md:flex-row items-center pt-24 md:pt-0"
+      className="relative min-h-[100svh] w-full bg-[#050508] overflow-hidden flex flex-col md:flex-row items-center pt-24 md:pt-0"
     >
-      {/* ── Background Glows & Optical Flare ─────────────────────────────── */}
-      
-      {/* Deep purple/blue ambient background glow */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-[#1e0a2d]/50 via-transparent to-transparent opacity-90 pointer-events-none" />
+      {/* ── 1. Liquid Aurora Mesh Gradient Blobs ──────────────────────────── */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-85">
+        {/* Blob 1: Pink Aurora */}
+        <div
+          className="absolute -top-[10%] left-[5%] w-[55vw] h-[55vw] max-w-[850px] max-h-[850px] rounded-full blur-[120px] sm:blur-[150px] animate-mesh-1 mix-blend-screen pointer-events-none"
+          style={{
+            background: "radial-gradient(circle at center, rgba(236, 72, 153, 0.28) 0%, rgba(244, 63, 94, 0.15) 50%, transparent 75%)",
+          }}
+        />
+        {/* Blob 2: Royal Purple Aurora */}
+        <div
+          className="absolute top-[10%] -right-[5%] w-[50vw] h-[50vw] max-w-[800px] max-h-[800px] rounded-full blur-[130px] sm:blur-[160px] animate-mesh-2 mix-blend-screen pointer-events-none"
+          style={{
+            background: "radial-gradient(circle at center, rgba(168, 85, 247, 0.26) 0%, rgba(139, 92, 246, 0.14) 50%, transparent 75%)",
+          }}
+        />
+        {/* Blob 3: Warm Gold Accent Blob */}
+        <div
+          className="absolute top-[50%] -left-[5%] w-[45vw] h-[45vw] max-w-[700px] max-h-[700px] rounded-full blur-[110px] sm:blur-[140px] animate-mesh-3 mix-blend-screen pointer-events-none"
+          style={{
+            background: "radial-gradient(circle at center, rgba(245, 158, 11, 0.16) 0%, rgba(251, 146, 60, 0.10) 50%, transparent 70%)",
+          }}
+        />
+        {/* Blob 4: Deep Indigo Fusion Blob */}
+        <div
+          className="absolute bottom-[-10%] right-[10%] w-[55vw] h-[55vw] max-w-[800px] max-h-[800px] rounded-full blur-[120px] sm:blur-[150px] animate-mesh-4 mix-blend-screen pointer-events-none"
+          style={{
+            background: "radial-gradient(circle at center, rgba(99, 102, 241, 0.20) 0%, rgba(236, 72, 153, 0.12) 50%, transparent 75%)",
+          }}
+        />
+      </div>
+
+      {/* ── 2. Tactile 5% Grain Texture Layer ─────────────────────────────── */}
+      <div
+        className="absolute inset-0 opacity-[0.05] mix-blend-overlay pointer-events-none"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+        }}
+      />
+
+      {/* ── 3. Central Contrast Mask / Vignette ──────────────────────────── */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,rgba(5,5,8,0.75)_100%)] pointer-events-none" />
 
       {/* Glow behind the photo collage */}
-      <div className="absolute top-[75%] md:top-1/2 right-[10%] w-[300px] md:w-[600px] h-[300px] md:h-[600px] -translate-y-1/2 bg-rose-600/20 md:bg-rose-600/30 blur-[80px] md:blur-[120px] rounded-full pointer-events-none mix-blend-screen" />
+      <div className="absolute top-[75%] md:top-1/2 right-[10%] w-[300px] md:w-[600px] h-[300px] md:h-[600px] -translate-y-1/2 bg-rose-600/20 md:bg-rose-600/25 blur-[80px] md:blur-[120px] rounded-full pointer-events-none mix-blend-screen" />
 
-      {/* The strong optical lens flare (like in reference) */}
+      {/* The strong optical lens flare */}
       <div className="hidden md:block absolute top-1/2 left-[50%] md:left-[60%] -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none mix-blend-screen opacity-100 scale-100">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-56 h-56 bg-white rounded-full blur-[60px] opacity-80" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[28rem] h-[28rem] bg-rose-500 rounded-full blur-[100px] opacity-60" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-56 h-56 bg-white rounded-full blur-[60px] opacity-75" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[28rem] h-[28rem] bg-rose-500 rounded-full blur-[100px] opacity-50" />
         {/* Diagonal light streak */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1400px] h-2 bg-rose-400 blur-[8px] opacity-90 rotate-[18deg]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[2px] bg-white blur-[2px] opacity-80 rotate-[18deg]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1400px] h-2 bg-rose-400 blur-[8px] opacity-80 rotate-[18deg]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[2px] bg-white blur-[2px] opacity-75 rotate-[18deg]" />
       </div>
 
       {/* ── Floating Particles (Stars and Hearts) ────────────────────────── */}
@@ -148,28 +186,29 @@ export default function LandingHero({
           
           <h1 className="animate-text font-sans text-4xl sm:text-5xl md:text-6xl lg:text-[4.5rem] font-bold tracking-tight text-white leading-[1.1] mb-6 whitespace-normal break-words md:whitespace-nowrap w-full">
             Turn Your Memories <br className="hidden md:block" />
-            Into <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-purple-500 drop-shadow-lg">Cinematic Stories</span>
+            Into <span className="font-serif italic font-normal tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-rose-300 via-pink-200 to-amber-200 drop-shadow-[0_4px_20px_rgba(244,63,94,0.4)]" style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}>Cinematic Stories</span>
           </h1>
 
-          <p className="animate-text text-lg text-zinc-400 max-w-[420px] mb-10 leading-relaxed font-medium">
-            Create beautiful stories with your photos and videos. Cherish, preview, and share your unforgettable moments.
+          <p className="animate-text text-lg text-zinc-300/90 max-w-[440px] mb-10 leading-relaxed font-normal">
+            Turn your shared jokes, polaroids, and heartfelt notes into an unforgettable interactive premiere. Beautiful. Private. Yours.
           </p>
 
+          {/* Distinctive CTAs */}
           <div className="animate-text flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto mb-16">
             <Link
               href={ctaHref}
-              className="group relative flex items-center justify-center gap-2 w-full sm:w-auto h-12 sm:h-14 px-8 rounded-full bg-gradient-to-r from-rose-500 to-purple-600 text-white font-bold text-base transition-all hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(236,72,153,0.5)]"
+              className="group relative flex items-center justify-center gap-2 w-full sm:w-auto h-12 sm:h-14 px-8 rounded-2xl bg-gradient-to-r from-rose-500 via-pink-500 to-purple-600 text-white font-bold text-base transition-all duration-300 hover:scale-[1.03] shadow-[0_0_25px_rgba(236,72,153,0.4)] hover:shadow-[0_0_35px_rgba(236,72,153,0.6)]"
             >
-              <Sparkles className="w-5 h-5" />
-              {ctaText}
+              <Sparkles className="w-5 h-5 text-rose-200 animate-pulse" />
+              <span>{ctaText}</span>
             </Link>
             
             <Link
               href="/demo"
-              className="flex items-center justify-center gap-2 w-full sm:w-auto h-12 sm:h-14 px-8 rounded-full border border-zinc-700 hover:border-zinc-400 hover:bg-white/5 bg-transparent text-zinc-300 hover:text-white font-semibold text-base transition-all"
+              className="group flex items-center justify-center gap-2 w-full sm:w-auto h-12 sm:h-14 px-8 rounded-2xl border border-white/15 hover:border-rose-400/40 bg-white/[0.04] hover:bg-white/[0.08] text-zinc-300 hover:text-white font-semibold text-base backdrop-blur-md transition-all duration-300 hover:shadow-[0_0_20px_rgba(244,63,94,0.2)]"
             >
-              <PlayCircle className="w-5 h-5" />
-              Watch Demo
+              <PlayCircle className="w-5 h-5 text-zinc-400 group-hover:text-rose-400 transition-colors" />
+              <span>Watch Demo</span>
             </Link>
           </div>
 

@@ -55,6 +55,17 @@ export default function LabeledPhotoPage({
     cardBg = "rgba(24, 24, 27, 0.9)",
   } = fixedConfig;
 
+  // Detect light background (e.g. Baby Pink #FFD6E8 or Cream #FAF7F2)
+  const isLightBg =
+    fixedConfig.mode === "light" ||
+    (backgroundColor.startsWith("#") &&
+      ["#f", "#e"].some((prefix) => backgroundColor.toLowerCase().startsWith(prefix)));
+
+  const titleColor = isLightBg ? (textColor === "#fafafa" ? "#1F0B14" : textColor) : textColor;
+  const subtitleColor = isLightBg ? "#4A1528" : "#d4d4d8";
+  const pillTextColor = isLightBg ? "#1F0B14" : (textColor === "#1F0B14" ? "#fafafa" : textColor);
+  const pillBg = isLightBg ? (cardBg.startsWith("rgba(24") ? "rgba(255, 255, 255, 0.95)" : cardBg) : cardBg;
+
   // Entrance animation
   useEffect(() => {
     if (!isActive) return;
@@ -204,28 +215,46 @@ export default function LabeledPhotoPage({
       style={{ backgroundColor }}
     >
       {/* Textured Canvas Background */}
-      <CanvasTexture texture={fixedConfig.backgroundTexture || "canvas"} />
+      <CanvasTexture
+        texture={fixedConfig.backgroundTexture || "canvas"}
+        mode={isLightBg ? "light" : "dark"}
+      />
 
       {/* Background glow */}
       <div
-        className="absolute w-[800px] h-[800px] rounded-full blur-[180px] pointer-events-none opacity-25 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+        className={`absolute w-[800px] h-[800px] rounded-full blur-[180px] pointer-events-none ${
+          isLightBg ? "opacity-35" : "opacity-25"
+        } top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2`}
         style={{ backgroundColor: accentColor }}
       />
 
       <div className="w-full flex flex-col items-center z-10 my-auto justify-center">
         {/* Header info directly on canvas */}
         {(data.title || data.subtitle) && (
-          <div className="text-center mb-6 sm:mb-8 z-10 space-y-2">
+          <div className="text-center mb-6 sm:mb-8 z-10 space-y-2.5 max-w-3xl mx-auto px-4">
             {data.title && (
               <h2
-                className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight font-serif drop-shadow-md"
-                style={{ color: textColor }}
+                className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-black tracking-tight leading-tight select-none"
+                style={{
+                  color: isLightBg ? "#e11d48" : "#f472b6",
+                  background: isLightBg
+                    ? "linear-gradient(135deg, #be123c 0%, #ec4899 50%, #f43f5e 100%)"
+                    : "linear-gradient(135deg, #f472b6 0%, #fb7185 50%, #fda4af 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  filter: isLightBg
+                    ? "drop-shadow(0 0 16px rgba(236, 72, 153, 0.45)) drop-shadow(0 0 35px rgba(244, 63, 94, 0.25))"
+                    : "drop-shadow(0 0 20px rgba(244, 63, 94, 0.6)) drop-shadow(0 0 40px rgba(236, 72, 153, 0.35))",
+                }}
               >
                 {data.title}
               </h2>
             )}
             {data.subtitle && (
-              <p className="text-xs sm:text-base md:text-xl text-zinc-300 font-mono tracking-wide">
+              <p
+                className="text-sm sm:text-lg md:text-xl font-medium tracking-wide font-sans"
+                style={{ color: subtitleColor }}
+              >
                 {data.subtitle}
               </p>
             )}
@@ -235,9 +264,13 @@ export default function LabeledPhotoPage({
         {/* Photo with SVG overlay directly on canvas */}
         <div
           ref={photoContainerRef}
-          className="relative w-full max-w-[min(95vw,1200px)] lg:max-w-[min(85vw,1400px)] aspect-[4/3] sm:aspect-[16/10] lg:aspect-[16/9] rounded-3xl sm:rounded-[2.5rem] overflow-hidden shadow-2xl z-10 border-2 border-white/15"
+          className={`relative w-full max-w-[min(95vw,1200px)] lg:max-w-[min(85vw,1400px)] aspect-[4/3] sm:aspect-[16/10] lg:aspect-[16/9] rounded-3xl sm:rounded-[2.5rem] overflow-hidden shadow-2xl z-10 ${
+            isLightBg ? "border-2 border-pink-200/60" : "border-2 border-white/15"
+          }`}
           style={{
-            boxShadow: `0 30px 70px -15px rgba(0, 0, 0, 0.85), 0 0 45px -10px ${accentColor}30`,
+            boxShadow: isLightBg
+              ? `0 25px 60px -15px rgba(244, 63, 94, 0.18), 0 10px 30px rgba(0, 0, 0, 0.1)`
+              : `0 30px 70px -15px rgba(0, 0, 0, 0.85), 0 0 45px -10px ${accentColor}30`,
           }}
         >
           {/* The Base Photo */}
@@ -249,7 +282,13 @@ export default function LabeledPhotoPage({
             className="object-cover"
             sizes="(max-width: 1024px) 100vw, 1400px"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/10 pointer-events-none" />
+          <div
+            className={`absolute inset-0 pointer-events-none ${
+              isLightBg
+                ? "bg-gradient-to-t from-black/40 via-transparent to-black/5"
+                : "bg-gradient-to-t from-black/50 via-transparent to-black/10"
+            }`}
+          />
 
           {/* SVG Callout Lines Layer */}
           <svg
@@ -318,20 +357,26 @@ export default function LabeledPhotoPage({
                 }}
               >
                 <div
-                  className="inline-flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-full border-2 border-white/25 backdrop-blur-2xl shadow-2xl transition-transform duration-300 hover:scale-105"
+                  className={`inline-flex items-center gap-2 px-4 sm:px-6 py-2 sm:py-3 rounded-full backdrop-blur-2xl transition-transform duration-300 hover:scale-105 ${
+                    isLightBg
+                      ? "border border-pink-200/80 shadow-lg"
+                      : "border-2 border-white/25 shadow-2xl"
+                  }`}
                   style={{
-                    backgroundColor: cardBg,
-                    boxShadow: `0 12px 30px -3px rgba(0, 0, 0, 0.8), 0 0 20px -3px ${accentColor}50`,
+                    backgroundColor: pillBg,
+                    boxShadow: isLightBg
+                      ? "0 10px 25px -3px rgba(0, 0, 0, 0.15), 0 4px 10px rgba(244, 63, 94, 0.1)"
+                      : `0 12px 30px -3px rgba(0, 0, 0, 0.8), 0 0 20px -3px ${accentColor}50`,
                   }}
                 >
                   {item.badge ? (
-                    <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
+                    <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500" />
                   ) : (
                     <Tag className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: accentColor }} />
                   )}
                   <span
                     className="text-xs sm:text-base md:text-lg font-bold whitespace-nowrap tracking-wide"
-                    style={{ color: textColor }}
+                    style={{ color: pillTextColor }}
                   >
                     {item.text}
                   </span>
@@ -344,7 +389,7 @@ export default function LabeledPhotoPage({
 
       {/* Subtle in-context Tap to Continue visual cue */}
       <div className="pt-4 relative z-20">
-        <TapToAdvanceCue accentColor={accentColor} />
+        <TapToAdvanceCue accentColor={accentColor} isLight={isLightBg} />
       </div>
     </div>
   );

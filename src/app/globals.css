@@ -191,17 +191,127 @@
   animation: shimmer 2s ease-in-out infinite;
 }
 
-/* ── Gradient border animation ──────────────────────────────────────────────── */
-@keyframes gradient-border-rotate {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+/* ── Liquid Aurora Mesh Gradient Animations ───────────────────────────────── */
+@keyframes mesh-drift-1 {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+    border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
+  }
+  33% {
+    transform: translate3d(12vw, 8vh, 0) scale(1.15) rotate(60deg);
+    border-radius: 58% 42% 38% 62% / 30% 65% 35% 70%;
+  }
+  66% {
+    transform: translate3d(-8vw, 15vh, 0) scale(0.92) rotate(120deg);
+    border-radius: 65% 35% 50% 50% / 55% 30% 70% 45%;
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1) rotate(180deg);
+    border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
+  }
+}
+
+@keyframes mesh-drift-2 {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+    border-radius: 50% 50% 40% 60% / 60% 40% 60% 40%;
+  }
+  33% {
+    transform: translate3d(-14vw, -6vh, 0) scale(1.12) rotate(-50deg);
+    border-radius: 35% 65% 60% 40% / 45% 55% 45% 55%;
+  }
+  66% {
+    transform: translate3d(6vw, 12vh, 0) scale(0.95) rotate(-110deg);
+    border-radius: 60% 40% 55% 45% / 70% 30% 70% 30%;
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1) rotate(-180deg);
+    border-radius: 50% 50% 40% 60% / 60% 40% 60% 40%;
+  }
+}
+
+@keyframes mesh-drift-3 {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.95) rotate(0deg);
+    border-radius: 60% 40% 30% 70% / 50% 60% 40% 50%;
+  }
+  33% {
+    transform: translate3d(10vw, -10vh, 0) scale(1.18) rotate(45deg);
+    border-radius: 40% 60% 65% 35% / 60% 35% 65% 40%;
+  }
+  66% {
+    transform: translate3d(-10vw, -4vh, 0) scale(1.05) rotate(90deg);
+    border-radius: 55% 45% 40% 60% / 40% 60% 40% 60%;
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(0.95) rotate(180deg);
+    border-radius: 60% 40% 30% 70% / 50% 60% 40% 50%;
+  }
+}
+
+@keyframes mesh-drift-4 {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1.05) rotate(0deg);
+    border-radius: 45% 55% 60% 40% / 50% 50% 50% 50%;
+  }
+  33% {
+    transform: translate3d(-8vw, 10vh, 0) scale(0.9) rotate(-40deg);
+    border-radius: 65% 35% 45% 55% / 35% 65% 35% 65%;
+  }
+  66% {
+    transform: translate3d(12vw, -8vh, 0) scale(1.1) rotate(-90deg);
+    border-radius: 40% 60% 50% 50% / 55% 45% 60% 40%;
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1.05) rotate(-180deg);
+    border-radius: 45% 55% 60% 40% / 50% 50% 50% 50%;
+  }
+}
+
+.animate-mesh-1 {
+  animation: mesh-drift-1 22s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+  will-change: transform, border-radius;
+}
+.animate-mesh-2 {
+  animation: mesh-drift-2 27s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+  will-change: transform, border-radius;
+}
+.animate-mesh-3 {
+  animation: mesh-drift-3 24s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+  will-change: transform, border-radius;
+}
+.animate-mesh-4 {
+  animation: mesh-drift-4 29s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+  will-change: transform, border-radius;
+}
+
+/* ── Dynamic Gradient Border Rotate / Flow ─────────────────────────────────── */
+@keyframes gradient-border-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient-border {
+  background-size: 200% 200%;
+  animation: gradient-border-flow 4s ease infinite;
 }
 
 /* ── Reduced Motion ─────────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   .animate-pulse-slow,
-  .animate-shimmer {
+  .animate-shimmer,
+  .animate-mesh-1,
+  .animate-mesh-2,
+  .animate-mesh-3,
+  .animate-mesh-4,
+  .animate-gradient-border {
     animation: none !important;
   }
   *,
@@ -230,4 +340,23 @@
 /* ── Prevent horizontal overflow globally ───────────────────────────────────── */
 body {
   overflow-x: hidden;
+}
+
+/* ── Birthday Cinematic Animations ─────────────────────────────────────────── */
+@keyframes flicker {
+  0%   { transform: scaleX(1) scaleY(1) rotate(-1deg); opacity: 0.9; }
+  25%  { transform: scaleX(0.9) scaleY(1.05) rotate(1deg); opacity: 1; }
+  50%  { transform: scaleX(1.05) scaleY(0.95) rotate(-2deg); opacity: 0.85; }
+  75%  { transform: scaleX(0.95) scaleY(1.08) rotate(1.5deg); opacity: 1; }
+  100% { transform: scaleX(1) scaleY(1) rotate(0deg); opacity: 0.9; }
+}
+
+@keyframes wave {
+  from { transform: rotate(-30deg); }
+  to   { transform: rotate(-15deg); }
+}
+
+@keyframes float {
+  from { transform: translateY(0px) rotate(-5deg); }
+  to   { transform: translateY(-12px) rotate(5deg); }
 }

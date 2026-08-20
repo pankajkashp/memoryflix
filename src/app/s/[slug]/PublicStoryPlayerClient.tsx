@@ -4,6 +4,10 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Sparkles, Heart, Share2 } from "lucide-react";
 import PageRenderer from "@/components/story-pages/PageRenderer";
+import OurStoryRenderer from "@/components/story-templates/our-story/OurStoryRenderer";
+import BirthdayRenderer from "@/components/story-templates/birthday/BirthdayRenderer";
+import TravelRenderer from "@/components/story-templates/travel/TravelRenderer";
+import CinematicBirthdayExperience from "@/components/story-templates/birthday-cinematic/CinematicBirthdayExperience";
 import toast from "react-hot-toast";
 
 interface PublicStoryPlayerProps {
@@ -12,6 +16,7 @@ interface PublicStoryPlayerProps {
     slug: string;
     template: {
       name: string;
+      slug?: string;
     };
   };
   pages: Array<{
@@ -113,19 +118,39 @@ export default function PublicStoryPlayerClient({
         </div>
       </header>
 
-      {/* Main Full-Viewport 100vw x 100dvh Canvas Presentation */}
+      {/* Main Full-Viewport Canvas Presentation */}
       <main className="w-full h-full min-h-[100dvh] flex-1 flex flex-col">
-        {activePage && (
-          <PageRenderer
-            key={`${activePage.id}-${animKey}`}
-            componentKey={activePage.componentKey}
-            fixedConfig={activePage.fixedConfig}
-            fieldValues={activePage.fieldValues}
-            isActive={true}
-            isExiting={isExiting}
-          />
+        {story.template.slug === "our-story" ? (
+          <div className="w-full h-full overflow-y-auto overflow-x-hidden no-scrollbar">
+             <OurStoryRenderer pages={pages as any} />
+             <div className="h-16" /> 
+          </div>
+        ) : story.template.slug === "birthday-magic" ? (
+          <div className="w-full h-full overflow-y-auto overflow-x-hidden no-scrollbar">
+             <BirthdayRenderer pages={pages as any} />
+             <div className="h-16" /> 
+          </div>
+        ) : story.template.slug === "birthday-cinematic" ? (
+          <CinematicBirthdayExperience fieldValues={(pages[0]?.fieldValues ?? {}) as Record<string, string>} />
+        ) : story.template.slug === "travel-journey" ? (
+          <div className="w-full h-full overflow-y-auto overflow-x-hidden no-scrollbar">
+             <TravelRenderer pages={pages as any} />
+             <div className="h-16" /> 
+          </div>
+        ) : (
+          activePage && (
+            <PageRenderer
+              key={`${activePage.id}-${animKey}`}
+              componentKey={activePage.componentKey}
+              fixedConfig={activePage.fixedConfig}
+              fieldValues={activePage.fieldValues}
+              isActive={true}
+              isExiting={isExiting}
+            />
+          )
         )}
       </main>
+
 
       {/* Subtle Floating Bottom Branding Overlay */}
       <footer className="fixed bottom-3 left-4 right-4 z-30 flex items-center justify-between text-[11px] font-mono text-zinc-400/80 pointer-events-none drop-shadow">
