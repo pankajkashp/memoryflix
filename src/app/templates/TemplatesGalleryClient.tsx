@@ -43,6 +43,26 @@ export default function TemplatesGalleryClient({
 }: TemplatesGalleryClientProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
+  if (!templates.length) {
+    return (
+      <div className="relative min-h-screen bg-[#0a0a0f] text-white selection:bg-rose-500/30 overflow-x-hidden">
+        <AtmosphericBackground glowColor="multi" />
+
+        <main className="relative z-10 flex min-h-screen items-center justify-center px-6">
+          <div className="max-w-xl rounded-[28px] border border-white/10 bg-white/[0.02] px-8 py-10 text-center shadow-[0_0_40px_rgba(244,63,94,0.12)] backdrop-blur-xl">
+            <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl border border-rose-500/30 bg-rose-500/10 text-2xl shadow-[0_0_25px_rgba(244,63,94,0.18)]">
+              ✨
+            </div>
+            <h1 className="text-3xl font-bold tracking-tight text-white">Template library is being refreshed</h1>
+            <p className="mt-4 text-base leading-relaxed text-zinc-300">
+              The previous template gallery has been removed while the new interactive design is prepared.
+            </p>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   // Extract unique categories
   const categories = useMemo(() => {
     const cats = Array.from(new Set(templates.map((t) => t.category))).filter(

@@ -8,7 +8,8 @@ import PageRenderer from "@/components/story-pages/PageRenderer";
 import OurStoryRenderer from "@/components/story-templates/our-story/OurStoryRenderer";
 import BirthdayRenderer from "@/components/story-templates/birthday/BirthdayRenderer";
 import TravelRenderer from "@/components/story-templates/travel/TravelRenderer";
-import CinematicBirthdayExperience from "@/components/story-templates/birthday-cinematic/CinematicBirthdayExperience";
+import ExperienceRenderer from "@/components/story-templates/ExperienceRenderer";
+import { resolveTemplateSlug } from "@/lib/templateCatalog";
 import toast from "react-hot-toast";
 
 interface StoryPreviewClientProps {
@@ -47,6 +48,7 @@ export default function StoryPreviewClient({
   const activePage = pages[currentPageIdx];
   const isFinalPage = currentPageIdx === pages.length - 1;
   const priceInRupees = Math.round(story.template.price / 100);
+  const canonicalTemplateSlug = resolveTemplateSlug(story.template.slug);
 
   // Advance to next page with smooth exit animation
   const handleAdvance = () => {
@@ -121,19 +123,14 @@ export default function StoryPreviewClient({
 
       {/* Main Full-Viewport Presentation Canvas */}
       <main className="w-full h-full min-h-[100dvh] flex-1 flex flex-col">
-        {story.template.slug === "our-story" ? (
+        {canonicalTemplateSlug === "our-little-story" ? (
           <div className="w-full h-full overflow-y-auto overflow-x-hidden no-scrollbar">
              <OurStoryRenderer pages={pages as any} />
              <div className="h-40" /> 
           </div>
-        ) : story.template.slug === "birthday-magic" ? (
-          <div className="w-full h-full overflow-y-auto overflow-x-hidden no-scrollbar">
-             <BirthdayRenderer pages={pages as any} />
-             <div className="h-40" /> 
-          </div>
-        ) : story.template.slug === "birthday-cinematic" ? (
-          <CinematicBirthdayExperience fieldValues={(pages[0]?.fieldValues ?? {}) as Record<string, string>} />
-        ) : story.template.slug === "travel-journey" ? (
+        ) : canonicalTemplateSlug === "a-little-surprise" ? (
+          <ExperienceRenderer templateSlug={canonicalTemplateSlug} fieldValues={(pages[0]?.fieldValues ?? {}) as Record<string, any>} />
+        ) : canonicalTemplateSlug === "the-journey" ? (
           <div className="w-full h-full overflow-y-auto overflow-x-hidden no-scrollbar">
              <TravelRenderer pages={pages as any} />
              <div className="h-40" /> 
