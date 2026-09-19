@@ -9,6 +9,8 @@ import OurStoryRenderer from "@/components/story-templates/our-story/OurStoryRen
 import BirthdayRenderer from "@/components/story-templates/birthday/BirthdayRenderer";
 import TravelRenderer from "@/components/story-templates/travel/TravelRenderer";
 import ExperienceRenderer from "@/components/story-templates/ExperienceRenderer";
+import BranchingExperiencePlayer from "@/components/story-pages/scenes/BranchingExperiencePlayer";
+import { isSceneComponentKey } from "@/components/story-pages/scenes/sceneRegistry";
 import { resolveTemplateSlug } from "@/lib/templateCatalog";
 import toast from "react-hot-toast";
 
@@ -49,6 +51,7 @@ export default function StoryPreviewClient({
   const isFinalPage = currentPageIdx === pages.length - 1;
   const priceInRupees = Math.round(story.template.price / 100);
   const canonicalTemplateSlug = resolveTemplateSlug(story.template.slug);
+  const isBranchingExperience = pages.some((p) => isSceneComponentKey(p.componentKey));
 
   // Advance to next page with smooth exit animation
   const handleAdvance = () => {
@@ -123,17 +126,19 @@ export default function StoryPreviewClient({
 
       {/* Main Full-Viewport Presentation Canvas */}
       <main className="w-full h-full min-h-[100dvh] flex-1 flex flex-col">
-        {canonicalTemplateSlug === "our-little-story" ? (
+        {isBranchingExperience ? (
+          <BranchingExperiencePlayer pages={pages as any} />
+        ) : canonicalTemplateSlug === "our-little-story" ? (
           <div className="w-full h-full overflow-y-auto overflow-x-hidden no-scrollbar">
              <OurStoryRenderer pages={pages as any} />
-             <div className="h-40" /> 
+             <div className="h-40" />
           </div>
         ) : canonicalTemplateSlug === "a-little-surprise" ? (
           <ExperienceRenderer templateSlug={canonicalTemplateSlug} fieldValues={(pages[0]?.fieldValues ?? {}) as Record<string, any>} />
         ) : canonicalTemplateSlug === "the-journey" ? (
           <div className="w-full h-full overflow-y-auto overflow-x-hidden no-scrollbar">
              <TravelRenderer pages={pages as any} />
-             <div className="h-40" /> 
+             <div className="h-40" />
           </div>
         ) : (
           activePage && (
@@ -150,7 +155,7 @@ export default function StoryPreviewClient({
       </main>
 
       {/* Checkout Overlay: for slide-based templates only */}
-      {(isFinalPage || story.template.slug === "our-story" || story.template.slug === "birthday-magic" || story.template.slug === "travel-journey") && (
+      {(isFinalPage || isBranchingExperience || story.template.slug === "our-story" || story.template.slug === "birthday-magic" || story.template.slug === "travel-journey") && (
         <div
           onClick={(e) => e.stopPropagation()}
           className="fixed bottom-0 left-0 right-0 z-50 p-4 sm:p-8 bg-gradient-to-t from-black/95 via-black/80 to-transparent backdrop-blur-sm pointer-events-auto animate-fadeIn cursor-default"

@@ -153,7 +153,7 @@ export default function TemplateStoryWizard({
   const schemaFields = (activeBlueprint?.editableSchema?.fields || []) as Array<{
     name: string;
     label: string;
-    type: "text" | "textarea" | "image";
+    type: "text" | "textarea" | "image" | "color";
     required?: boolean;
     default?: string;
   }>;
@@ -285,6 +285,31 @@ export default function TemplateStoryWizard({
                       onChange={(url) => handleFieldChange(field.name, url)}
                       required={field.required}
                     />
+                  </div>
+                );
+              }
+
+              if (field.type === "color") {
+                return (
+                  <div key={field.name} className="space-y-1.5">
+                    <label className="text-xs font-semibold text-zinc-300">
+                      {field.label} {field.required && <span className="text-rose-400">*</span>}
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="color"
+                        value={val || "#f43f5e"}
+                        onChange={(e) => handleFieldChange(field.name, e.target.value)}
+                        className="w-10 h-10 rounded-lg border border-white/10 bg-zinc-900 cursor-pointer p-0.5"
+                      />
+                      <input
+                        type="text"
+                        value={val}
+                        onChange={(e) => handleFieldChange(field.name, e.target.value)}
+                        placeholder="#f43f5e"
+                        className="flex-1 px-4 py-2.5 rounded-xl bg-zinc-900 border border-white/10 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-rose-500 transition-colors"
+                      />
+                    </div>
                   </div>
                 );
               }

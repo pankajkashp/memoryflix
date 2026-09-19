@@ -8,6 +8,8 @@ import OurStoryRenderer from "@/components/story-templates/our-story/OurStoryRen
 import BirthdayRenderer from "@/components/story-templates/birthday/BirthdayRenderer";
 import TravelRenderer from "@/components/story-templates/travel/TravelRenderer";
 import ExperienceRenderer from "@/components/story-templates/ExperienceRenderer";
+import BranchingExperiencePlayer from "@/components/story-pages/scenes/BranchingExperiencePlayer";
+import { isSceneComponentKey } from "@/components/story-pages/scenes/sceneRegistry";
 import { resolveTemplateSlug } from "@/lib/templateCatalog";
 import toast from "react-hot-toast";
 
@@ -41,6 +43,7 @@ export default function PublicStoryPlayerClient({
 
   const activePage = pages[currentPageIdx];
   const canonicalTemplateSlug = resolveTemplateSlug(story.template.slug);
+  const isBranchingExperience = pages.some((p) => isSceneComponentKey(p.componentKey));
 
   // Advance to next page with smooth exit-then-entrance transition
   const handleAdvance = () => {
@@ -122,7 +125,9 @@ export default function PublicStoryPlayerClient({
 
       {/* Main Full-Viewport Canvas Presentation */}
       <main className="w-full h-full min-h-[100dvh] flex-1 flex flex-col">
-        {canonicalTemplateSlug === "our-little-story" ? (
+        {isBranchingExperience ? (
+          <BranchingExperiencePlayer pages={pages as any} />
+        ) : canonicalTemplateSlug === "our-little-story" ? (
           <div className="w-full h-full overflow-y-auto overflow-x-hidden no-scrollbar">
              <OurStoryRenderer pages={pages as any} />
              <div className="h-16" /> 

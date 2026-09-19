@@ -5,12 +5,17 @@ import { razorpay } from "@/lib/razorpay";
 import crypto from "crypto";
 import { z } from "zod";
 import { sendStoryDeliveryEmail } from "@/lib/email";
+import { assertStoryEditAccess } from "@/lib/storyAuth";
 
 /**
  * Creates or retrieves a pending Razorpay order for a template story.
  */
 export async function createStoryPaymentOrder(storyId: string, email?: string) {
   try {
+    const access = await assertStoryEditAccess(storyId);
+    if (!access.ok) {
+      return { success: false, error: access.error };
+    }
     const story = await prisma.story.findUnique({
       where: { id: storyId },
       include: { template: true },
@@ -192,6 +197,15 @@ export async function verifyRazorpayPayment(
       razorpay_signature,
       storyId,
     } = parsed.data;
+
+    // Client-initiated verification must prove edit access to this story.
+    // (The Razorpay webhook fulfills payments through fulfillPaidStory()
+    // directly, authenticated by the webhook signature instead — it does
+    // not go through this function, so this check doesn't affect it.)
+    const access = await assertStoryEditAccess(storyId);
+    if (!access.ok) {
+      return { success: false, error: access.error };
+    }
 
     // Verify signature
     const secret = process.env.RAZORPAY_KEY_SECRET || "dummy_secret";

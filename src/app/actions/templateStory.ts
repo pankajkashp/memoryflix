@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import crypto from "crypto";
 import { revalidatePath } from "next/cache";
+import { assertStoryEditAccess, grantStoryEditAccess } from "@/lib/storyAuth";
 
 export async function createStoryFromTemplate(templateSlug: string) {
   try {
@@ -54,6 +55,8 @@ export async function createStoryFromTemplate(templateSlug: string) {
       });
     }
 
+    await grantStoryEditAccess(story);
+
     return {
       success: true,
       storyId: story.id,
@@ -71,6 +74,11 @@ export async function updateStoryPageInstance(
   fieldValues: Record<string, any>
 ) {
   try {
+    const access = await assertStoryEditAccess(storyId);
+    if (!access.ok) {
+      return { success: false, error: access.error };
+    }
+
     const instance = await prisma.storyPageInstance.findFirst({
       where: {
         id: pageInstanceId,
@@ -98,12 +106,9 @@ export async function updateStoryPageInstance(
 
 export async function finalizeStoryDraft(storyId: string, email?: string) {
   try {
-    const story = await prisma.story.findUnique({
-      where: { id: storyId },
-    });
-
-    if (!story) {
-      return { success: false, error: "Story not found" };
+    const access = await assertStoryEditAccess(storyId);
+    if (!access.ok) {
+      return { success: false, error: access.error };
     }
 
     const updated = await prisma.story.update({

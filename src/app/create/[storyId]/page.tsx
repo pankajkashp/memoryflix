@@ -1,6 +1,7 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import TemplateStoryWizard from "@/components/story/TemplateStoryWizard";
+import { assertStoryEditAccess, grantStoryEditAccess } from "@/lib/storyAuth";
 
 interface CreateStoryPageProps {
   params: Promise<{ storyId: string }>;
@@ -16,7 +17,29 @@ export default async function CreateStoryPage({
   searchParams,
 }: CreateStoryPageProps) {
   const { storyId } = await params;
-  const { page: pageQuery } = await searchParams;
+  const { page: pageQuery, token } = await searchParams;
+
+  const access = await assertStoryEditAccess(storyId);
+  if (!access.ok) {
+    // Cross-device / recovered-link path: an emailed editUrl (?token=...)
+    // can (re)mint the edit-access cookie, then we redirect to the bare
+    // URL so the token isn't left sitting in browser history/referrers.
+    const storyForToken = await prisma.story.findUnique({
+      where: { id: storyId },
+      select: { id: true, editToken: true, editTokenExpiresAt: true },
+    });
+    const tokenValid =
+      storyForToken &&
+      token === storyForToken.editToken &&
+      (!storyForToken.editTokenExpiresAt || storyForToken.editTokenExpiresAt.getTime() >= Date.now());
+
+    if (tokenValid) {
+      await grantStoryEditAccess(storyForToken);
+      redirect(`/create/${storyId}`);
+    }
+
+    notFound();
+  }
 
   const story = await prisma.story.findUnique({
     where: { id: storyId },

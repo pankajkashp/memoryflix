@@ -1646,7 +1646,327 @@ async function main() {
     ],
   });
 
-  console.log("\n✅ All 4 templates seeded with textured canvas backgrounds and Pick & Reveal interactions!");
+  // ==========================================
+  // 5. Surprise in an Envelope (data-driven branching-scene experience)
+  // Warm rose/amber. Envelope open -> Yes/No question (No loops to a
+  // "how dare you" gag) -> accept -> gift pick -> photo reveal -> confetti.
+  // ==========================================
+  await seedTemplate({
+    name: "Surprise in an Envelope",
+    slug: "birthday-envelope-surprise",
+    category: "Birthday Celebration",
+    price: 5900, // ₹59
+    description:
+      "A wax-sealed envelope opens into a branching, click-driven birthday surprise — dare to say no and you'll be sent right back to the question.",
+    previewUrl: "/1.png",
+    blueprints: [
+      {
+        position: 1,
+        componentKey: "SCENE_ENVELOPE",
+        fixedConfig: {
+          backgroundColor: "#0d0d0d",
+          textColor: "#fafafa",
+          accentColor: "#f43f5e",
+          sceneId: "envelope",
+          isEntry: true,
+          next: "question",
+        },
+        editableSchema: {
+          title: "The Envelope",
+          description: "The opening moment, before the surprise unfolds.",
+          fields: [
+            { name: "recipientName", label: "Recipient's Name", type: "text", required: true, default: "Ananya" },
+            { name: "accentColor", label: "Seal & Glow Color", type: "color", required: false, default: "#f43f5e" },
+          ],
+        },
+      },
+      {
+        position: 2,
+        componentKey: "SCENE_YESNO_QUESTION",
+        fixedConfig: {
+          backgroundColor: "#FFF7ED",
+          textColor: "#27272a",
+          accentColor: "#f43f5e",
+          sceneId: "question",
+          choices: [
+            { key: "yes", label: "YES", targetSceneId: "accept" },
+            { key: "no", label: "NO", targetSceneId: "reaction" },
+          ],
+        },
+        editableSchema: {
+          title: "The Big Question",
+          description: "They tap YES or NO — NO bounces to a funny reaction and loops back here.",
+          fields: [
+            { name: "questionText", label: "Question", type: "text", required: true, default: "Wanna see what I made?" },
+            { name: "recipientName", label: "Recipient's Name (small tag above)", type: "text", required: false, default: "Ananya" },
+          ],
+        },
+      },
+      {
+        position: 3,
+        componentKey: "SCENE_REACTION_GAG",
+        fixedConfig: {
+          backgroundColor: "#FFF7ED",
+          accentColor: "#f97316",
+          sceneId: "reaction",
+          next: "question",
+        },
+        editableSchema: {
+          title: "The \"How Dare You\" Reaction",
+          description: "Shown only if they tap NO — the try-again button loops back to the question.",
+          fields: [
+            { name: "reactionTitle", label: "Reaction Headline", type: "text", required: false, default: "HOW DARE YOU!" },
+            {
+              name: "reactionSubtitle",
+              label: "Reaction Subtext",
+              type: "text",
+              required: false,
+              default: "That was the wrong answer. Try again... please 🥺",
+            },
+          ],
+        },
+      },
+      {
+        position: 4,
+        componentKey: "SCENE_MESSAGE_BEAT",
+        fixedConfig: {
+          backgroundColor: "#0d0d0d",
+          textColor: "#fafafa",
+          accentColor: "#f43f5e",
+          sceneId: "accept",
+          next: "gifts",
+        },
+        editableSchema: {
+          title: "Accepting the Surprise",
+          description: "A short beat before the gifts appear.",
+          fields: [
+            { name: "message", label: "Message", type: "textarea", required: true, default: "Get ready... I made something just for you." },
+            { name: "ctaLabel", label: "Button Label", type: "text", required: false, default: "Show me!" },
+          ],
+        },
+      },
+      {
+        position: 5,
+        componentKey: "SCENE_GIFT_PICKER",
+        fixedConfig: {
+          backgroundColor: "#fdf4ff",
+          accentColor: "#d946ef",
+          sceneId: "gifts",
+          next: "reveal",
+          animationPreset: "ribboned-boxes",
+          itemCount: 3,
+        },
+        editableSchema: {
+          title: "Pick a Gift",
+          description: "3 clickable gift boxes — opening any one advances the story.",
+          fields: [
+            { name: "prompt", label: "Prompt", type: "text", required: false, default: "Pick one to open 🎁" },
+            { name: "gift1Label", label: "Gift 1 Label", type: "text", required: false, default: "Memory" },
+            { name: "gift2Label", label: "Gift 2 Label", type: "text", required: false, default: "Surprise" },
+            { name: "gift3Label", label: "Gift 3 Label", type: "text", required: false, default: "Moment" },
+            { name: "accentColor", label: "Gift Color", type: "color", required: false, default: "#d946ef" },
+          ],
+        },
+      },
+      {
+        position: 6,
+        componentKey: "SCENE_MESSAGE_BEAT",
+        fixedConfig: {
+          backgroundColor: "#0d0d0d",
+          textColor: "#fafafa",
+          accentColor: "#f43f5e",
+          sceneId: "reveal",
+          next: "finale",
+        },
+        editableSchema: {
+          title: "The Memory Reveal",
+          description: "A favorite photo with a caption.",
+          fields: [
+            { name: "title", label: "Heading", type: "text", required: false, default: "A memory worth reliving" },
+            { name: "message", label: "Caption", type: "textarea", required: true, default: "This moment with you is one I'll treasure forever." },
+            { name: "photoUrl", label: "Photo", type: "image", required: true, default: "/1.png" },
+            { name: "ctaLabel", label: "Button Label", type: "text", required: false, default: "Continue" },
+          ],
+        },
+      },
+      {
+        position: 7,
+        componentKey: "SCENE_CONFETTI_FINALE",
+        fixedConfig: {
+          backgroundColor: "#0d0d0d",
+          accentColor: "#f43f5e",
+          sceneId: "finale",
+          next: "envelope",
+          animationPreset: "paper-confetti",
+        },
+        editableSchema: {
+          title: "The Final Wish",
+          description: "Closing message with a confetti burst. \"Replay\" loops back to the envelope.",
+          fields: [
+            {
+              name: "finalMessage",
+              label: "Final Message",
+              type: "textarea",
+              required: true,
+              default: "May all the good things you've been waiting for\nfinally find you this year.\n\nHappy Birthday. 🎂",
+            },
+            { name: "senderName", label: "From", type: "text", required: false, default: "With love" },
+            { name: "accentColor", label: "Confetti Accent", type: "color", required: false, default: "#f43f5e" },
+          ],
+        },
+      },
+    ],
+  });
+
+  // ==========================================
+  // 6. Countdown Confetti Blast (data-driven branching-scene experience)
+  // Neon/party theme, deliberately different opening mechanic (scratch-off
+  // countdown instead of an envelope) — proves 2 templates can share the
+  // same scene-type library while feeling completely different.
+  // ==========================================
+  await seedTemplate({
+    name: "Countdown Confetti Blast",
+    slug: "birthday-countdown-blast",
+    category: "Birthday Celebration",
+    price: 5900, // ₹59
+    description:
+      "Scratch off a foil card to trigger a glowing 3-2-1 countdown, pick a mystery orb, and blast into a neon confetti finale.",
+    previewUrl: "/3.png",
+    blueprints: [
+      {
+        position: 1,
+        componentKey: "SCENE_SCRATCH_COUNTDOWN",
+        fixedConfig: {
+          backgroundColor: "#0b0817",
+          textColor: "#f8fafc",
+          accentColor: "#22d3ee",
+          sceneId: "countdown",
+          isEntry: true,
+          next: "question",
+        },
+        editableSchema: {
+          title: "Scratch to Start",
+          description: "Scratching the foil card triggers a glowing 3-2-1 countdown.",
+          fields: [
+            { name: "title", label: "Scratch Card Title", type: "text", required: false, default: "Scratch to start the countdown" },
+            { name: "subtitle", label: "Hint Text", type: "text", required: false, default: "Drag or tap anywhere to uncover" },
+          ],
+        },
+      },
+      {
+        position: 2,
+        componentKey: "SCENE_YESNO_QUESTION",
+        fixedConfig: {
+          backgroundColor: "#130a2e",
+          textColor: "#f8fafc",
+          accentColor: "#22d3ee",
+          sceneId: "question",
+          choices: [
+            { key: "yes", label: "YES", targetSceneId: "gifts" },
+            { key: "no", label: "NO", targetSceneId: "reaction" },
+          ],
+        },
+        editableSchema: {
+          title: "The Big Question",
+          description: "They tap YES or NO — NO bounces to a reaction and loops back here.",
+          fields: [
+            { name: "questionText", label: "Question", type: "text", required: true, default: "Ready to see your neon surprise?" },
+            { name: "recipientName", label: "Recipient's Name (small tag above)", type: "text", required: false, default: "" },
+          ],
+        },
+      },
+      {
+        position: 3,
+        componentKey: "SCENE_REACTION_GAG",
+        fixedConfig: {
+          backgroundColor: "#130a2e",
+          accentColor: "#f472b6",
+          sceneId: "reaction",
+          next: "question",
+        },
+        editableSchema: {
+          title: "The Reaction",
+          description: "Shown only if they tap NO — the try-again button loops back to the question.",
+          fields: [
+            { name: "reactionTitle", label: "Reaction Headline", type: "text", required: false, default: "NOT YET!" },
+            { name: "reactionSubtitle", label: "Reaction Subtext", type: "text", required: false, default: "Wrong button — try again ✨" },
+          ],
+        },
+      },
+      {
+        position: 4,
+        componentKey: "SCENE_GIFT_PICKER",
+        fixedConfig: {
+          backgroundColor: "#0b0817",
+          accentColor: "#a855f7",
+          sceneId: "gifts",
+          next: "reveal",
+          animationPreset: "glowing-orbs",
+          itemCount: 3,
+        },
+        editableSchema: {
+          title: "Pick an Orb",
+          description: "3 glowing orbs — opening any one advances the story.",
+          fields: [
+            { name: "prompt", label: "Prompt", type: "text", required: false, default: "Pick an orb to unlock ✨" },
+            { name: "gift1Label", label: "Orb 1 Label", type: "text", required: false, default: "Spark" },
+            { name: "gift2Label", label: "Orb 2 Label", type: "text", required: false, default: "Glow" },
+            { name: "gift3Label", label: "Orb 3 Label", type: "text", required: false, default: "Shine" },
+            { name: "accentColor", label: "Orb Color", type: "color", required: false, default: "#a855f7" },
+          ],
+        },
+      },
+      {
+        position: 5,
+        componentKey: "SCENE_MESSAGE_BEAT",
+        fixedConfig: {
+          backgroundColor: "#0b0817",
+          textColor: "#f8fafc",
+          accentColor: "#22d3ee",
+          sceneId: "reveal",
+          next: "finale",
+        },
+        editableSchema: {
+          title: "Your Moment",
+          description: "A favorite photo with a caption.",
+          fields: [
+            { name: "title", label: "Heading", type: "text", required: false, default: "This one's for you" },
+            { name: "message", label: "Caption", type: "textarea", required: true, default: "Another year of pure, unstoppable main-character energy." },
+            { name: "photoUrl", label: "Photo", type: "image", required: true, default: "/3.png" },
+            { name: "ctaLabel", label: "Button Label", type: "text", required: false, default: "Let's go" },
+          ],
+        },
+      },
+      {
+        position: 6,
+        componentKey: "SCENE_CONFETTI_FINALE",
+        fixedConfig: {
+          backgroundColor: "#0b0817",
+          accentColor: "#22d3ee",
+          sceneId: "finale",
+          next: "countdown",
+          animationPreset: "neon-burst",
+        },
+        editableSchema: {
+          title: "The Finale",
+          description: "Closing message with a neon confetti burst. \"Replay\" loops back to the start.",
+          fields: [
+            {
+              name: "finalMessage",
+              label: "Final Message",
+              type: "textarea",
+              required: true,
+              default: "Wishing you a year filled with big wins,\nwild adventures, and endless neon nights.\n\nHappy Birthday! 🎉",
+            },
+            { name: "senderName", label: "From", type: "text", required: false, default: "Your party crew" },
+            { name: "accentColor", label: "Confetti Accent", type: "color", required: false, default: "#22d3ee" },
+          ],
+        },
+      },
+    ],
+  });
+
+  console.log("\n✅ All 6 templates seeded — including 2 data-driven branching Birthday experiences!");
 }
 
 main()

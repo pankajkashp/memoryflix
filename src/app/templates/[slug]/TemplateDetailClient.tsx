@@ -14,9 +14,18 @@ import {
   Eye,
 } from "lucide-react";
 import PageRenderer from "@/components/story-pages/PageRenderer";
+import BranchingExperiencePlayer from "@/components/story-pages/scenes/BranchingExperiencePlayer";
+import { isSceneComponentKey } from "@/components/story-pages/scenes/sceneRegistry";
 import AtmosphericBackground from "@/components/common/AtmosphericBackground";
 import { createStoryFromTemplate } from "@/app/actions/templateStory";
 import toast from "react-hot-toast";
+
+function defaultFieldValues(editableSchema: any): Record<string, any> {
+  return (editableSchema?.fields || []).reduce((acc: Record<string, any>, field: any) => {
+    acc[field.name] = field.default || "";
+    return acc;
+  }, {});
+}
 
 interface TemplateDetailClientProps {
   template: {
@@ -49,15 +58,10 @@ export default function TemplateDetailClient({
 
   const activeBlueprint = template.pages[currentPageIdx];
   const priceInRupees = Math.round(template.price / 100);
+  const isBranchingTemplate = template.pages.some((p) => isSceneComponentKey(p.componentKey));
 
   // Extract defaults from editableSchema for live sample preview
-  const defaultSampleFields = (activeBlueprint?.editableSchema?.fields || []).reduce(
-    (acc: any, field: any) => {
-      acc[field.name] = field.default || "";
-      return acc;
-    },
-    {}
-  );
+  const defaultSampleFields = defaultFieldValues(activeBlueprint?.editableSchema);
 
   const handleAdvance = () => {
     if (isTransitioningRef.current) return;
@@ -144,31 +148,44 @@ export default function TemplateDetailClient({
               <div className="flex items-center gap-2">
                 <Eye className="w-4 h-4 text-rose-500" />
                 <span className="text-xs font-mono uppercase tracking-widest text-zinc-300 font-semibold">
-                  Interactive Live Sample ({currentPageIdx + 1}/{template.pages.length})
+                  {isBranchingTemplate
+                    ? "Interactive Live Sample"
+                    : `Interactive Live Sample (${currentPageIdx + 1}/${template.pages.length})`}
                 </span>
               </div>
               <span className="text-[11px] font-mono text-zinc-500">
-                Tap frame to advance
+                {isBranchingTemplate ? "Click through the story" : "Tap frame to advance"}
               </span>
             </div>
 
-            {/* Live Page Preview Frame (Tap anywhere to advance) */}
+            {/* Live Page Preview Frame (Tap anywhere to advance, unless it's a click-driven branching experience) */}
             <div
-              onClick={handleAdvance}
-              className="relative w-full aspect-[4/3] sm:aspect-[16/11] rounded-3xl overflow-hidden border-2 border-white/20 bg-zinc-950 shadow-2xl cursor-pointer transition-transform duration-300 hover:scale-[1.005]"
+              onClick={isBranchingTemplate ? undefined : handleAdvance}
+              className={`relative w-full aspect-[4/3] sm:aspect-[16/11] rounded-3xl overflow-hidden border-2 border-white/20 bg-zinc-950 shadow-2xl transition-transform duration-300 hover:scale-[1.005] ${
+                isBranchingTemplate ? "" : "cursor-pointer"
+              }`}
               style={{
                 boxShadow: "0 25px 60px -15px rgba(0,0,0,0.9), 0 0 40px -10px rgba(244,63,94,0.2)",
               }}
             >
-              {activeBlueprint && (
-                <PageRenderer
-                  key={`${activeBlueprint.id}-${animKey}`}
-                  componentKey={activeBlueprint.componentKey}
-                  fixedConfig={activeBlueprint.fixedConfig}
-                  fieldValues={defaultSampleFields}
-                  isActive={true}
-                  isExiting={isExiting}
+              {isBranchingTemplate ? (
+                <BranchingExperiencePlayer
+                  pages={template.pages.map((p) => ({
+                    ...p,
+                    fieldValues: defaultFieldValues(p.editableSchema),
+                  }))}
                 />
+              ) : (
+                activeBlueprint && (
+                  <PageRenderer
+                    key={`${activeBlueprint.id}-${animKey}`}
+                    componentKey={activeBlueprint.componentKey}
+                    fixedConfig={activeBlueprint.fixedConfig}
+                    fieldValues={defaultSampleFields}
+                    isActive={true}
+                    isExiting={isExiting}
+                  />
+                )
               )}
             </div>
           </div>

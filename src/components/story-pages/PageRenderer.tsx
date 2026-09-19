@@ -37,6 +37,10 @@ import TravelPostcardEndingSection from "../story-templates/travel/sections/Trav
 // Birthday Cinematic
 import CinematicBirthdayExperience from "../story-templates/birthday-cinematic/CinematicBirthdayExperience";
 
+// Data-driven branching scenes (isolated single-scene preview mode)
+import { SCENE_COMPONENT_REGISTRY, isSceneComponentKey } from "./scenes/sceneRegistry";
+import { SceneFixedConfig } from "./scenes/types";
+
 export interface PageRendererProps {
   componentKey: string;
   fixedConfig: FixedPageConfig;
@@ -185,6 +189,24 @@ export default function PageRenderer({
   isExiting = false,
 }: PageRendererProps) {
   const formattedData = formatPageData(componentKey, fieldValues);
+
+  if (isSceneComponentKey(componentKey)) {
+    const SceneComponent = SCENE_COMPONENT_REGISTRY[componentKey];
+    if (!SceneComponent) {
+      return (
+        <div className="p-8 text-center text-zinc-400">
+          Component &ldquo;{componentKey}&rdquo; not recognized.
+        </div>
+      );
+    }
+    return (
+      <SceneComponent
+        fixedConfig={fixedConfig as SceneFixedConfig}
+        fieldValues={formattedData as Record<string, any>}
+        onExit={() => {}}
+      />
+    );
+  }
 
   switch (componentKey) {
     case "SCRATCH_REVEAL":

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { assertStoryEditAccess } from "@/lib/storyAuth";
 
 export async function PATCH(
   request: NextRequest,
@@ -7,6 +8,15 @@ export async function PATCH(
 ) {
   try {
     const { storyId, pageInstanceId } = await context.params;
+
+    const access = await assertStoryEditAccess(storyId);
+    if (!access.ok) {
+      return NextResponse.json(
+        { success: false, error: access.error },
+        { status: access.status }
+      );
+    }
+
     const body = await request.json();
 
     const instance = await prisma.storyPageInstance.findFirst({
