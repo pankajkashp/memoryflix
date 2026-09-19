@@ -22,6 +22,8 @@ export interface SceneFixedConfig extends FixedPageConfig {
   animationPreset?: string;
   /** e.g. number of gift boxes for SCENE_GIFT_PICKER. */
   itemCount?: number;
+  /** Decorative floating emoji for this scene (hearts, sparkles, bears, ...). Omit/empty for none. */
+  emojiDecor?: string[];
 }
 
 export interface SceneProps {

@@ -61,848 +61,9 @@ async function seedTemplate(templateData: {
 async function main() {
   console.log("🌱 Seeding database with textured templates...");
 
-  // ==========================================
-  // 1. Friendship Day Template (Pastel & Playful)
-  // Textures: soft-stripes, dots, paper-grain
-  // ==========================================
-  await seedTemplate({
-    name: "Friendship Day",
-    slug: "friendship-day",
-    category: "Friendship",
-    price: 4900, // ₹49
-    description:
-      "Celebrate your closest bond with an interactive, cinematic tribute designed to make your best friend smile, laugh, and cherish your journey together.",
-    previewUrl: "/1.png",
-    blueprints: [
-      {
-        position: 1,
-        componentKey: "NOTIFICATION",
-        fixedConfig: {
-          backgroundColor: "#0c0a09",
-          textColor: "#fafafa",
-          accentColor: "#f43f5e",
-          cardBg: "rgba(24, 24, 27, 0.9)",
-          backgroundTexture: "soft-stripes",
-        },
-        editableSchema: {
-          title: "Priority Notification",
-          description: "A fun notification that appears on a phone lockscreen.",
-          fields: [
-            {
-              name: "notificationTitle",
-              label: "Notification Title",
-              type: "text",
-              required: true,
-              default: "Priority Delivery for Best Friend 💌",
-            },
-            {
-              name: "notificationText",
-              label: "Notification Message",
-              type: "textarea",
-              required: true,
-              default:
-                "Hey bestie! Just a quick reminder that you are irreplaceable. Tap to open!",
-            },
-            {
-              name: "sender",
-              label: "Sender / App Name",
-              type: "text",
-              required: false,
-              default: "MemoryFlix",
-            },
-            {
-              name: "time",
-              label: "Subtitle / Time",
-              type: "text",
-              required: false,
-              default: "Priority Message",
-            },
-            {
-              name: "replyText",
-              label: "Surprise Note (revealed on tap)",
-              type: "text",
-              required: false,
-              default: "Unlocked: Unlimited laughs and a lifetime friend pass ❤️",
-            },
-          ],
-        },
-      },
-      {
-        position: 2,
-        componentKey: "DEFINITION",
-        fixedConfig: {
-          backgroundColor: "#09090b",
-          textColor: "#f4f4f5",
-          accentColor: "#ec4899",
-          cardBg: "rgba(24, 24, 27, 0.85)",
-          backgroundTexture: "dots",
-        },
-        editableSchema: {
-          title: "The Living Dictionary",
-          description: "Define a special word that sums up your friendship.",
-          fields: [
-            {
-              name: "word",
-              label: "Special Word",
-              type: "text",
-              required: true,
-              default: "Unconditional",
-            },
-            {
-              name: "phonetic",
-              label: "Phonetic Pronunciation",
-              type: "text",
-              required: false,
-              default: "/ʌnkənˈdɪʃən(ə)l/",
-            },
-            {
-              name: "partOfSpeech",
-              label: "Part of Speech",
-              type: "text",
-              required: false,
-              default: "noun / adjective",
-            },
-            {
-              name: "definition",
-              label: "Your Personal Definition",
-              type: "textarea",
-              required: true,
-              default:
-                "Knowing all your deepest secrets, embarrassing stories, and still being the first to answer the phone at 2 AM.",
-            },
-            {
-              name: "exampleSentence",
-              label: "Example Sentence or Memory",
-              type: "text",
-              required: false,
-              default: "They define true loyalty in every possible dimension.",
-            },
-            {
-              name: "photoUrl",
-              label: "Polaroid Photo",
-              type: "image",
-              required: true,
-              default: "/2.png",
-            },
-          ],
-        },
-      },
-      {
-        position: 3,
-        componentKey: "LOADING",
-        fixedConfig: {
-          backgroundColor: "#09090b",
-          textColor: "#fafafa",
-          accentColor: "#eab308",
-          cardBg: "rgba(24, 24, 27, 0.9)",
-          backgroundTexture: "dots",
-        },
-        editableSchema: {
-          title: "Friendship Compatibility Test",
-          description: "A playful progress bar that calculates a 100% match.",
-          fields: [
-            {
-              name: "loadingLabel",
-              label: "Loading Stage Label",
-              type: "text",
-              required: true,
-              default: "CALCULATING FRIENDSHIP SCORE...",
-            },
-            {
-              name: "awardTitle",
-              label: "Award / Result Title",
-              type: "text",
-              required: true,
-              default: "OFFICIAL BEST FRIEND OF THE DECADE",
-            },
-            {
-              name: "rewardText",
-              label: "Award Reason & Praise",
-              type: "textarea",
-              required: true,
-              default:
-                "After analyzing 10,000 inside jokes, 500 late-night calls, and infinite memories: You have achieved a certified 100% bond rating.",
-            },
-            {
-              name: "subtitle",
-              label: "Subtitle / Note",
-              type: "text",
-              required: false,
-              default: "Presented with immense gratitude & love",
-            },
-          ],
-        },
-      },
-      {
-        position: 4,
-        componentKey: "CERTIFICATE",
-        fixedConfig: {
-          backgroundColor: "#09090b",
-          textColor: "#f5f5f4",
-          accentColor: "#eab308",
-          cardBg: "rgba(20, 20, 24, 0.95)",
-          backgroundTexture: "paper-grain",
-        },
-        editableSchema: {
-          title: "Official Friendship Certificate",
-          description: "An official certificate honoring your friendship.",
-          fields: [
-            {
-              name: "title",
-              label: "Certificate Header",
-              type: "text",
-              required: true,
-              default: "Certificate of Eternal Friendship",
-            },
-            {
-              name: "recipientName",
-              label: "Best Friend's Name",
-              type: "text",
-              required: true,
-              default: "Ananya Sharma",
-            },
-            {
-              name: "message",
-              label: "Dedication Message",
-              type: "textarea",
-              required: true,
-              default:
-                "For bringing infinite joy, listening without judgment, and turning ordinary days into unforgettable adventures.",
-            },
-            {
-              name: "issuer",
-              label: "Your Name",
-              type: "text",
-              required: true,
-              default: "Rohan Kapoor",
-            },
-            {
-              name: "date",
-              label: "Date",
-              type: "text",
-              required: false,
-              default: "Friendship Day",
-            },
-          ],
-        },
-      },
-      {
-        position: 5,
-        componentKey: "LABELED_PHOTO",
-        fixedConfig: {
-          backgroundColor: "#09090b",
-          textColor: "#fafafa",
-          accentColor: "#ec4899",
-          cardBg: "rgba(24, 24, 27, 0.9)",
-          backgroundTexture: "soft-stripes",
-        },
-        editableSchema: {
-          title: "Anatomy of Our Memory",
-          description: "A memorable photo with 4 custom callout labels.",
-          fields: [
-            {
-              name: "title",
-              label: "Section Title",
-              type: "text",
-              required: false,
-              default: "Anatomy of Our Friendship",
-            },
-            {
-              name: "subtitle",
-              label: "Section Subtitle",
-              type: "text",
-              required: false,
-              default: "The little things that make us invincible",
-            },
-            {
-              name: "photoUrl",
-              label: "Photo to Annotate",
-              type: "image",
-              required: true,
-              default: "/1.png",
-            },
-            {
-              name: "label1",
-              label: "Label 1 (Top Left)",
-              type: "text",
-              required: true,
-              default: "Your iconic smile",
-            },
-            {
-              name: "label2",
-              label: "Label 2 (Top Right)",
-              type: "text",
-              required: true,
-              default: "That day in the sun",
-            },
-            {
-              name: "label3",
-              label: "Label 3 (Bottom Left)",
-              type: "text",
-              required: true,
-              default: "Always having my back",
-            },
-            {
-              name: "label4",
-              label: "Label 4 (Bottom Right)",
-              type: "text",
-              required: true,
-              default: "Our favorite song",
-            },
-          ],
-        },
-      },
-      {
-        position: 6,
-        componentKey: "SEARCH",
-        fixedConfig: {
-          backgroundColor: "#09090b",
-          textColor: "#fafafa",
-          accentColor: "#3b82f6",
-          cardBg: "rgba(24, 24, 27, 0.85)",
-          backgroundTexture: "dots",
-        },
-        editableSchema: {
-          title: "Search Results for Us",
-          description: "A search query with 3 memorable photo cards.",
-          fields: [
-            {
-              name: "searchQuery",
-              label: "Search Bar Query",
-              type: "text",
-              required: true,
-              default: "what is the definition of a true friend?",
-            },
-            {
-              name: "resultsCount",
-              label: "Results Counter Text",
-              type: "text",
-              required: false,
-              default: "Found 3 unforgettable memories",
-            },
-            {
-              name: "photo1",
-              label: "Memory 1 Photo",
-              type: "image",
-              required: true,
-              default: "/1.png",
-            },
-            {
-              name: "title1",
-              label: "Memory 1 Title",
-              type: "text",
-              required: false,
-              default: "Late Night Talks",
-            },
-            {
-              name: "photo2",
-              label: "Memory 2 Photo",
-              type: "image",
-              required: true,
-              default: "/2.png",
-            },
-            {
-              name: "title2",
-              label: "Memory 2 Title",
-              type: "text",
-              required: false,
-              default: "Unplanned Road Trips",
-            },
-            {
-              name: "photo3",
-              label: "Memory 3 Photo",
-              type: "image",
-              required: true,
-              default: "/3.png",
-            },
-            {
-              name: "title3",
-              label: "Memory 3 Title",
-              type: "text",
-              required: false,
-              default: "Laughing Until It Hurt",
-            },
-          ],
-        },
-      },
-      {
-        position: 7,
-        componentKey: "LETTER",
-        fixedConfig: {
-          backgroundColor: "#0c0a09",
-          textColor: "#f5f5f4",
-          accentColor: "#f43f5e",
-          cardBg: "rgba(28, 25, 23, 0.9)",
-          backgroundTexture: "paper-grain",
-        },
-        editableSchema: {
-          title: "A Letter from the Heart",
-          description: "A personal letter to wrap up your story.",
-          fields: [
-            {
-              name: "recipientName",
-              label: "Dear...",
-              type: "text",
-              required: true,
-              default: "Ananya",
-            },
-            {
-              name: "message",
-              label: "Your Message",
-              type: "textarea",
-              required: true,
-              default:
-                "Looking back at everything we've been through, I'm just so grateful to have you in my corner.\n\nThank you for always being you and making every moment brighter.",
-            },
-            {
-              name: "senderName",
-              label: "With love, (Your Name)",
-              type: "text",
-              required: true,
-              default: "Rohan",
-            },
-            {
-              name: "date",
-              label: "Date / Header Note",
-              type: "text",
-              required: false,
-              default: "Forever & Always",
-            },
-            {
-              name: "photoUrl",
-              label: "Attached Photo (optional)",
-              type: "image",
-              required: false,
-              default: "/3.png",
-            },
-          ],
-        },
-      },
-    ],
-  });
 
   // ==========================================
-  // 2. Romantic Anniversary Template (Linen & Grain)
-  // Textures: linen, paper-grain, canvas
-  // ==========================================
-  await seedTemplate({
-    name: "Romantic Anniversary",
-    slug: "romantic-anniversary",
-    category: "Anniversary & Love",
-    price: 5900, // ₹59
-    description:
-      "An elegant, candlelit cinematic love letter to celebrate your anniversary, milestone, or lifelong romance.",
-    previewUrl: "/2.png",
-    blueprints: [
-      {
-        position: 1,
-        componentKey: "NOTIFICATION",
-        fixedConfig: {
-          backgroundColor: "#0f050b",
-          textColor: "#faf5f0",
-          accentColor: "#e2b153",
-          cardBg: "rgba(32, 10, 22, 0.9)",
-          backgroundTexture: "linen",
-        },
-        editableSchema: {
-          title: "Anniversary Alert",
-          description: "A romantic notification arriving on your partner's phone.",
-          fields: [
-            {
-              name: "notificationTitle",
-              label: "Notification Title",
-              type: "text",
-              required: true,
-              default: "Anniversary Alert 💖",
-            },
-            {
-              name: "notificationText",
-              label: "Notification Message",
-              type: "textarea",
-              required: true,
-              default:
-                "Happy Anniversary my love! Another 365 days of falling deeper in love with you. Tap to open our story.",
-            },
-            {
-              name: "sender",
-              label: "Sender / App Name",
-              type: "text",
-              required: false,
-              default: "Forever Yours",
-            },
-            {
-              name: "time",
-              label: "Subtitle / Time",
-              type: "text",
-              required: false,
-              default: "Special Delivery",
-            },
-            {
-              name: "replyText",
-              label: "Surprise Note (revealed on tap)",
-              type: "text",
-              required: false,
-              default: "You + Me = Our best chapter yet ✨",
-            },
-          ],
-        },
-      },
-      {
-        position: 2,
-        componentKey: "DEFINITION",
-        fixedConfig: {
-          backgroundColor: "#0d0408",
-          textColor: "#faf5f0",
-          accentColor: "#f43f5e",
-          cardBg: "rgba(30, 8, 20, 0.85)",
-          backgroundTexture: "paper-grain",
-        },
-        editableSchema: {
-          title: "The Living Dictionary",
-          description: "Define what your partner means to you.",
-          fields: [
-            {
-              name: "word",
-              label: "Special Word",
-              type: "text",
-              required: true,
-              default: "Soulmate",
-            },
-            {
-              name: "phonetic",
-              label: "Phonetic Pronunciation",
-              type: "text",
-              required: false,
-              default: "/ˈsoʊl.meɪt/",
-            },
-            {
-              name: "partOfSpeech",
-              label: "Part of Speech",
-              type: "text",
-              required: false,
-              default: "noun",
-            },
-            {
-              name: "definition",
-              label: "Your Personal Definition",
-              type: "textarea",
-              required: true,
-              default:
-                "A person with whom one has a feeling of deep and natural affinity, shared laughter, and quiet understanding that needs no words.",
-            },
-            {
-              name: "exampleSentence",
-              label: "Example Sentence or Memory",
-              type: "text",
-              required: false,
-              default: "From day one, meeting you felt like finally coming home.",
-            },
-            {
-              name: "photoUrl",
-              label: "Polaroid Photo",
-              type: "image",
-              required: true,
-              default: "/2.png",
-            },
-          ],
-        },
-      },
-      {
-        position: 3,
-        componentKey: "LOADING",
-        fixedConfig: {
-          backgroundColor: "#0d0408",
-          textColor: "#faf5f0",
-          accentColor: "#e2b153",
-          cardBg: "rgba(32, 10, 22, 0.9)",
-          backgroundTexture: "linen",
-        },
-        editableSchema: {
-          title: "Love Compatibility Analysis",
-          description: "A romantic calculation measuring your bond.",
-          fields: [
-            {
-              name: "loadingLabel",
-              label: "Loading Stage Label",
-              type: "text",
-              required: true,
-              default: "MEASURING COMPATIBILITY & MEMORIES...",
-            },
-            {
-              name: "awardTitle",
-              label: "Award / Result Title",
-              type: "text",
-              required: true,
-              default: "OFFICIAL PERFECT MATCH FOR LIFE",
-            },
-            {
-              name: "rewardText",
-              label: "Award Reason & Praise",
-              type: "textarea",
-              required: true,
-              default:
-                "Calculated across 1,000+ shared glances, endless adventures, and unconditional warmth: Compatibility score is infinity/100.",
-            },
-            {
-              name: "subtitle",
-              label: "Subtitle / Note",
-              type: "text",
-              required: false,
-              default: "Certified by the Universe",
-            },
-          ],
-        },
-      },
-      {
-        position: 4,
-        componentKey: "CERTIFICATE",
-        fixedConfig: {
-          backgroundColor: "#0d0408",
-          textColor: "#faf5f0",
-          accentColor: "#e2b153",
-          cardBg: "rgba(28, 8, 18, 0.95)",
-          backgroundTexture: "paper-grain",
-        },
-        editableSchema: {
-          title: "Certificate of Endless Devotion",
-          description: "An official certificate honoring your anniversary.",
-          fields: [
-            {
-              name: "title",
-              label: "Certificate Header",
-              type: "text",
-              required: true,
-              default: "Certificate of Endless Devotion",
-            },
-            {
-              name: "recipientName",
-              label: "Partner's Name",
-              type: "text",
-              required: true,
-              default: "My Beloved Partner",
-            },
-            {
-              name: "message",
-              label: "Dedication Message",
-              type: "textarea",
-              required: true,
-              default:
-                "Awarded for being the most patient, loving, and extraordinary partner in the entire world. Here's to all our yesterdays and all our tomorrows.",
-            },
-            {
-              name: "issuer",
-              label: "Your Name",
-              type: "text",
-              required: true,
-              default: "Yours Always",
-            },
-            {
-              name: "date",
-              label: "Date",
-              type: "text",
-              required: false,
-              default: "Happy Anniversary",
-            },
-          ],
-        },
-      },
-      {
-        position: 5,
-        componentKey: "LABELED_PHOTO",
-        fixedConfig: {
-          backgroundColor: "#0d0408",
-          textColor: "#faf5f0",
-          accentColor: "#fb7185",
-          cardBg: "rgba(30, 8, 20, 0.9)",
-          backgroundTexture: "canvas",
-        },
-        editableSchema: {
-          title: "Anatomy of Our Love",
-          description: "An annotated photo marking sweet details of your love.",
-          fields: [
-            {
-              name: "title",
-              label: "Section Title",
-              type: "text",
-              required: false,
-              default: "Anatomy of Our Love",
-            },
-            {
-              name: "subtitle",
-              label: "Section Subtitle",
-              type: "text",
-              required: false,
-              default: "The four little things that make my heart skip a beat",
-            },
-            {
-              name: "photoUrl",
-              label: "Photo to Annotate",
-              type: "image",
-              required: true,
-              default: "/1.png",
-            },
-            {
-              name: "label1",
-              label: "Label 1 (Top Left)",
-              type: "text",
-              required: true,
-              default: "The way you hold my hand",
-            },
-            {
-              name: "label2",
-              label: "Label 2 (Top Right)",
-              type: "text",
-              required: true,
-              default: "Our spontaneous road trips",
-            },
-            {
-              name: "label3",
-              label: "Label 3 (Bottom Left)",
-              type: "text",
-              required: true,
-              default: "How you make me laugh",
-            },
-            {
-              name: "label4",
-              label: "Label 4 (Bottom Right)",
-              type: "text",
-              required: true,
-              default: "Your heart of pure gold",
-            },
-          ],
-        },
-      },
-      {
-        position: 6,
-        componentKey: "SEARCH",
-        fixedConfig: {
-          backgroundColor: "#0d0408",
-          textColor: "#faf5f0",
-          accentColor: "#e2b153",
-          cardBg: "rgba(30, 8, 20, 0.85)",
-          backgroundTexture: "linen",
-        },
-        editableSchema: {
-          title: "Search Results for Us",
-          description: "Three memorable milestone moments.",
-          fields: [
-            {
-              name: "searchQuery",
-              label: "Search Bar Query",
-              type: "text",
-              required: true,
-              default: "how did I get so lucky to find you?",
-            },
-            {
-              name: "resultsCount",
-              label: "Results Counter Text",
-              type: "text",
-              required: false,
-              default: "Found 3 unforgettable milestones",
-            },
-            {
-              name: "photo1",
-              label: "Milestone 1 Photo",
-              type: "image",
-              required: true,
-              default: "/1.png",
-            },
-            {
-              name: "title1",
-              label: "Milestone 1 Title",
-              type: "text",
-              required: false,
-              default: "Our Very First Date",
-            },
-            {
-              name: "photo2",
-              label: "Milestone 2 Photo",
-              type: "image",
-              required: true,
-              default: "/2.png",
-            },
-            {
-              name: "title2",
-              label: "Milestone 2 Title",
-              type: "text",
-              required: false,
-              default: "Midnight Beach Walks",
-            },
-            {
-              name: "photo3",
-              label: "Milestone 3 Photo",
-              type: "image",
-              required: true,
-              default: "/3.png",
-            },
-            {
-              name: "title3",
-              label: "Milestone 3 Title",
-              type: "text",
-              required: false,
-              default: "Making a Home Together",
-            },
-          ],
-        },
-      },
-      {
-        position: 7,
-        componentKey: "LETTER",
-        fixedConfig: {
-          backgroundColor: "#0f050b",
-          textColor: "#faf5f0",
-          accentColor: "#f43f5e",
-          cardBg: "rgba(32, 10, 22, 0.9)",
-          backgroundTexture: "paper-grain",
-        },
-        editableSchema: {
-          title: "A Love Letter from the Heart",
-          description: "An intimate love letter dedicated to your partner.",
-          fields: [
-            {
-              name: "recipientName",
-              label: "Dear...",
-              type: "text",
-              required: true,
-              default: "My Dearest",
-            },
-            {
-              name: "message",
-              label: "Your Message",
-              type: "textarea",
-              required: true,
-              default:
-                "Happy Anniversary my love.\n\nEvery day with you is my favorite adventure. Thank you for your warmth, your kindness, and the thousand little ways you make our life feel like magic.\n\nHere is to forever and a day.",
-            },
-            {
-              name: "senderName",
-              label: "With love, (Your Name)",
-              type: "text",
-              required: true,
-              default: "Yours Eternally",
-            },
-            {
-              name: "date",
-              label: "Date / Header Note",
-              type: "text",
-              required: false,
-              default: "Our Anniversary",
-            },
-            {
-              name: "photoUrl",
-              label: "Attached Photo (optional)",
-              type: "image",
-              required: false,
-              default: "/2.png",
-            },
-          ],
-        },
-      },
-    ],
-  });
-
-  // ==========================================
-  // 3. Neon Birthday Blast Template (Cyber & Dots)
+  // 1. Neon Birthday Blast Template (Cyber & Dots)
   // Textures: cyber-grid, dots, subtle-noise
   // ==========================================
   await seedTemplate({
@@ -1322,7 +483,7 @@ async function main() {
   });
 
   // ==========================================
-  // 4. Secret Surprises & Mystery Notes Template (Light / Pastel / Interactive)
+  // 2. Secret Surprises & Mystery Notes Template (Light / Pastel / Interactive)
   // Featuring PICK_REVEAL interactive choice pages
   // ==========================================
   await seedTemplate({
@@ -1647,9 +808,12 @@ async function main() {
   });
 
   // ==========================================
-  // 5. Surprise in an Envelope (data-driven branching-scene experience)
-  // Warm rose/amber. Envelope open -> Yes/No question (No loops to a
-  // "how dare you" gag) -> accept -> gift pick -> photo reveal -> confetti.
+  // 3. Surprise in an Envelope (data-driven branching-scene experience)
+  // Cohesive warm rose-gold "party" palette across every scene — deep
+  // rose-black background + rose/gold accents throughout, so it reads as
+  // one premium experience instead of a patchwork of clashing screens.
+  // Envelope open -> Yes/No question (No loops to a "how dare you" gag)
+  // -> accept -> gift pick -> photo reveal -> confetti.
   // ==========================================
   await seedTemplate({
     name: "Surprise in an Envelope",
@@ -1664,19 +828,20 @@ async function main() {
         position: 1,
         componentKey: "SCENE_ENVELOPE",
         fixedConfig: {
-          backgroundColor: "#0d0d0d",
-          textColor: "#fafafa",
-          accentColor: "#f43f5e",
+          backgroundColor: "#1b0a12",
+          textColor: "#fff1f2",
+          accentColor: "#fb7185",
           sceneId: "envelope",
           isEntry: true,
           next: "question",
+          emojiDecor: ["💕", "✨", "🧸"],
         },
         editableSchema: {
           title: "The Envelope",
           description: "The opening moment, before the surprise unfolds.",
           fields: [
             { name: "recipientName", label: "Recipient's Name", type: "text", required: true, default: "Ananya" },
-            { name: "accentColor", label: "Seal & Glow Color", type: "color", required: false, default: "#f43f5e" },
+            { name: "accentColor", label: "Seal & Glow Color", type: "color", required: false, default: "#fb7185" },
           ],
         },
       },
@@ -1684,14 +849,15 @@ async function main() {
         position: 2,
         componentKey: "SCENE_YESNO_QUESTION",
         fixedConfig: {
-          backgroundColor: "#FFF7ED",
-          textColor: "#27272a",
-          accentColor: "#f43f5e",
+          backgroundColor: "#1b0a12",
+          textColor: "#fff1f2",
+          accentColor: "#fb7185",
           sceneId: "question",
           choices: [
             { key: "yes", label: "YES", targetSceneId: "accept" },
             { key: "no", label: "NO", targetSceneId: "reaction" },
           ],
+          emojiDecor: ["🎈", "✨", "💖"],
         },
         editableSchema: {
           title: "The Big Question",
@@ -1706,10 +872,11 @@ async function main() {
         position: 3,
         componentKey: "SCENE_REACTION_GAG",
         fixedConfig: {
-          backgroundColor: "#FFF7ED",
-          accentColor: "#f97316",
+          backgroundColor: "#1b0a12",
+          accentColor: "#fb923c",
           sceneId: "reaction",
           next: "question",
+          emojiDecor: ["😤", "💢"],
         },
         editableSchema: {
           title: "The \"How Dare You\" Reaction",
@@ -1730,11 +897,12 @@ async function main() {
         position: 4,
         componentKey: "SCENE_MESSAGE_BEAT",
         fixedConfig: {
-          backgroundColor: "#0d0d0d",
-          textColor: "#fafafa",
-          accentColor: "#f43f5e",
+          backgroundColor: "#1b0a12",
+          textColor: "#fff1f2",
+          accentColor: "#fb7185",
           sceneId: "accept",
           next: "gifts",
+          emojiDecor: ["🎉", "💖", "🧸"],
         },
         editableSchema: {
           title: "Accepting the Surprise",
@@ -1749,12 +917,13 @@ async function main() {
         position: 5,
         componentKey: "SCENE_GIFT_PICKER",
         fixedConfig: {
-          backgroundColor: "#fdf4ff",
-          accentColor: "#d946ef",
+          backgroundColor: "#1b0a12",
+          accentColor: "#fbbf24",
           sceneId: "gifts",
           next: "reveal",
           animationPreset: "ribboned-boxes",
           itemCount: 3,
+          emojiDecor: ["🎉", "🎊", "✨"],
         },
         editableSchema: {
           title: "Pick a Gift",
@@ -1762,9 +931,9 @@ async function main() {
           fields: [
             { name: "prompt", label: "Prompt", type: "text", required: false, default: "Pick one to open 🎁" },
             { name: "gift1Label", label: "Gift 1 Label", type: "text", required: false, default: "Memory" },
-            { name: "gift2Label", label: "Gift 2 Label", type: "text", required: false, default: "Surprise" },
+            { name: "gift2Label", label: "Gift 2 Label", type: "text", required: false, default: "Teddy" },
             { name: "gift3Label", label: "Gift 3 Label", type: "text", required: false, default: "Moment" },
-            { name: "accentColor", label: "Gift Color", type: "color", required: false, default: "#d946ef" },
+            { name: "accentColor", label: "Gift Color", type: "color", required: false, default: "#fbbf24" },
           ],
         },
       },
@@ -1772,11 +941,12 @@ async function main() {
         position: 6,
         componentKey: "SCENE_MESSAGE_BEAT",
         fixedConfig: {
-          backgroundColor: "#0d0d0d",
-          textColor: "#fafafa",
-          accentColor: "#f43f5e",
+          backgroundColor: "#1b0a12",
+          textColor: "#fff1f2",
+          accentColor: "#fb7185",
           sceneId: "reveal",
           next: "finale",
+          emojiDecor: ["📸", "💗"],
         },
         editableSchema: {
           title: "The Memory Reveal",
@@ -1793,11 +963,12 @@ async function main() {
         position: 7,
         componentKey: "SCENE_CONFETTI_FINALE",
         fixedConfig: {
-          backgroundColor: "#0d0d0d",
-          accentColor: "#f43f5e",
+          backgroundColor: "#1b0a12",
+          accentColor: "#fb7185",
           sceneId: "finale",
           next: "envelope",
           animationPreset: "paper-confetti",
+          emojiDecor: ["🧸", "🎉", "❤️", "🎈"],
         },
         editableSchema: {
           title: "The Final Wish",
@@ -1811,7 +982,7 @@ async function main() {
               default: "May all the good things you've been waiting for\nfinally find you this year.\n\nHappy Birthday. 🎂",
             },
             { name: "senderName", label: "From", type: "text", required: false, default: "With love" },
-            { name: "accentColor", label: "Confetti Accent", type: "color", required: false, default: "#f43f5e" },
+            { name: "accentColor", label: "Confetti Accent", type: "color", required: false, default: "#fb7185" },
           ],
         },
       },
@@ -1819,7 +990,7 @@ async function main() {
   });
 
   // ==========================================
-  // 6. Countdown Confetti Blast (data-driven branching-scene experience)
+  // 4. Countdown Confetti Blast (data-driven branching-scene experience)
   // Neon/party theme, deliberately different opening mechanic (scratch-off
   // countdown instead of an envelope) — proves 2 templates can share the
   // same scene-type library while feeling completely different.
@@ -1843,6 +1014,7 @@ async function main() {
           sceneId: "countdown",
           isEntry: true,
           next: "question",
+          emojiDecor: ["✨", "💫", "🎉"],
         },
         editableSchema: {
           title: "Scratch to Start",
@@ -1865,6 +1037,7 @@ async function main() {
             { key: "yes", label: "YES", targetSceneId: "gifts" },
             { key: "no", label: "NO", targetSceneId: "reaction" },
           ],
+          emojiDecor: ["🎊", "💜", "✨"],
         },
         editableSchema: {
           title: "The Big Question",
@@ -1883,6 +1056,7 @@ async function main() {
           accentColor: "#f472b6",
           sceneId: "reaction",
           next: "question",
+          emojiDecor: ["😤", "💢"],
         },
         editableSchema: {
           title: "The Reaction",
@@ -1903,6 +1077,7 @@ async function main() {
           next: "reveal",
           animationPreset: "glowing-orbs",
           itemCount: 3,
+          emojiDecor: ["🎉", "✨", "🧸"],
         },
         editableSchema: {
           title: "Pick an Orb",
@@ -1925,6 +1100,7 @@ async function main() {
           accentColor: "#22d3ee",
           sceneId: "reveal",
           next: "finale",
+          emojiDecor: ["📸", "💫"],
         },
         editableSchema: {
           title: "Your Moment",
@@ -1946,6 +1122,7 @@ async function main() {
           sceneId: "finale",
           next: "countdown",
           animationPreset: "neon-burst",
+          emojiDecor: ["🎉", "🧸", "💜", "🎊"],
         },
         editableSchema: {
           title: "The Finale",
@@ -1966,7 +1143,7 @@ async function main() {
     ],
   });
 
-  console.log("\n✅ All 6 templates seeded — including 2 data-driven branching Birthday experiences!");
+  console.log("\n✅ All 4 templates seeded — including 2 data-driven branching Birthday experiences!");
 }
 
 main()

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import { useSceneAnimation } from "@/lib/scene-engine/useSceneAnimation";
+import FloatingEmojiField from "./FloatingEmojiField";
 import { SceneProps } from "./types";
 
 const PAPER_COLORS = ["#f43f5e", "#fbbf24", "#f472b6", "#38bdf8", "#a3e635"];
@@ -81,6 +82,7 @@ export default function ConfettiFinaleScene({ fixedConfig, fieldValues, onExit }
           />
         ))}
       </div>
+      <FloatingEmojiField emojis={fixedConfig.emojiDecor || []} count={4} />
 
       <div className="relative z-10 max-w-xs sm:max-w-sm md:max-w-md w-full text-center space-y-4 sm:space-y-5">
         {lines.map((line: string, idx: number) => (

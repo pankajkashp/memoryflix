@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import FloatingEmojiField from "./FloatingEmojiField";
 import { SceneProps } from "./types";
 
 /**
@@ -134,6 +135,8 @@ export default function ScratchCountdownScene({ fixedConfig, fieldValues, onExit
 
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center gap-6 px-6 py-6 select-none overflow-y-auto" style={{ backgroundColor }}>
+      <FloatingEmojiField emojis={fixedConfig.emojiDecor || []} />
+
       {!isRevealed ? (
         <>
           <div className="text-center space-y-1 max-w-sm">

@@ -3,10 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { useSceneAnimation } from "@/lib/scene-engine/useSceneAnimation";
+import FloatingEmojiField from "./FloatingEmojiField";
 import { SceneProps } from "./types";
 
 const EMOJI_BY_PRESET: Record<string, string[]> = {
-  "ribboned-boxes": ["🎁", "🎀", "💝"],
+  "ribboned-boxes": ["🎁", "🧸", "💝"],
   "glowing-orbs": ["🔮", "✨", "💫"],
 };
 
@@ -90,6 +91,8 @@ export default function GiftPickerScene({ fixedConfig, fieldValues, onExit }: Sc
       className="absolute inset-0 flex flex-col items-center justify-center gap-8 sm:gap-12 px-6 py-6 select-none overflow-y-auto"
       style={{ backgroundColor }}
     >
+      <FloatingEmojiField emojis={fixedConfig.emojiDecor || []} />
+
       <div ref={titleRef} className="text-center space-y-1">
         <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-tight" style={{ color: accentColor }}>
           {prompt}

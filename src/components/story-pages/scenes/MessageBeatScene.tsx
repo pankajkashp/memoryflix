@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { useSceneAnimation } from "@/lib/scene-engine/useSceneAnimation";
+import FloatingEmojiField from "./FloatingEmojiField";
 import { SceneProps } from "./types";
 
 export default function MessageBeatScene({ fixedConfig, fieldValues, onExit }: SceneProps) {
@@ -45,6 +46,8 @@ export default function MessageBeatScene({ fixedConfig, fieldValues, onExit }: S
       className="absolute inset-0 flex flex-col items-center justify-center gap-5 px-6 sm:px-10 py-6 text-center select-none overflow-y-auto"
       style={{ backgroundColor }}
     >
+      <FloatingEmojiField emojis={fixedConfig.emojiDecor || []} />
+
       {photoUrl && (
         <div ref={photoRef} className="relative w-40 h-40 sm:w-52 sm:h-52 rounded-2xl overflow-hidden shadow-2xl border-2" style={{ borderColor: `${accentColor}55` }}>
           <Image src={photoUrl} alt="" fill className="object-cover" />

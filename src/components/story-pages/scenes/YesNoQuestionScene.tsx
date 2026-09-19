@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useSceneAnimation } from "@/lib/scene-engine/useSceneAnimation";
+import FloatingEmojiField from "./FloatingEmojiField";
 import { SceneProps } from "./types";
 
 function Character({ excited }: { excited: boolean }) {
@@ -75,6 +76,8 @@ export default function YesNoQuestionScene({ fixedConfig, fieldValues, onExit }:
       className="absolute inset-0 flex flex-col items-center justify-center gap-8 sm:gap-10 px-6 py-6 select-none overflow-y-auto"
       style={{ backgroundColor }}
     >
+      <FloatingEmojiField emojis={fixedConfig.emojiDecor || []} />
+
       {recipientName && (
         <p className="absolute top-8 font-mono text-[10px] tracking-[0.25em] uppercase" style={{ color: `${accentColor}99` }}>
           for {recipientName}

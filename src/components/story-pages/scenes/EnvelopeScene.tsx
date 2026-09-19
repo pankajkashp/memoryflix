@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { useSceneAnimation } from "@/lib/scene-engine/useSceneAnimation";
 import { useFloatingObject } from "@/lib/scene-engine/useFloatingObject";
+import FloatingEmojiField from "./FloatingEmojiField";
 import { SceneProps } from "./types";
 
 export default function EnvelopeScene({ fixedConfig, fieldValues, onExit }: SceneProps) {
@@ -71,6 +72,7 @@ export default function EnvelopeScene({ fixedConfig, fieldValues, onExit }: Scen
         className="absolute inset-0 pointer-events-none"
         style={{ background: `radial-gradient(circle at center, ${accentColor}22 0%, transparent 70%)` }}
       />
+      <FloatingEmojiField emojis={fixedConfig.emojiDecor || []} />
 
       <p
         ref={hintRef}

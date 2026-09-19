@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useSceneAnimation } from "@/lib/scene-engine/useSceneAnimation";
+import FloatingEmojiField from "./FloatingEmojiField";
 import { SceneProps } from "./types";
 
 export default function ReactionGagScene({ fixedConfig, fieldValues, onExit }: SceneProps) {
@@ -44,6 +45,8 @@ export default function ReactionGagScene({ fixedConfig, fieldValues, onExit }: S
       className="absolute inset-0 flex flex-col items-center justify-center gap-6 sm:gap-8 px-6 py-6 select-none overflow-y-auto"
       style={{ backgroundColor }}
     >
+      <FloatingEmojiField emojis={fixedConfig.emojiDecor || []} />
+
       <div ref={characterRef} className="relative w-36 h-44 sm:w-44 sm:h-52 mx-auto">
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24 h-28 rounded-t-3xl bg-orange-400" />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-24 rounded-full bg-amber-200 border-4 border-amber-300 shadow-lg flex items-end justify-center pb-3">

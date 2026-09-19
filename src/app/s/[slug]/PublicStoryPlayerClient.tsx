@@ -13,6 +13,14 @@ import { isSceneComponentKey } from "@/components/story-pages/scenes/sceneRegist
 import { resolveTemplateSlug } from "@/lib/templateCatalog";
 import toast from "react-hot-toast";
 
+function WhatsAppGlyph({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+      <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.87.5 3.62 1.4 5.13L2 22l5.13-1.5a9.88 9.88 0 0 0 4.91 1.32h.01c5.46 0 9.9-4.45 9.9-9.91S17.5 2 12.04 2Zm5.79 14.14c-.24.68-1.4 1.3-1.93 1.35-.53.06-1.02.27-3.44-.72-2.91-1.19-4.78-4.15-4.93-4.34-.14-.19-1.18-1.57-1.18-3 0-1.42.75-2.12 1.01-2.41.27-.29.58-.36.77-.36.19 0 .39 0 .55.01.19.01.42-.07.66.5.25.6.85 2.06.92 2.21.07.15.12.32.02.51-.1.19-.15.31-.29.48-.15.17-.31.38-.44.51-.15.15-.3.31-.13.6.17.29.76 1.25 1.63 2.02 1.12 1 2.06 1.31 2.35 1.46.29.15.46.13.63-.08.17-.2.72-.84.92-1.13.19-.29.39-.24.65-.14.27.09 1.7.8 1.99.95.29.15.48.22.55.34.07.13.07.72-.17 1.4Z" />
+    </svg>
+  );
+}
+
 interface PublicStoryPlayerProps {
   story: {
     id: string;
@@ -92,6 +100,12 @@ export default function PublicStoryPlayerClient({
     }
   };
 
+  const handleShareWhatsApp = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const message = `I made you something special! 💌✨ Open it here: ${window.location.href}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+  };
+
   return (
     <div
       onClick={handleAdvance}
@@ -112,8 +126,15 @@ export default function PublicStoryPlayerClient({
           </span>
         </Link>
 
-        {/* Floating Share action */}
+        {/* Floating Share actions */}
         <div className="flex items-center gap-2 pointer-events-auto">
+          <button
+            onClick={handleShareWhatsApp}
+            aria-label="Share on WhatsApp"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/15 text-xs text-zinc-200 hover:bg-black/60 shadow-lg transition-colors"
+          >
+            <WhatsAppGlyph className="w-3.5 h-3.5 text-emerald-400" /> WhatsApp
+          </button>
           <button
             onClick={handleShare}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/15 text-xs text-zinc-200 hover:bg-black/60 shadow-lg transition-colors"
