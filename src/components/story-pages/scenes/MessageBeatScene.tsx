@@ -4,6 +4,9 @@ import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { useSceneAnimation } from "@/lib/scene-engine/useSceneAnimation";
 import FloatingEmojiField from "./FloatingEmojiField";
+import CanvasTexture from "../CanvasTexture";
+import { Polaroid, ScrapbookButton } from "../ScrapbookDecor";
+import { getFontClassName } from "@/lib/fonts";
 import { SceneProps } from "./types";
 
 export default function MessageBeatScene({ fixedConfig, fieldValues, onExit }: SceneProps) {
@@ -46,16 +49,21 @@ export default function MessageBeatScene({ fixedConfig, fieldValues, onExit }: S
       className="absolute inset-0 flex flex-col items-center justify-center gap-5 px-6 sm:px-10 py-6 text-center select-none overflow-y-auto"
       style={{ backgroundColor }}
     >
+      <CanvasTexture texture={fixedConfig.backgroundTexture || "canvas"} mode="dark" />
       <FloatingEmojiField emojis={fixedConfig.emojiDecor || []} />
 
       {photoUrl && (
-        <div ref={photoRef} className="relative w-40 h-40 sm:w-52 sm:h-52 rounded-2xl overflow-hidden shadow-2xl border-2" style={{ borderColor: `${accentColor}55` }}>
-          <Image src={photoUrl} alt="" fill className="object-cover" />
+        <div ref={photoRef}>
+          <Polaroid rotate={-4} tapeColor={accentColor} className="w-36 sm:w-48">
+            <div className="relative w-full aspect-square">
+              <Image src={photoUrl} alt="" fill className="object-cover" />
+            </div>
+          </Polaroid>
         </div>
       )}
 
       {title && (
-        <h1 ref={titleRef} className="text-2xl sm:text-3xl font-serif font-bold" style={{ color: textColor }}>
+        <h1 ref={titleRef} className={`text-2xl sm:text-3xl font-serif font-bold ${getFontClassName(fixedConfig.fontId)}`} style={{ color: textColor }}>
           {title}
         </h1>
       )}
@@ -64,14 +72,9 @@ export default function MessageBeatScene({ fixedConfig, fieldValues, onExit }: S
         {message}
       </p>
 
-      <button
-        ref={btnRef}
-        onClick={handleContinue}
-        className="mt-2 min-h-[48px] px-8 py-3 rounded-2xl text-white font-bold text-sm tracking-wide shadow-lg active:scale-95 transition-all focus:outline-none focus:ring-4"
-        style={{ background: `linear-gradient(135deg, ${accentColor}, #be123c)` }}
-      >
+      <ScrapbookButton ref={btnRef} onClick={handleContinue} color={accentColor} tape className="mt-2 min-h-[48px] text-sm">
         {ctaLabel}
-      </button>
+      </ScrapbookButton>
     </div>
   );
 }

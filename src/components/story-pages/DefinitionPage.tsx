@@ -14,6 +14,8 @@ import {
 } from "@/lib/pageAnimations";
 import CanvasTexture from "./CanvasTexture";
 import TapToAdvanceCue from "./TapToAdvanceCue";
+import FloatingEmojiField from "./scenes/FloatingEmojiField";
+import { Stamp } from "./ScrapbookDecor";
 
 export interface DefinitionPageData {
   word: string;
@@ -160,6 +162,7 @@ export default function DefinitionPage({
     >
       {/* Textured Canvas Background */}
       <CanvasTexture texture={fixedConfig.backgroundTexture || "subtle-noise"} />
+      <FloatingEmojiField emojis={fixedConfig.emojiDecor || []} />
 
       {/* Background glow */}
       <div
@@ -236,6 +239,7 @@ export default function DefinitionPage({
           >
             {/* Washi Tape detail on top of Polaroid */}
             <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-28 sm:w-36 h-8 sm:h-10 bg-white/20 backdrop-blur-md rounded-md rotate-[-2deg] border border-white/30 pointer-events-none shadow-md" />
+            <Stamp color={accentColor} size={54} rotate={-9} label="Fig.1" className="absolute -top-5 -right-4 sm:-right-6 z-10" />
 
             {/* Photo inside Polaroid */}
             <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden shadow-inner">

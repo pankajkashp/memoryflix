@@ -2,23 +2,12 @@
 
 import { useEffect, useRef } from "react";
 import { useSceneAnimation } from "@/lib/scene-engine/useSceneAnimation";
-import FloatingEmojiField from "./FloatingEmojiField";
+import FloatingEmojiField, { usePrefersReducedMotion } from "./FloatingEmojiField";
+import CharacterSticker from "./CharacterSticker";
+import CanvasTexture from "../CanvasTexture";
+import { ScrapbookButton } from "../ScrapbookDecor";
+import { getFontClassName } from "@/lib/fonts";
 import { SceneProps } from "./types";
-
-function Character({ excited }: { excited: boolean }) {
-  return (
-    <div className="relative w-32 h-40 sm:w-40 sm:h-48 mx-auto">
-      <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-24 sm:w-24 sm:h-28 rounded-t-3xl transition-all duration-300 ${excited ? "bg-amber-400" : "bg-amber-300"}`} />
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-amber-200 border-4 border-amber-300 shadow-lg flex items-center justify-center">
-        <div className="flex gap-4 mb-3">
-          <div className={`w-3 h-3 rounded-full transition-all duration-300 ${excited ? "bg-amber-800 scale-125" : "bg-amber-700"}`} />
-          <div className={`w-3 h-3 rounded-full transition-all duration-300 ${excited ? "bg-amber-800 scale-125" : "bg-amber-700"}`} />
-        </div>
-      </div>
-      <div className={`absolute top-[4.5rem] sm:top-[5.5rem] left-1/2 -translate-x-1/2 transition-all duration-300 ${excited ? "w-8 h-4 rounded-b-full bg-rose-500" : "w-6 h-3 rounded-b-full bg-rose-400"}`} />
-    </div>
-  );
-}
 
 export default function YesNoQuestionScene({ fixedConfig, fieldValues, onExit }: SceneProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -26,6 +15,7 @@ export default function YesNoQuestionScene({ fixedConfig, fieldValues, onExit }:
   const textRef = useRef<HTMLDivElement>(null);
   const buttonsRef = useRef<HTMLDivElement>(null);
   const { animate } = useSceneAnimation(containerRef);
+  const reducedMotion = usePrefersReducedMotion();
 
   const { backgroundColor = "#FFF7ED", textColor = "#27272a" } = fixedConfig;
   const accentColor = fieldValues.accentColor || fixedConfig.accentColor || "#f43f5e";
@@ -76,6 +66,7 @@ export default function YesNoQuestionScene({ fixedConfig, fieldValues, onExit }:
       className="absolute inset-0 flex flex-col items-center justify-center gap-8 sm:gap-10 px-6 py-6 select-none overflow-y-auto"
       style={{ backgroundColor }}
     >
+      <CanvasTexture texture={fixedConfig.backgroundTexture || "canvas"} mode="dark" />
       <FloatingEmojiField emojis={fixedConfig.emojiDecor || []} />
 
       {recipientName && (
@@ -84,31 +75,33 @@ export default function YesNoQuestionScene({ fixedConfig, fieldValues, onExit }:
         </p>
       )}
 
-      <div ref={characterRef}>
-        <Character excited={false} />
+      <div ref={characterRef} className="w-40 h-40 sm:w-52 sm:h-52 drop-shadow-xl">
+        <CharacterSticker
+          name={fixedConfig.characterSticker || "panda-popcorn"}
+          reducedMotion={reducedMotion}
+          className="w-full h-full"
+        />
       </div>
 
       <div ref={textRef} className="text-center space-y-2 max-w-xs sm:max-w-sm">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-black leading-tight tracking-tight uppercase" style={{ color: textColor }}>
+        <h1 className={`text-3xl sm:text-4xl md:text-5xl font-black leading-tight tracking-tight uppercase ${getFontClassName(fixedConfig.fontId)}`} style={{ color: textColor }}>
           {questionText}
         </h1>
       </div>
 
       <div ref={buttonsRef} className="flex gap-4 sm:gap-6">
         {choices.map((choice, idx) => (
-          <button
+          <ScrapbookButton
             key={choice.key}
             onClick={() => handleChoice(choice.key)}
-            className="min-w-[120px] sm:min-w-[140px] min-h-[52px] px-8 py-3.5 rounded-2xl text-white font-black text-lg sm:text-xl tracking-wider shadow-lg hover:scale-105 active:scale-95 transition-transform focus:outline-none focus:ring-4"
-            style={
-              idx === 0
-                ? { background: `linear-gradient(135deg, ${accentColor}, #be123c)`, boxShadow: `0 10px 20px -6px ${accentColor}66` }
-                : { background: "#e4e4e7", color: "#52525b" }
-            }
+            variant={idx === 0 ? "sticker" : "paper"}
+            color={idx === 0 ? accentColor : "#78716c"}
+            tape={idx === 0}
+            className="min-w-[120px] sm:min-w-[140px] min-h-[52px] text-lg sm:text-xl"
             aria-label={choice.label}
           >
             {choice.label}
-          </button>
+          </ScrapbookButton>
         ))}
       </div>
     </div>

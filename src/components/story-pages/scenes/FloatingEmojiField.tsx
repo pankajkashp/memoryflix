@@ -1,33 +1,55 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import AnimatedSticker from "./AnimatedSticker";
+
 /**
- * FloatingEmojiField — a decorative layer of gently floating emoji
- * (hearts, sparkles, party poppers, bears, ...) shared across scenes so
- * each occasion's "cute factor" is a config choice, not per-scene code.
+ * FloatingEmojiField — a decorative layer of continuously drifting animated
+ * stickers (hearts, sparkles, party poppers, bears, ...) shared across
+ * scenes so each occasion's "cute factor" is a config choice, not
+ * per-scene code. See AnimatedSticker for where the animation comes from.
  *
- * Positions/timings are a fixed table (not Math.random()) so server-rendered
- * and hydrated markup always match — the same approach already used by
- * ConfettiFinaleScene's finale decorations.
+ * Each slot wanders along its own long, slow path (not just a fixed-spot
+ * bob) so the screen keeps feeling alive. Paths/timings are a fixed table
+ * (not Math.random()) so server-rendered and hydrated markup always match —
+ * the same approach already used by ConfettiFinaleScene's finale decorations.
  */
 
 const SLOTS = [
-  { top: "8%", left: "6%", size: "text-xl sm:text-2xl", duration: 3.2, delay: 0 },
-  { top: "14%", left: "82%", size: "text-lg sm:text-xl", duration: 2.6, delay: 0.4 },
-  { top: "78%", left: "10%", size: "text-lg sm:text-xl", duration: 3.6, delay: 0.8 },
-  { top: "72%", left: "86%", size: "text-xl sm:text-2xl", duration: 2.9, delay: 0.2 },
-  { top: "40%", left: "4%", size: "text-base sm:text-lg", duration: 3.3, delay: 1.1 },
-  { top: "36%", left: "92%", size: "text-base sm:text-lg", duration: 2.8, delay: 0.6 },
+  { top: "10%", left: "8%", size: 52, duration: 11, delay: 0, driftX: 70, driftY: 90 },
+  { top: "16%", left: "80%", size: 44, duration: 13, delay: 1.2, driftX: -60, driftY: 110 },
+  { top: "78%", left: "12%", size: 44, duration: 12, delay: 2.4, driftX: 90, driftY: -70 },
+  { top: "74%", left: "84%", size: 50, duration: 14, delay: 0.6, driftX: -80, driftY: -60 },
+  { top: "42%", left: "6%", size: 38, duration: 10, delay: 3, driftX: 55, driftY: 60 },
+  { top: "38%", left: "90%", size: 38, duration: 12.5, delay: 1.8, driftX: -65, driftY: 50 },
 ] as const;
 
 export interface FloatingEmojiFieldProps {
   /** Which emoji to scatter, e.g. ["❤️", "✨", "🧸"]. Cycled across the fixed slots. */
   emojis: string[];
-  /** How many of the 6 fixed slots to use. Default: all. */
+  /**
+   * How many of the 6 fixed slots to use. Default: 3 — each is a real,
+   * independently-animating Lottie instance, and mounting too many at once
+   * across a scene noticeably slows down the concurrent GSAP timelines.
+   */
   count?: number;
   className?: string;
 }
 
-export default function FloatingEmojiField({ emojis, count = SLOTS.length, className = "" }: FloatingEmojiFieldProps) {
+export function usePrefersReducedMotion(): boolean {
+  const [reduced, setReduced] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReduced(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setReduced(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+  return reduced;
+}
+
+export default function FloatingEmojiField({ emojis, count = 3, className = "" }: FloatingEmojiFieldProps) {
+  const reducedMotion = usePrefersReducedMotion();
   if (emojis.length === 0) return null;
   const slots = SLOTS.slice(0, Math.min(count, SLOTS.length));
 
@@ -36,20 +58,33 @@ export default function FloatingEmojiField({ emojis, count = SLOTS.length, class
       {slots.map((slot, i) => (
         <span
           key={i}
-          className={`absolute select-none opacity-70 motion-reduce:animate-none ${slot.size}`}
-          style={{
-            top: slot.top,
-            left: slot.left,
-            animation: `mflx-float-emoji ${slot.duration}s ease-in-out ${slot.delay}s infinite alternate`,
-          }}
+          className="absolute inline-block select-none opacity-80 drop-shadow-sm text-4xl leading-none motion-reduce:animate-none"
+          style={
+            {
+              top: slot.top,
+              left: slot.left,
+              width: slot.size,
+              height: slot.size,
+              "--drift-x": `${slot.driftX}px`,
+              "--drift-y": `${slot.driftY}px`,
+              animation: reducedMotion ? undefined : `mflx-drift-emoji ${slot.duration}s ease-in-out ${slot.delay}s infinite`,
+            } as React.CSSProperties
+          }
         >
-          {emojis[i % emojis.length]}
+          <AnimatedSticker
+            emoji={emojis[i % emojis.length]}
+            reducedMotion={reducedMotion}
+            className="w-full h-full"
+          />
         </span>
       ))}
       <style>{`
-        @keyframes mflx-float-emoji {
-          from { transform: translateY(0px) rotate(-6deg); }
-          to { transform: translateY(-14px) rotate(6deg); }
+        @keyframes mflx-drift-emoji {
+          0% { transform: translate(0, 0) rotate(-6deg); }
+          25% { transform: translate(calc(var(--drift-x) * 0.6), calc(var(--drift-y) * -0.5)) rotate(4deg); }
+          50% { transform: translate(var(--drift-x), var(--drift-y)) rotate(8deg); }
+          75% { transform: translate(calc(var(--drift-x) * 0.3), calc(var(--drift-y) * 0.8)) rotate(-4deg); }
+          100% { transform: translate(0, 0) rotate(-6deg); }
         }
       `}</style>
     </div>

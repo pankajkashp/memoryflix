@@ -7,6 +7,7 @@ import ReactionGagScene from "./ReactionGagScene";
 import MessageBeatScene from "./MessageBeatScene";
 import GiftPickerScene from "./GiftPickerScene";
 import ConfettiFinaleScene from "./ConfettiFinaleScene";
+import PhotoMomentScene from "./PhotoMomentScene";
 
 export const SCENE_COMPONENT_REGISTRY: Record<string, ComponentType<SceneProps>> = {
   SCENE_ENVELOPE: EnvelopeScene,
@@ -16,6 +17,7 @@ export const SCENE_COMPONENT_REGISTRY: Record<string, ComponentType<SceneProps>>
   SCENE_MESSAGE_BEAT: MessageBeatScene,
   SCENE_GIFT_PICKER: GiftPickerScene,
   SCENE_CONFETTI_FINALE: ConfettiFinaleScene,
+  SCENE_PHOTO_MOMENT: PhotoMomentScene,
 };
 
 export function isSceneComponentKey(componentKey: string): boolean {

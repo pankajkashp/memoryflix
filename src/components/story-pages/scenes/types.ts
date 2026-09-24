@@ -24,6 +24,14 @@ export interface SceneFixedConfig extends FixedPageConfig {
   itemCount?: number;
   /** Decorative floating emoji for this scene (hearts, sparkles, bears, ...). Omit/empty for none. */
   emojiDecor?: string[];
+  /** Font id from src/lib/fonts.ts (FONT_OPTIONS) for this scene's main heading. Omit for the default. */
+  fontId?: string;
+  /** A vendored full-body character sticker name from CharacterSticker.tsx (e.g. "panda-popcorn"). Omit for none. */
+  characterSticker?: string;
+  /** SCENE_PHOTO_MOMENT layout direction — which side the photo sits on (text takes the other side). */
+  side?: "left" | "right";
+  /** SCENE_PHOTO_MOMENT — emoji for the small revolving sticker pinned at the photo's corner. */
+  cornerSticker?: string;
 }
 
 export interface SceneProps {

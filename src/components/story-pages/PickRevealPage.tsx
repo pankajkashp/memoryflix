@@ -7,6 +7,8 @@ import { Sparkles, Heart } from "lucide-react";
 import { FixedPageConfig } from "@/lib/pageAnimations";
 import CanvasTexture from "./CanvasTexture";
 import TapToAdvanceCue from "./TapToAdvanceCue";
+import FloatingEmojiField from "./scenes/FloatingEmojiField";
+import { WashiTape } from "./ScrapbookDecor";
 
 export interface PickRevealOption {
   characterKey?: string;
@@ -407,6 +409,7 @@ export default function PickRevealPage({
     >
       {/* ── 1. Textured Canvas Background (Light Mode Paper Grain) ── */}
       <CanvasTexture texture={backgroundTexture} mode="light" />
+      <FloatingEmojiField emojis={fixedConfig.emojiDecor || []} />
 
       {/* ── 2. Ambient Lighting Glow ── */}
       <div
@@ -544,6 +547,9 @@ export default function PickRevealPage({
             >
               {/* Paper Texture Overlay */}
               <CanvasTexture texture="paper-grain" mode="light" className="opacity-25 rounded-3xl" />
+
+              {/* Taped corner, for a scrapbook-note feel */}
+              <WashiTape color={accentColor} rotate={-7} width={80} className="absolute -top-4 left-1/2 -translate-x-1/2 z-20" />
 
               {/* Decorative Stamp / Crest */}
               <div className="flex items-center justify-between border-b border-stone-200/80 pb-3 mb-4">

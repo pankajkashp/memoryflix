@@ -4,6 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { useSceneAnimation } from "@/lib/scene-engine/useSceneAnimation";
 import FloatingEmojiField from "./FloatingEmojiField";
+import CanvasTexture from "../CanvasTexture";
+import { shade } from "../ScrapbookDecor";
+import { getFontClassName } from "@/lib/fonts";
 import { SceneProps } from "./types";
 
 const EMOJI_BY_PRESET: Record<string, string[]> = {
@@ -81,7 +84,7 @@ export default function GiftPickerScene({ fixedConfig, fieldValues, onExit }: Sc
         .to(selectedEl, { rotation: 10, duration: 0.1 })
         .to(selectedEl, { rotation: 0, duration: 0.1 })
         .to(selectedEl, { scale: 3, opacity: 0, duration: 0.4, ease: "power3.in" })
-        .to(containerRef.current, { opacity: 0, duration: 0.2, onComplete: () => onExit("default") }, "-=0.2");
+        .to(containerRef.current, { opacity: 0, duration: 0.2, onComplete: () => onExit(`gift${idx + 1}`) }, "-=0.2");
     });
   };
 
@@ -91,10 +94,11 @@ export default function GiftPickerScene({ fixedConfig, fieldValues, onExit }: Sc
       className="absolute inset-0 flex flex-col items-center justify-center gap-8 sm:gap-12 px-6 py-6 select-none overflow-y-auto"
       style={{ backgroundColor }}
     >
+      <CanvasTexture texture={fixedConfig.backgroundTexture || "canvas"} mode="dark" />
       <FloatingEmojiField emojis={fixedConfig.emojiDecor || []} />
 
       <div ref={titleRef} className="text-center space-y-1">
-        <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-tight" style={{ color: accentColor }}>
+        <h1 className={`text-2xl sm:text-3xl font-black uppercase tracking-tight ${getFontClassName(fixedConfig.fontId)}`} style={{ color: accentColor }}>
           {prompt}
         </h1>
       </div>
@@ -109,16 +113,24 @@ export default function GiftPickerScene({ fixedConfig, fieldValues, onExit }: Sc
             onClick={() => handlePick(idx)}
             disabled={isSelecting}
             className="relative w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-2xl sm:rounded-3xl shadow-2xl flex flex-col items-center justify-center gap-1 border-2 border-white/40 cursor-pointer hover:shadow-xl transition-shadow focus:outline-none focus:ring-4 focus:ring-white/50 disabled:cursor-default"
-            style={{ background: `linear-gradient(135deg, ${accentColor}, #be123c)`, transform: `rotate(${item.rotation}deg)` }}
+            style={{ background: `linear-gradient(135deg, ${accentColor}, ${shade(accentColor, -35)})`, transform: `rotate(${item.rotation}deg)` }}
             aria-label={`Open ${item.label}`}
           >
+            {/* Ribbon cross + bow, for a wrapped-gift scrapbook feel */}
+            <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-3 sm:w-3.5 bg-white/70 z-10 pointer-events-none" />
+            <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-3 sm:h-3.5 bg-white/70 z-10 pointer-events-none" />
+            <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 flex items-center z-20 pointer-events-none">
+              <span className="block w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-white/85 -mr-1" />
+              <span className="block w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-white shadow" />
+              <span className="block w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-white/85 -ml-1" />
+            </div>
             <span className="text-3xl sm:text-4xl z-10">{item.emoji}</span>
-            <span className="text-white/85 font-bold text-[10px] uppercase tracking-wider z-10">{item.label}</span>
+            <span className="text-white/90 font-bold text-[10px] uppercase tracking-wider z-10 bg-black/15 px-2 py-0.5 rounded-full">{item.label}</span>
           </button>
         ))}
       </div>
 
-      <p ref={hintRef} className="font-mono text-xs tracking-wider text-zinc-500 text-center">
+      <p ref={hintRef} className="font-serif italic text-sm tracking-wide text-zinc-500 text-center">
         click any {animationPreset === "glowing-orbs" ? "orb" : "gift"} to reveal your surprise
       </p>
     </div>

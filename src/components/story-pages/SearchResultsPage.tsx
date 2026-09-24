@@ -14,6 +14,8 @@ import {
 } from "@/lib/pageAnimations";
 import CanvasTexture from "./CanvasTexture";
 import TapToAdvanceCue from "./TapToAdvanceCue";
+import FloatingEmojiField from "./scenes/FloatingEmojiField";
+import { Polaroid } from "./ScrapbookDecor";
 
 export interface SearchPhotoItem {
   url: string;
@@ -169,6 +171,7 @@ export default function SearchResultsPage({
     >
       {/* Textured Canvas Background */}
       <CanvasTexture texture={fixedConfig.backgroundTexture || "subtle-noise"} />
+      <FloatingEmojiField emojis={fixedConfig.emojiDecor || []} />
 
       {/* Ambient background glow */}
       <div
@@ -212,10 +215,11 @@ export default function SearchResultsPage({
           className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10"
         >
           {photoItems.map((item, idx) => (
-            <div
+            <Polaroid
               key={idx}
-              className="search-card-item group relative rounded-3xl sm:rounded-[2rem] overflow-hidden border-2 border-white/15 backdrop-blur-md shadow-2xl transition-all duration-300 hover:-translate-y-2 hover:border-white/30"
-              style={{ backgroundColor: cardBg }}
+              rotate={idx % 2 === 0 ? -2.5 : 2.5}
+              tapeColor={accentColor}
+              className="search-card-item group w-full transition-transform duration-300 hover:-translate-y-2 hover:rotate-0"
             >
               {/* Photo */}
               <div className="relative w-full h-56 sm:h-72 md:h-80 lg:h-96 overflow-hidden">
@@ -226,33 +230,29 @@ export default function SearchResultsPage({
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
                 {/* Badge on photo */}
-                <div className="absolute top-4 left-4 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-xs sm:text-sm font-mono text-zinc-200 shadow-md">
+                <div className="absolute top-3 left-3 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-xs sm:text-sm font-mono text-zinc-200 shadow-md">
                   #{idx + 1}
                 </div>
               </div>
 
               {/* Card Caption */}
               {(item.title || item.caption) && (
-                <div className="p-5 sm:p-6 space-y-1.5">
+                <div className="pt-4 pb-1 px-1 space-y-1">
                   {item.title && (
-                    <h4
-                      className="text-base sm:text-xl md:text-2xl font-bold truncate"
-                      style={{ color: textColor }}
-                    >
+                    <h4 className="text-base sm:text-lg font-bold truncate text-stone-800">
                       {item.title}
                     </h4>
                   )}
                   {item.caption && (
-                    <p className="text-xs sm:text-base text-zinc-300 line-clamp-2">
+                    <p className="text-xs sm:text-sm text-stone-500 line-clamp-2 font-serif italic">
                       {item.caption}
                     </p>
                   )}
                 </div>
               )}
-            </div>
+            </Polaroid>
           ))}
         </div>
       </div>

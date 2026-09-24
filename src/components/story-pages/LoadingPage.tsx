@@ -12,6 +12,8 @@ import {
 } from "@/lib/pageAnimations";
 import CanvasTexture from "./CanvasTexture";
 import TapToAdvanceCue from "./TapToAdvanceCue";
+import FloatingEmojiField from "./scenes/FloatingEmojiField";
+import { WashiTape, DoodleStar } from "./ScrapbookDecor";
 
 export interface LoadingPageData {
   loadingLabel?: string;
@@ -167,6 +169,7 @@ export default function LoadingPage({
     >
       {/* Textured Canvas Background */}
       <CanvasTexture texture={fixedConfig.backgroundTexture || "subtle-noise"} />
+      <FloatingEmojiField emojis={fixedConfig.emojiDecor || []} />
 
       {/* Background ambient lighting */}
       <div
@@ -249,6 +252,8 @@ export default function LoadingPage({
               <div className="absolute -top-3 -right-3 w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-emerald-500 flex items-center justify-center shadow-xl border-2 border-white/40">
                 <CheckCircle2 className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
               </div>
+              <WashiTape color={accentColor} rotate={-10} width={80} className="absolute -top-5 left-2 sm:left-4" />
+              <DoodleStar color={accentColor} size={26} rotate={14} className="absolute -bottom-3 -left-3 opacity-90" />
             </div>
 
             {/* Badge pill */}

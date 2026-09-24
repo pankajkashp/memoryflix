@@ -13,6 +13,8 @@ import {
 } from "@/lib/pageAnimations";
 import CanvasTexture from "./CanvasTexture";
 import TapToAdvanceCue from "./TapToAdvanceCue";
+import FloatingEmojiField from "./scenes/FloatingEmojiField";
+import { WashiTape, Stamp, Polaroid } from "./ScrapbookDecor";
 
 export interface LetterPageData {
   date?: string;
@@ -140,6 +142,7 @@ export default function LetterPage({
         texture={fixedConfig.backgroundTexture || "paper-grain"}
         mode={isLightBg ? "light" : "dark"}
       />
+      <FloatingEmojiField emojis={fixedConfig.emojiDecor || []} />
 
       {/* Background ambient lighting */}
       <div
@@ -174,6 +177,10 @@ export default function LetterPage({
 
         {/* Subtle decorative letterhead accent */}
         <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-transparent via-rose-500/70 to-transparent" />
+
+        {/* Scrapbook-craft accents: taped corner + a postmark stamp */}
+        <WashiTape color={accentColor} rotate={-8} width={100} className="absolute -top-4 -left-3 sm:-left-5 z-10" />
+        <Stamp color={accentColor} size={56} rotate={9} label="Sealed" className="absolute top-4 right-4 sm:top-6 sm:right-8 opacity-90" />
 
         <div ref={contentRef} className="space-y-6 sm:space-y-8 relative z-10">
           {/* Header (Date / Salutation) */}
@@ -211,19 +218,18 @@ export default function LetterPage({
 
           {/* Optional Attached Photo */}
           {data.photoUrl && (
-            <div
-              className={`relative w-full h-56 sm:h-72 md:h-80 lg:h-96 rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl ${
-                isLightBg ? "border-2 border-stone-200" : "border-2 border-white/15"
-              } mt-6 group`}
-            >
-              <Image
-                src={data.photoUrl}
-                alt="Attached memory"
-                fill
-                className="object-cover transition-transform duration-700 group-hover:scale-105"
-                sizes="(max-width: 768px) 100vw, 900px"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+            <div className="flex justify-center mt-6">
+              <Polaroid rotate={-2.5} tapeColor={accentColor} className="w-full max-w-xs sm:max-w-sm">
+                <div className="relative w-full h-48 sm:h-60 md:h-64 group">
+                  <Image
+                    src={data.photoUrl}
+                    alt="Attached memory"
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, 400px"
+                  />
+                </div>
+              </Polaroid>
             </div>
           )}
 

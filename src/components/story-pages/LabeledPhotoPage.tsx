@@ -14,6 +14,8 @@ import {
 } from "@/lib/pageAnimations";
 import CanvasTexture from "./CanvasTexture";
 import TapToAdvanceCue from "./TapToAdvanceCue";
+import FloatingEmojiField from "./scenes/FloatingEmojiField";
+import { WashiTape } from "./ScrapbookDecor";
 
 export interface PhotoLabel {
   text: string;
@@ -219,6 +221,7 @@ export default function LabeledPhotoPage({
         texture={fixedConfig.backgroundTexture || "canvas"}
         mode={isLightBg ? "light" : "dark"}
       />
+      <FloatingEmojiField emojis={fixedConfig.emojiDecor || []} />
 
       {/* Background glow */}
       <div
@@ -273,6 +276,10 @@ export default function LabeledPhotoPage({
               : `0 30px 70px -15px rgba(0, 0, 0, 0.85), 0 0 45px -10px ${accentColor}30`,
           }}
         >
+          {/* Scrapbook-craft accent: photo pinned down with washi tape corners */}
+          <WashiTape color={accentColor} rotate={-9} width={90} className="absolute -top-3 left-6 sm:left-12 z-30" />
+          <WashiTape color={accentColor} rotate={9} width={90} className="absolute -top-3 right-6 sm:right-12 z-30" />
+
           {/* The Base Photo */}
           <Image
             src={data.photoUrl}

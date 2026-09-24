@@ -13,6 +13,8 @@ import {
 } from "@/lib/pageAnimations";
 import CanvasTexture from "./CanvasTexture";
 import TapToAdvanceCue from "./TapToAdvanceCue";
+import FloatingEmojiField from "./scenes/FloatingEmojiField";
+import { WashiTape, Stamp } from "./ScrapbookDecor";
 
 export interface CertificatePageData {
   title?: string;
@@ -143,6 +145,7 @@ export default function CertificatePage({
     >
       {/* Textured Canvas Background */}
       <CanvasTexture texture={fixedConfig.backgroundTexture || "linen"} />
+      <FloatingEmojiField emojis={fixedConfig.emojiDecor || []} />
 
       {/* Background ambient gold lighting */}
       <div
@@ -162,6 +165,11 @@ export default function CertificatePage({
       >
         {/* Certificate Linen/Parchment Texture */}
         <CanvasTexture texture="linen" className="opacity-25 rounded-3xl sm:rounded-[2.5rem]" />
+
+        {/* Scrapbook-craft accents: taped corners + a rubber stamp */}
+        <WashiTape color={accentColor} rotate={-6} width={96} className="absolute -top-3 left-6 sm:left-10 z-10" />
+        <WashiTape color={accentColor} rotate={7} width={96} className="absolute -top-3 right-6 sm:right-10 z-10" />
+        <Stamp color={accentColor} size={62} rotate={-12} label="Est." className="absolute top-4 right-4 sm:top-6 sm:right-6 hidden sm:flex" />
 
         {/* Ornate Gold Border lines */}
         <div

@@ -7,6 +7,8 @@ import { Sparkles, Wand2, Heart, Star } from "lucide-react";
 import { FixedPageConfig } from "@/lib/pageAnimations";
 import CanvasTexture from "./CanvasTexture";
 import TapToAdvanceCue from "./TapToAdvanceCue";
+import FloatingEmojiField from "./scenes/FloatingEmojiField";
+import { WashiTape, Stamp } from "./ScrapbookDecor";
 
 export interface ScratchRevealPageData {
   title?: string;
@@ -205,6 +207,7 @@ export default function ScratchRevealPage({
         texture={fixedConfig.backgroundTexture || "paper-grain"}
         mode={isLightBg ? "light" : "dark"}
       />
+      <FloatingEmojiField emojis={fixedConfig.emojiDecor || []} />
 
       {/* Radiant Background Ambient Glows */}
       <div
@@ -266,6 +269,10 @@ export default function ScratchRevealPage({
           >
             {/* Subtle paper grain on card */}
             <CanvasTexture texture="paper-grain" mode="light" className="opacity-20 rounded-3xl" />
+
+            {/* Scrapbook-craft accents: taped corner + a rubber stamp */}
+            <WashiTape color={accentColor} rotate={-8} width={78} className="absolute -top-3 left-4 z-20" />
+            <Stamp color={accentColor} size={44} rotate={11} label="Ch.1" className="absolute -top-3 right-3 z-20 opacity-90" />
 
             {/* Header / Stamp */}
             <div className="w-full flex items-center justify-between border-b border-pink-100 pb-3">

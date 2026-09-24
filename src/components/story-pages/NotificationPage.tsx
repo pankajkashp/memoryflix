@@ -13,6 +13,8 @@ import {
 } from "@/lib/pageAnimations";
 import CanvasTexture from "./CanvasTexture";
 import TapToAdvanceCue from "./TapToAdvanceCue";
+import FloatingEmojiField from "./scenes/FloatingEmojiField";
+import { WashiTape, Stamp } from "./ScrapbookDecor";
 
 export interface NotificationPageData {
   notificationTitle?: string;
@@ -163,6 +165,7 @@ export default function NotificationPage({
         className="absolute w-[800px] h-[800px] rounded-full blur-[180px] pointer-events-none opacity-25 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
         style={{ backgroundColor: accentColor }}
       />
+      <FloatingEmojiField emojis={fixedConfig.emojiDecor || []} />
 
       {/* Floating decorative elements across full canvas */}
       <div ref={heartsRef} className="absolute inset-0 pointer-events-none z-20">
@@ -209,6 +212,10 @@ export default function NotificationPage({
             boxShadow: `0 30px 60px -15px rgba(0, 0, 0, 0.7), 0 0 45px -5px ${accentColor}35`,
           }}
         >
+          {/* Scrapbook-craft accents: taped corner + a rubber stamp badge */}
+          <WashiTape color={accentColor} rotate={-8} width={92} className="absolute -top-4 left-8 sm:left-14 z-10" />
+          <Stamp color={accentColor} size={50} rotate={10} label="New!" className="absolute -top-5 right-4 sm:right-8 z-10" />
+
           {/* Notification Header */}
           <div className="flex items-center justify-between mb-4 sm:mb-6">
             <div className="flex items-center gap-3 sm:gap-4">

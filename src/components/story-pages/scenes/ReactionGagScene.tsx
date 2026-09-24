@@ -3,6 +3,9 @@
 import { useEffect, useRef } from "react";
 import { useSceneAnimation } from "@/lib/scene-engine/useSceneAnimation";
 import FloatingEmojiField from "./FloatingEmojiField";
+import CanvasTexture from "../CanvasTexture";
+import { ScrapbookButton } from "../ScrapbookDecor";
+import { getFontClassName } from "@/lib/fonts";
 import { SceneProps } from "./types";
 
 export default function ReactionGagScene({ fixedConfig, fieldValues, onExit }: SceneProps) {
@@ -45,6 +48,7 @@ export default function ReactionGagScene({ fixedConfig, fieldValues, onExit }: S
       className="absolute inset-0 flex flex-col items-center justify-center gap-6 sm:gap-8 px-6 py-6 select-none overflow-y-auto"
       style={{ backgroundColor }}
     >
+      <CanvasTexture texture={fixedConfig.backgroundTexture || "canvas"} mode="dark" />
       <FloatingEmojiField emojis={fixedConfig.emojiDecor || []} />
 
       <div ref={characterRef} className="relative w-36 h-44 sm:w-44 sm:h-52 mx-auto">
@@ -61,7 +65,7 @@ export default function ReactionGagScene({ fixedConfig, fieldValues, onExit }: S
       </div>
 
       <div ref={textRef} className="text-center">
-        <h1 className="text-3xl sm:text-5xl md:text-6xl font-black leading-none tracking-tight uppercase" style={{ color: accentColor }}>
+        <h1 className={`text-3xl sm:text-5xl md:text-6xl font-black leading-none tracking-tight uppercase ${getFontClassName(fixedConfig.fontId)}`} style={{ color: accentColor }}>
           {title}
         </h1>
       </div>
@@ -70,15 +74,15 @@ export default function ReactionGagScene({ fixedConfig, fieldValues, onExit }: S
         {subtitle}
       </p>
 
-      <button
+      <ScrapbookButton
         ref={btnRef}
         onClick={handleTryAgain}
-        className="min-h-[52px] px-10 py-3.5 rounded-2xl text-white font-black text-base sm:text-lg tracking-wider shadow-lg active:scale-95 transition-all focus:outline-none focus:ring-4"
-        style={{ backgroundColor: accentColor }}
+        color={accentColor}
+        className="min-h-[52px] text-base sm:text-lg"
         aria-label="Try again"
       >
         TRY AGAIN →
-      </button>
+      </ScrapbookButton>
     </div>
   );
 }
