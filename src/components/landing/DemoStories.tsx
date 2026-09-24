@@ -42,9 +42,9 @@ const STORIES = [
 // ─── Component ──────────────────────────────────────────────────────────────
 export default function DemoStories() {
   return (
-    <section className="bg-black py-24 sm:py-32 relative overflow-hidden">
-      {/* Subtle purple glow from top */}
-      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/5 to-transparent" />
+    <section className="bg-[#FFF8F2] py-24 sm:py-32 relative overflow-hidden">
+      {/* Subtle warm divider from top */}
+      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#F0DCE0] to-transparent" />
 
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         {/* ── Header row ─────────────────────────────────────────────────── */}
@@ -57,8 +57,8 @@ export default function DemoStories() {
               transition={{ duration: 0.7 }}
               className="flex items-center gap-3 mb-3"
             >
-              <div className="h-px w-10 bg-gradient-to-r from-transparent to-purple-400/60" />
-              <span className="text-xs uppercase tracking-[0.32em] text-purple-400/80 font-semibold">
+              <div className="h-px w-10 bg-gradient-to-r from-transparent to-[#B79FD1]/70" />
+              <span className="text-xs uppercase tracking-[0.32em] text-[#8B6FA8] font-semibold">
                 Real stories
               </span>
             </motion.div>
@@ -68,7 +68,7 @@ export default function DemoStories() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.7, delay: 0.08 }}
-              className="text-4xl sm:text-5xl font-bold text-white tracking-tight"
+              className="text-4xl sm:text-5xl font-bold text-[#3B2436] tracking-tight"
             >
               Watch Real Stories
             </motion.h2>
@@ -78,7 +78,7 @@ export default function DemoStories() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.7, delay: 0.16 }}
-              className="mt-3 text-zinc-400 text-base max-w-sm"
+              className="mt-3 text-[#8B6B7A] text-base max-w-sm"
             >
               See exactly what MemoryFlix creates.
             </motion.p>
@@ -92,7 +92,7 @@ export default function DemoStories() {
           >
             <Link
               href="/demo"
-              className="text-sm font-semibold text-zinc-500 hover:text-white transition-colors flex items-center gap-1.5"
+              className="text-sm font-semibold text-[#B49AA4] hover:text-[#E85D75] transition-colors flex items-center gap-1.5"
             >
               See all stories
               <svg

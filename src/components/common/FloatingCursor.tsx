@@ -87,17 +87,17 @@ export default function FloatingCursor() {
         className="fixed top-0 left-0 w-80 h-80 rounded-full pointer-events-none z-[9998] opacity-0"
         style={{
           background:
-            "radial-gradient(circle at center, rgba(244,63,94,0.07) 0%, rgba(244,63,94,0.03) 40%, transparent 70%)",
+            "radial-gradient(circle at center, rgba(232,93,117,0.14) 0%, rgba(232,93,117,0.06) 40%, transparent 70%)",
           willChange: "transform",
-          mixBlendMode: "screen",
+          mixBlendMode: "multiply",
         }}
       />
       {/* Inner precise dot */}
       <div
         ref={innerRef}
         aria-hidden="true"
-        className="fixed top-0 left-0 w-2 h-2 rounded-full pointer-events-none z-[9999] opacity-0 bg-rose-400/60"
-        style={{ willChange: "transform", mixBlendMode: "screen" }}
+        className="fixed top-0 left-0 w-2 h-2 rounded-full pointer-events-none z-[9999] opacity-0 bg-[#E85D75]/70"
+        style={{ willChange: "transform", mixBlendMode: "multiply" }}
       />
     </>
   );

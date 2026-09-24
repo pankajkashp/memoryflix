@@ -58,10 +58,10 @@ const TEMPLATES = [
 // ─── Component ──────────────────────────────────────────────────────────────
 export default function TemplateCards({ ctaHref }: { ctaHref: string }) {
   return (
-    <section className="bg-[#080808] py-24 sm:py-32 relative overflow-hidden">
+    <section className="bg-[#FFFBF6] py-24 sm:py-32 relative overflow-hidden">
       {/* Ambient background glow */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[400px] bg-rose-500/6 rounded-full blur-[120px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[400px] bg-[#E85D75]/8 rounded-full blur-[120px]" />
       </div>
 
       <div className="mx-auto max-w-7xl px-6 lg:px-8 relative">
@@ -74,11 +74,11 @@ export default function TemplateCards({ ctaHref }: { ctaHref: string }) {
             transition={{ duration: 0.8 }}
             className="flex items-center justify-center gap-3 mb-6"
           >
-            <div className="h-px w-12 bg-gradient-to-r from-transparent to-rose-400/60" />
-            <span className="text-xs uppercase tracking-[0.32em] text-rose-400/80 font-semibold">
+            <div className="h-px w-12 bg-gradient-to-r from-transparent to-[#E85D75]/60" />
+            <span className="text-xs uppercase tracking-[0.32em] text-[#B9425C]/90 font-semibold">
               Choose your story
             </span>
-            <div className="h-px w-12 bg-gradient-to-l from-transparent to-rose-400/60" />
+            <div className="h-px w-12 bg-gradient-to-l from-transparent to-[#E85D75]/60" />
           </motion.div>
 
           <motion.h2
@@ -86,7 +86,7 @@ export default function TemplateCards({ ctaHref }: { ctaHref: string }) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.1 }}
-            className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight"
+            className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[#3B2436] tracking-tight"
           >
             What&apos;s your story?
           </motion.h2>
@@ -96,7 +96,7 @@ export default function TemplateCards({ ctaHref }: { ctaHref: string }) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="mt-4 text-zinc-400 text-lg max-w-md mx-auto"
+            className="mt-4 text-[#8B6B7A] text-lg max-w-md mx-auto"
           >
             Every memory deserves the right frame.
           </motion.p>

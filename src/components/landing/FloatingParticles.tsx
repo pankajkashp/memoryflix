@@ -59,29 +59,29 @@ export default function FloatingParticles() {
             }}
           >
             {p.type === "circle" && (
-              <div 
-                className="rounded-full bg-white/40 blur-[1px]"
+              <div
+                className="rounded-full bg-[#E85D75]/25 blur-[1px]"
                 style={{ width: p.size, height: p.size }}
               />
             )}
-            
+
             {p.type === "heart" && (
-              <svg 
-                viewBox="0 0 24 24" 
-                fill="currentColor" 
-                className="text-red-500/30"
-                style={{ width: p.size, height: p.size, filter: "drop-shadow(0px 0px 4px rgba(239, 68, 68, 0.3))" }}
+              <svg
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="text-[#E85D75]/35"
+                style={{ width: p.size, height: p.size, filter: "drop-shadow(0px 0px 4px rgba(232, 93, 117, 0.25))" }}
               >
                 <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
               </svg>
             )}
 
             {p.type === "sparkle" && (
-              <svg 
-                viewBox="0 0 24 24" 
-                fill="currentColor" 
-                className="text-amber-100/40"
-                style={{ width: p.size, height: p.size, filter: "drop-shadow(0px 0px 3px rgba(254, 243, 199, 0.4))" }}
+              <svg
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="text-[#C9A24A]/50"
+                style={{ width: p.size, height: p.size, filter: "drop-shadow(0px 0px 3px rgba(233, 201, 137, 0.4))" }}
               >
                 <path d="M12 2L14.09 9.91L22 12L14.09 14.09L12 22L9.91 14.09L2 12L9.91 9.91L12 2Z"/>
               </svg>

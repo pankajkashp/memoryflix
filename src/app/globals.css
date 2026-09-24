@@ -49,38 +49,39 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  /* ── MemoryFlix "storybook magic" light theme (Phase 1 design system) ── */
+  --background: #FFF8F2; /* warm ivory */
+  --foreground: #3B2436; /* deep plum-berry ink */
+  --card: #FFFDFB;
+  --card-foreground: #3B2436;
+  --popover: #FFFDFB;
+  --popover-foreground: #3B2436;
+  --primary: #E85D75; /* berry-rose */
+  --primary-foreground: #FFFDFB;
+  --secondary: #F7C9CF; /* blush pink */
+  --secondary-foreground: #4B2A34;
+  --muted: #FDEFE6; /* soft peach panel */
+  --muted-foreground: #8B6B7A; /* dusty mauve */
+  --accent: #B79FD1; /* lavender */
+  --accent-foreground: #3A2E4A;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --border: #F3DEE2; /* blush border */
+  --input: #F3DEE2;
+  --ring: #E85D75;
+  --chart-1: #E85D75;
+  --chart-2: #B79FD1;
+  --chart-3: #E9C989;
+  --chart-4: #FF9E7D;
+  --chart-5: #B9425C;
+  --radius: 1rem;
+  --sidebar: #FFFDFB;
+  --sidebar-foreground: #3B2436;
+  --sidebar-primary: #E85D75;
+  --sidebar-primary-foreground: #FFFDFB;
+  --sidebar-accent: #FDEFE6;
+  --sidebar-accent-foreground: #3A2E4A;
+  --sidebar-border: #F3DEE2;
+  --sidebar-ring: #E85D75;
 }
 
 .dark {
@@ -324,17 +325,27 @@
   }
 }
 
-/* ── Focus Ring (accessible, cinematic rose) ────────────────────────────────── */
+/* ── Focus Ring (accessible, storybook berry) ─────────────────────────────── */
 :focus-visible {
-  outline: 2px solid rgba(244, 63, 94, 0.7);
+  outline: 2px solid rgba(232, 93, 117, 0.75);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
 /* ── Selection ──────────────────────────────────────────────────────────────── */
 ::selection {
-  background: rgba(244, 63, 94, 0.3);
+  background: rgba(232, 93, 117, 0.25);
   color: inherit;
+}
+
+/* ── Magical soft shadow + paper-card helpers (Phase 1 design system) ──────── */
+.shadow-magical {
+  box-shadow: 0 20px 45px -18px rgba(178, 110, 120, 0.35), 0 6px 16px -8px rgba(178, 110, 120, 0.2);
+}
+.paper-card {
+  background: #FFFDFB;
+  border: 1px solid #F3DEE2;
+  box-shadow: 0 20px 45px -18px rgba(178, 110, 120, 0.35), 0 6px 16px -8px rgba(178, 110, 120, 0.2);
 }
 
 /* ── Prevent horizontal overflow globally ───────────────────────────────────── */

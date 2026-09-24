@@ -118,23 +118,23 @@ export default function TemplateDetailClient({
   };
 
   return (
-    <div className="relative min-h-screen bg-[#050508] text-white selection:bg-rose-500/30 select-none overflow-x-hidden">
+    <div className="relative min-h-screen bg-[#FFF8F2] text-[#3B2436] selection:bg-[#E85D75]/25 select-none overflow-x-hidden">
       {/* Ambient Atmospheric Background (Radial glow + noise/grid + floating particles) */}
       <AtmosphericBackground glowColor="rose" includeGrid={true} />
 
       {/* Top Navbar */}
-      <header className="sticky top-0 z-40 backdrop-blur-xl bg-black/70 border-b border-white/10 px-4 sm:px-8 py-3.5 flex items-center justify-between">
+      <header className="sticky top-0 z-40 backdrop-blur-xl bg-white/70 border-b border-[#F3DEE2] px-4 sm:px-8 py-3.5 flex items-center justify-between">
         <Link
           href="/templates"
-          className="inline-flex items-center gap-2 text-xs sm:text-sm text-zinc-400 hover:text-white transition-colors"
+          className="inline-flex items-center gap-2 text-xs sm:text-sm text-[#8B6B7A] hover:text-[#3B2436] transition-colors"
         >
           <ArrowLeft className="w-4 h-4" /> Back to Templates
         </Link>
         <div className="flex items-center gap-2.5">
-          <span className="text-xs font-mono uppercase tracking-widest text-zinc-400">
+          <span className="text-xs font-mono uppercase tracking-widest text-[#8B6B7A]">
             {template.category}
           </span>
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30 shadow-sm">
+          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#F7C9CF]/50 text-[#B9425C] border border-[#E85D75]/30 shadow-sm">
             ₹{priceInRupees}
           </span>
         </div>
@@ -146,14 +146,14 @@ export default function TemplateDetailClient({
           <div className="lg:col-span-7 flex flex-col space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Eye className="w-4 h-4 text-rose-500" />
-                <span className="text-xs font-mono uppercase tracking-widest text-zinc-300 font-semibold">
+                <Eye className="w-4 h-4 text-[#E85D75]" />
+                <span className="text-xs font-mono uppercase tracking-widest text-[#4A2C2A] font-semibold">
                   {isBranchingTemplate
                     ? "Interactive Live Sample"
                     : `Interactive Live Sample (${currentPageIdx + 1}/${template.pages.length})`}
                 </span>
               </div>
-              <span className="text-[11px] font-mono text-zinc-500">
+              <span className="text-[11px] font-mono text-[#B49AA4]">
                 {isBranchingTemplate ? "Click through the story" : "Tap frame to advance"}
               </span>
             </div>
@@ -161,11 +161,11 @@ export default function TemplateDetailClient({
             {/* Live Page Preview Frame (Tap anywhere to advance, unless it's a click-driven branching experience) */}
             <div
               onClick={isBranchingTemplate ? undefined : handleAdvance}
-              className={`relative w-full aspect-[4/3] sm:aspect-[16/11] rounded-3xl overflow-hidden border-2 border-white/20 bg-zinc-950 shadow-2xl transition-transform duration-300 hover:scale-[1.005] ${
+              className={`relative w-full aspect-[4/3] sm:aspect-[16/11] rounded-3xl overflow-hidden border-2 border-white shadow-magical transition-transform duration-300 hover:scale-[1.005] ${
                 isBranchingTemplate ? "" : "cursor-pointer"
               }`}
               style={{
-                boxShadow: "0 25px 60px -15px rgba(0,0,0,0.9), 0 0 40px -10px rgba(244,63,94,0.2)",
+                boxShadow: "0 25px 60px -15px rgba(178,110,120,0.35), 0 0 40px -10px rgba(232,93,117,0.2)",
               }}
             >
               {isBranchingTemplate ? (
@@ -192,27 +192,27 @@ export default function TemplateDetailClient({
 
           {/* Right Column: Template Info & CTA Card (5 cols) */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="rounded-3xl p-6 sm:p-8 bg-zinc-950/90 border border-white/15 backdrop-blur-2xl shadow-2xl space-y-6">
+            <div className="rounded-3xl p-6 sm:p-8 bg-white/90 border border-[#F3DEE2] backdrop-blur-2xl shadow-magical space-y-6">
               {/* Badge & Title */}
               <div className="space-y-3">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-rose-500/15 border border-rose-500/30 text-rose-300 shadow-sm">
-                  <Sparkles className="w-3.5 h-3.5 text-rose-400" /> {template.category} Special
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-[#F7C9CF]/40 border border-[#E85D75]/30 text-[#B9425C] shadow-sm">
+                  <Sparkles className="w-3.5 h-3.5 text-[#E85D75]" /> {template.category} Special
                 </div>
-                <h1 className="text-3xl sm:text-4xl font-serif font-bold tracking-tight text-white drop-shadow-sm">
+                <h1 className="text-3xl sm:text-4xl font-serif font-bold tracking-tight text-[#3B2436]">
                   {template.name}
                 </h1>
-                <p className="text-sm text-zinc-300/85 leading-relaxed">
+                <p className="text-sm text-[#8B6B7A] leading-relaxed">
                   {template.description}
                 </p>
               </div>
 
               {/* Price Row */}
-              <div className="flex items-baseline gap-3 pt-4 border-t border-white/10">
-                <span className="text-4xl font-bold text-white tracking-tight">
+              <div className="flex items-baseline gap-3 pt-4 border-t border-[#F3DEE2]">
+                <span className="text-4xl font-bold text-[#3B2436] tracking-tight">
                   ₹{priceInRupees}
                 </span>
-                <span className="text-xs text-zinc-500 line-through">₹199</span>
-                <span className="text-xs font-bold text-emerald-400">
+                <span className="text-xs text-[#B49AA4] line-through">₹199</span>
+                <span className="text-xs font-bold text-[#3E8A6D]">
                   Save 75% • One-time fee
                 </span>
               </div>
@@ -221,7 +221,7 @@ export default function TemplateDetailClient({
               <button
                 onClick={handleCreate}
                 disabled={isPending}
-                className="w-full py-4 rounded-2xl bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-400 hover:to-pink-500 text-white font-bold text-base shadow-lg shadow-rose-500/35 flex items-center justify-center gap-2 transition-all duration-300 disabled:opacity-50 cursor-pointer active:scale-98"
+                className="w-full py-4 rounded-2xl bg-gradient-to-r from-[#E85D75] to-[#B9425C] hover:from-[#DB4A64] hover:to-[#A83A54] text-white font-bold text-base shadow-magical flex items-center justify-center gap-2 transition-all duration-300 disabled:opacity-50 cursor-pointer active:scale-98"
               >
                 {isPending ? (
                   <>
@@ -237,17 +237,17 @@ export default function TemplateDetailClient({
               </button>
 
               {/* Features List */}
-              <div className="space-y-3 pt-4 border-t border-white/10 text-xs text-zinc-300">
+              <div className="space-y-3 pt-4 border-t border-[#F3DEE2] text-xs text-[#6B4C58]">
                 <div className="flex items-center gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-[#3E8A6D] shrink-0" />
                   <span>Includes all 7 animated chapter blueprints</span>
                 </div>
                 <div className="flex items-center gap-2.5">
-                  <Clock className="w-4 h-4 text-sky-400 shrink-0" />
+                  <Clock className="w-4 h-4 text-[#B79FD1] shrink-0" />
                   <span>30-day editing access after purchase</span>
                 </div>
                 <div className="flex items-center gap-2.5">
-                  <Shield className="w-4 h-4 text-rose-400 shrink-0" />
+                  <Shield className="w-4 h-4 text-[#E85D75] shrink-0" />
                   <span>Permanent ad-free public link forever</span>
                 </div>
               </div>
